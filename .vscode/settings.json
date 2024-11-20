@@ -1,0 +1,8 @@
+{
+    "python.defaultInterpreterPath": "/Users/miloszwojtaszczyk/miniconda3/envs/praca_inz/bin/python",
+    "pylint.args": [
+        "--load-plugins",
+        "pylint_django",
+        "--django-settings-module=backend.settings"
+    ]
+}
