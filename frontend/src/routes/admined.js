@@ -10,7 +10,7 @@ const AdminedRoute = ({children}) => {
     if (!admin) {
       nav("/menu");
     }
-  }, [admin, nav]);
+  }, [admin]);
 
   if (admin) {
     return children; 

@@ -12,7 +12,7 @@ const ProtectedRoute = ({ children }) => {
     if (!loading && !user) {
       nav("/login"); 
     }
-  }, [loading, user, nav]);
+  }, [loading, user]);
 
   if (loading) {
     return <Heading>Loading...</Heading>; 
