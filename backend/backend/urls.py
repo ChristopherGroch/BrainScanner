@@ -29,6 +29,7 @@ from api.views import (
     createUser,
     multipleImageCheck,
     getAllUsagesFiles,
+    is_admin,
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -47,6 +48,7 @@ urlpatterns = [
     path("api/createUser/", createUser),
     path("api/checkMultipleFiles/", multipleImageCheck),
     path("api/getReports/", getAllUsagesFiles),
+    path("api/checkAdmin/",is_admin)
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

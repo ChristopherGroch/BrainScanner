@@ -4,5 +4,10 @@
         "--load-plugins",
         "pylint_django",
         "--django-settings-module=backend.settings"
-    ]
+    ],
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true,
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }

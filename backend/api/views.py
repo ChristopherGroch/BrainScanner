@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.core.files.base import ContentFile
 from .serializers import (
     UserSerializer,
@@ -39,6 +40,7 @@ from io import StringIO
 
 
 class CookieTokenRefreshView(TokenRefreshView):
+
     def post(self, request, *args, **kwargs):
         try:
             data = request.data.copy()
@@ -54,7 +56,7 @@ class CookieTokenRefreshView(TokenRefreshView):
                 key="access",
                 value=access,
                 httponly=True,
-                secure=False,
+                secure=True,
                 samesite="None",
                 path="/",
             )
@@ -69,6 +71,14 @@ class CookieTokenRefreshView(TokenRefreshView):
 
 class CookieTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
+        
+        # x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        # if x_forwarded_for:
+        #     ip = x_forwarded_for.split(',')[0]
+        # else:
+        #     ip = request.META.get('REMOTE_ADDR')
+        # print(ip)
+
         try:
             response = super().post(request, *args, **kwargs)
             data = response.data
@@ -117,6 +127,12 @@ def logout(request):
 def is_logged_in(request):
     serializer = UserSerializer(request.user, many=False)
     return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def is_admin(request):
+    return Response({'is_admin':request.user.is_superuser})
 
 
 @api_view(["PUT"])
