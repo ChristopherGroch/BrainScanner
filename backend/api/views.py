@@ -30,7 +30,8 @@ from .utils import (
     generate_password,
     generatePasswordFile,
     generateZipFile,
-    loadNetwork
+    loadNetwork,
+    frontedHappyReformatHistory
 )
 from decimal import Decimal, ROUND_HALF_UP
 from django.db import transaction, connection
@@ -280,6 +281,13 @@ def single_image_classification(request):
 def getAllUsages(request):
     usages = Usage.objects.filter(doctor=request.user).all()
     return Response(UsageSerializer(usages, many=True).data)
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def getAllUsagesFrontFriendly(request):
+    usages = Usage.objects.filter(doctor=request.user).all()
+    response_data = frontedHappyReformatHistory(UsageSerializer(usages,many=True).data)
+    return Response(response_data)
 
 
 @api_view(["GET"])

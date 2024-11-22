@@ -17,7 +17,7 @@ import secrets
 import pyminizip
 from django.core.mail import EmailMessage
 from backend.settings import EMAIL_HOST_USER
-
+import datetime
 
 
 def loadNetwork():
@@ -196,3 +196,27 @@ def sendEmail(email,file):
     with open(file, "rb") as f:
         email_message.attach(file, f.read(), "application/zip")
     email_message.send()
+    
+    
+def frontedHappyReformatHistory(data):
+    result = []
+    for item in data:
+        id_usage = item.get("id")
+        for classification in item.get('classifications', []):
+            id_class = classification.get('id')
+            image = classification.get('image', {})
+            patient = image.get('patient', {})
+            result.append({
+                "id": f"{id_usage}-{id_class}",
+                "patient": f"{patient.get("first_name")} {patient.get("last_name")}",
+                "image_id":(image.get('id')),
+                "date": (item.get("date_of_creation")),
+                "image_url": image.get("photo"),
+                "tumor_type": image.get("tumor_type"),
+                "no_tumor_prob": classification.get("no_tumor_prob"),
+                "pituitary_prob": classification.get("pituitary_prob"),
+                "meningioma_prob": classification.get("meningioma_prob"),
+                "glioma_prob": classification.get("glioma_prob"),
+                
+            })
+    return result

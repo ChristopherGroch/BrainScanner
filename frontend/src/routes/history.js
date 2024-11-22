@@ -2,16 +2,23 @@ import { VStack, Text, Button } from "@chakra-ui/react";
 
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/auth";
-import { getHistory } from "../endpoints/api";
+import { getUsages } from "../endpoints/api";
+import { useNavigate } from "react-router-dom";
 
 const HistoryMenu = () => {
   const [classifications, setClassifications] = useState([]);
   const { logoutUser } = useAuth();
+  const nav = useNavigate()
+
+  const moveToMenu = () => {
+    nav('/menu')
+  }
 
   useEffect(() => {
     const fetchClassifications = async () => {
       try {
-        const classifications = await getHistory();
+        const classifications = await getUsages();
+        console.log(classifications)
         setClassifications(classifications);
       } catch (error) {
         setClassifications([]);
@@ -26,6 +33,7 @@ const HistoryMenu = () => {
 
   return (
     <VStack alignItems="start">
+      <Button onClick={moveToMenu}>Menu</Button>
       <Button onClick={handleLogout} colorScheme="red">
         Logout
       </Button>
@@ -33,7 +41,7 @@ const HistoryMenu = () => {
         {classifications.map((classifications) => {
           return (
             <Text key={classifications.id} fontSize="22px">
-              {classifications.date_of_creation}
+              {classifications.date}
             </Text>
           );
         })}

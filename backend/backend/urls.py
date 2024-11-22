@@ -30,6 +30,7 @@ from api.views import (
     multipleImageCheck,
     getAllUsagesFiles,
     is_admin,
+    getAllUsagesFrontFriendly
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -45,6 +46,7 @@ urlpatterns = [
     path("api/classify/<int:pk>/", classifiy),
     path("api/changePassword/<int:pk>/", change_password),
     path("api/history/", getAllUsages),
+    path("api/getUsages/",getAllUsagesFrontFriendly),
     path("api/createUser/", createUser),
     path("api/checkMultipleFiles/", multipleImageCheck),
     path("api/getReports/", getAllUsagesFiles),

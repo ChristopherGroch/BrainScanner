@@ -5,11 +5,13 @@ const BASE_URL = "http://127.0.0.1:8000/api/";
 
 const LOGIN_URL = `${BASE_URL}token/`;
 const HISTORY_URL = `${BASE_URL}history/`;
+const USAGES_URL = `${BASE_URL}getUsages/`;
 const REFRESH_URL = `${BASE_URL}token/refresh/`;
 const AUTH_CHECK_URL = `${BASE_URL}authcheck/`;
 const LOGOUT_URL = `${BASE_URL}logout/`;
 const ADMIN_URL = `${BASE_URL}checkAdmin/`;
 const CREATE_USER = `${BASE_URL}createUser/`;
+const PASSWORD_URL = `${BASE_URL}changePassword/1/`;
 // axios.defaults.withCredentials = true;
 
 export const login = async (username, password) => {
@@ -38,8 +40,24 @@ export const createUser = async (username, first_name, last_name, email, PESEL) 
   return true;
 };
 
+
+export const changePassword = async (new_password) => {
+  await axios.put(
+    PASSWORD_URL,
+    { new_password},
+    { withCredentials: true }
+  );
+
+  return true;
+};
+
 export const getHistory = async () => {
   const response = await axios.get(HISTORY_URL, { withCredentials: true });
+  return response.data;
+};
+
+export const getUsages = async () => {
+  const response = await axios.get(USAGES_URL, { withCredentials: true });
   return response.data;
 };
 

@@ -3,6 +3,7 @@ import HistoryMenu from "./routes/history";
 import Menu from "./routes/menu";
 import CreateUser from "./routes/createUser";
 import NotFound from "./routes/nothing";
+import ChangePasasword from "./routes/changePassword";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 import { AuthProvider } from "./context/auth";
@@ -20,6 +21,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Menu />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/changePassword"
+              element={
+                <ProtectedRoute>
+                  <ChangePasasword />
                 </ProtectedRoute>
               }
             ></Route>

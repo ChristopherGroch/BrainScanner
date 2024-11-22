@@ -57,6 +57,7 @@ class ClassificationSerializer(serializers.ModelSerializer):
         model = Classification
         fields = [
             # "usage",
+            "id",
             "image",
             "no_tumor_prob",
             "pituitary_prob",

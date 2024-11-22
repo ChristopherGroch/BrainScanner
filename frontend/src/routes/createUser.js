@@ -5,7 +5,7 @@ import {
   Input,
   Button,
 } from "@chakra-ui/react";
-
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { createUser } from "../endpoints/api";
 
@@ -15,6 +15,11 @@ const CreateUser = () => {
   const [last_name, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [PESEL, setPESEL] = useState("");
+  const nav = useNavigate();
+
+  const moveToMenu = () => {
+    nav("/menu");
+  };
 
   const handleCreateUser = async () => {
     try {
@@ -25,12 +30,13 @@ const CreateUser = () => {
       // console.log(PESEL);
       await createUser(username, first_name, last_name, email, PESEL);
     } catch (error) {
-      alert("Złe dane");
+      alert(error.response.data.reason);
     }
   };
 
   return (
     <VStack>
+      <Button onClick={moveToMenu}>Menu</Button>
       <FormControl>
         <FormLabel>Username</FormLabel>
         <Input

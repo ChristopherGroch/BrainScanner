@@ -1,10 +1,10 @@
-import { VStack, Text, Button } from "@chakra-ui/react";
+import { VStack, Button } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth";
 
 const Menu = () => {
   const nav = useNavigate();
-  const { logoutUser } = useAuth();
+  const { logoutUser,admin } = useAuth();
 
   const moveToHistory = () => {
     nav("/history");
@@ -12,6 +12,10 @@ const Menu = () => {
 
   const moveToCreateUser = () => {
     nav("/createUser");
+  };
+
+  const moveToChangepassword = () => {
+    nav("/changePassword");
   };
 
   const handleLogout = async () => {
@@ -22,10 +26,13 @@ const Menu = () => {
       <Button onClick={moveToHistory} colorScheme="blue">
         Classification History
       </Button>
+      <Button onClick={moveToChangepassword} colorScheme="yellow">
+        Change Password
+      </Button>
       <Button onClick={handleLogout} colorScheme="red">
         Logout
       </Button>
-      <Button onClick={moveToCreateUser} colorScheme="green">
+      <Button onClick={moveToCreateUser} colorScheme="green" display={admin ? "inline-flex" : "none"} >
         Create User
       </Button>
     </VStack>
