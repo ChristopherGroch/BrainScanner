@@ -11,6 +11,9 @@ import {
   ModalCloseButton,
   useDisclosure,
   Button,
+  Select,
+  FormControl,
+  FormLabel
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { downloadFile } from "../endpoints/api";
@@ -25,11 +28,33 @@ const HistoryItem = ({
   meningioma_prob,
   glioma_prob,
   image_id,
+  classifyFunction,
 }) => {
+  const TUMOR_TYPES = {
+    0: "not_classified",
+    1: "glioma",
+    2: "meningioma",
+    3: "pituitary",
+    4: "no_tumor",
+  };
+  const tumorName = TUMOR_TYPES[tumor_type] || "Unknown";
+
+  const [showForm, setShowForm] = useState(false);
+  const [selectedOption, setSelectedOption] = useState("");
+
+  const handleClassifyClick = () => {
+    setShowForm(!showForm);
+  };
+
+  const handleFormSubmit = () => {
+    console.log("Selected option:", selectedOption);
+    classifyFunction(image_id,parseInt(selectedOption))
+    setShowForm(false);
+  };
 
   const handleDownloadFile = async () => {
     // console.log(image_id)
-    await downloadFile(image_id,`${patient}-image.jpg`);
+    await downloadFile(image_id, `${patient}-image.jpg`);
   };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -60,7 +85,7 @@ const HistoryItem = ({
             Date: {new Date(date).toLocaleString()}
           </Text>
           <Text fontSize="sm" color="gray.600">
-            Class: {tumor_type}
+            Class: {tumorName}
           </Text>
           <Text fontSize="sm" color="gray.600">
             No tumor: {no_tumor_prob}
@@ -74,9 +99,43 @@ const HistoryItem = ({
           <Text fontSize="sm" color="gray.600">
             Meningioma: {meningioma_prob}
           </Text>
+          <Button
+            colorScheme="blue"
+            size="sm"
+            display={tumor_type === null ? "inline-flex" : "none"}
+            onClick={handleClassifyClick}
+          >
+            Classify
+          </Button>
           <Button colorScheme="green" size="sm" onClick={handleDownloadFile}>
             Download Image
           </Button>
+          {showForm && (
+            <Box mt={4}>
+              <FormControl>
+                <FormLabel>Wybierz rodzaj guza mózgu</FormLabel>
+                <Select
+                  value={selectedOption}
+                  onChange={(e) => setSelectedOption(e.target.value)}
+                  placeholder="Rodzaj guza mózgu"
+                >
+                  <option value="1">Glioma</option>
+                  <option value="2">Meningioma</option>
+                  <option value="3">Pituitary</option>
+                  <option value="4">No Tumor</option>
+                </Select>
+              </FormControl>
+
+              <Button
+                colorScheme="blue"
+                mt={4}
+                onClick={handleFormSubmit}
+                isDisabled={!selectedOption} 
+              >
+                Submit
+              </Button>
+            </Box>
+          )}
         </Box>
       </Flex>
       <Modal isOpen={isOpen} onClose={onClose} isCentered>

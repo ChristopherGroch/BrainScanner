@@ -34,6 +34,15 @@ const HistoryMenu = () => {
     await logoutUser();
   };
 
+  const updateTumorType = (image_id, tumor_type) => {
+    const updatedClassifications = classifications.map((item) => {
+      if (item.image_id === image_id) {
+        return { ...item, tumor_type };
+      }
+      return item;
+    });
+    setClassifications(updatedClassifications);
+  };
   return (
     <Box
       display="flex"
@@ -62,6 +71,7 @@ const HistoryMenu = () => {
               glioma_prob={menuItem.glioma_prob}
               meningioma_prob={menuItem.meningioma_prob}
               image_id={menuItem.image_id}
+              classifyFunction={updateTumorType}
             />
           );
         })}

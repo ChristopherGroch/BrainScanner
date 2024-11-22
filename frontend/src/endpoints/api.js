@@ -13,6 +13,7 @@ const ADMIN_URL = `${BASE_URL}checkAdmin/`;
 const CREATE_USER = `${BASE_URL}createUser/`;
 const PASSWORD_URL = `${BASE_URL}changePassword/1/`;
 const DOWNLOAD_FILE = `${BASE_URL}downloadFile/`;
+const CLASSIFY_URL = `${BASE_URL}classify/`;
 // axios.defaults.withCredentials = true;
 
 var fileDownload = require('js-file-download');
@@ -51,6 +52,12 @@ export const createUser = async (
 
 export const changePassword = async (new_password) => {
   await axios.put(PASSWORD_URL, { new_password }, { withCredentials: true });
+
+  return true;
+};
+
+export const classify = async (tumor_type,pk) => {
+  await axios.put(`${CLASSIFY_URL}${pk}/`, { tumor_type }, { withCredentials: true });
 
   return true;
 };

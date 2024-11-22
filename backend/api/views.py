@@ -286,7 +286,7 @@ def getAllUsages(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def getAllUsagesFrontFriendly(request):
-    usages = Usage.objects.filter(doctor=request.user).all()
+    usages = Usage.objects.filter(doctor=request.user).all().order_by('-date_of_creation')
     response_data = frontedHappyReformatHistory(UsageSerializer(usages,many=True).data)
     return Response(response_data)
 
