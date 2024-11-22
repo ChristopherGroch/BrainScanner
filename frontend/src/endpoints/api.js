@@ -13,7 +13,9 @@ const ADMIN_URL = `${BASE_URL}checkAdmin/`;
 const CREATE_USER = `${BASE_URL}createUser/`;
 const PASSWORD_URL = `${BASE_URL}changePassword/1/`;
 const DOWNLOAD_FILE = `${BASE_URL}downloadFile/`;
+const DOWNLOAD_REPORT = `${BASE_URL}downloadReport/`;
 const CLASSIFY_URL = `${BASE_URL}classify/`;
+const REPORTS_URL = `${BASE_URL}getUsageReports/`
 // axios.defaults.withCredentials = true;
 
 var fileDownload = require('js-file-download');
@@ -67,6 +69,11 @@ export const getHistory = async () => {
   return response.data;
 };
 
+export const getReports = async () => {
+  const response = await axios.get(REPORTS_URL, { withCredentials: true });
+  return response.data;
+};
+
 export const getUsages = async () => {
   const response = await axios.get(USAGES_URL, { withCredentials: true });
   return response.data;
@@ -81,6 +88,23 @@ export const downloadFile = async (id,filename) => {
   axios
     .post(
       DOWNLOAD_FILE,
+      { id },
+      { withCredentials: true, responseType: "blob" }
+    )
+    .then((res) => {
+      fileDownload(res.data, filename);
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+
+export const downloadReport = async (id,filename) => {
+  axios
+    .post(
+      DOWNLOAD_REPORT,
       { id },
       { withCredentials: true, responseType: "blob" }
     )

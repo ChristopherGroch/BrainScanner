@@ -13,10 +13,12 @@ import {
   Button,
   Select,
   FormControl,
-  FormLabel
+  FormLabel,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { downloadFile } from "../endpoints/api";
+import { classify, refresh } from "../endpoints/api";
+import { useNavigate } from "react-router-dom";
 
 const HistoryItem = ({
   image,
@@ -41,14 +43,31 @@ const HistoryItem = ({
 
   const [showForm, setShowForm] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
-
+  const nav = useNavigate();
   const handleClassifyClick = () => {
     setShowForm(!showForm);
   };
 
-  const handleFormSubmit = () => {
+  const handleFormSubmit = async () => {
     console.log("Selected option:", selectedOption);
-    classifyFunction(image_id,parseInt(selectedOption))
+    classifyFunction(image_id, parseInt(selectedOption));
+    try {
+      console.log("EW")
+      await classify(parseInt(selectedOption), image_id);
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        try {
+          await refresh();
+          await classify(parseInt(selectedOption), image_id);
+        } catch (refreshError) {
+          console.error("Nie udało się odświeżyć tokena", refreshError);
+          alert("Twoja sesja wygasła. Zaloguj się ponownie.");
+          nav("/login");
+        }
+      } else {
+        alert(error.response?.data?.reason || "Wystąpił błąd.");
+      }
+    }
     setShowForm(false);
   };
 
@@ -130,7 +149,7 @@ const HistoryItem = ({
                 colorScheme="blue"
                 mt={4}
                 onClick={handleFormSubmit}
-                isDisabled={!selectedOption} 
+                isDisabled={!selectedOption}
               >
                 Submit
               </Button>

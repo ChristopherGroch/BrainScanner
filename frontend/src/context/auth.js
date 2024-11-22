@@ -45,7 +45,16 @@ export const AuthProvider = ({ children }) => {
   const logoutUser = async () => {
     try {
         await logout();
-    } catch(error) {}
+    } catch(error) {
+      if (error.response && error.response.status === 401) {
+        try {
+          await refresh();
+          await logout();
+        } catch (refreshError) {
+        }
+      } else {
+      }
+    }
     nav('/login')
   }
 

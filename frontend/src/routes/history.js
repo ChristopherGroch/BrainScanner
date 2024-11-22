@@ -1,5 +1,5 @@
 import { VStack, Text, Button } from "@chakra-ui/react";
-import { Box, Flex, Image, Heading } from "@chakra-ui/react";
+import { Box, Flex, Image, Heading , FormControl, Input,FormLabel} from "@chakra-ui/react";
 
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/auth";
@@ -10,6 +10,7 @@ import HistoryItem from "../components/historyItem";
 const HistoryMenu = () => {
   const BASE_URL = "http://127.0.0.1:8000";
   const [classifications, setClassifications] = useState([]);
+  const [searchBar, setSearchBar] = useState('');
   const { logoutUser } = useAuth();
   const nav = useNavigate();
 
@@ -57,8 +58,18 @@ const HistoryMenu = () => {
       <Heading as="h1" mb={6} textAlign="center">
         Patient Images
       </Heading>
+      <FormControl>
+        <FormLabel>Search</FormLabel>
+        <Input
+          onChange={(e) => setSearchBar(e.target.value)}
+          value={searchBar}
+          type="text"
+        />
+      </FormControl>
       <Flex direction="column" gap={6}>
-        {classifications.map((menuItem, key) => {
+        {classifications.filter((menuItem) => {
+          return searchBar.toLocaleLowerCase() === '' ? menuItem : menuItem.patient.toLocaleLowerCase().includes(searchBar)
+        }).map((menuItem, key) => {
           return (
             <HistoryItem
               key={key}

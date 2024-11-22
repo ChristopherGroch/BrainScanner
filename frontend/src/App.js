@@ -4,6 +4,7 @@ import Menu from "./routes/menu";
 import CreateUser from "./routes/createUser";
 import NotFound from "./routes/nothing";
 import ChangePasasword from "./routes/changePassword";
+import ReportHistory from "./routes/reportsHistory";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 import { AuthProvider } from "./context/auth";
@@ -21,6 +22,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Menu />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/reportHistory"
+              element={
+                <ProtectedRoute>
+                  <ReportHistory />
                 </ProtectedRoute>
               }
             ></Route>

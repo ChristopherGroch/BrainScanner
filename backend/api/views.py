@@ -297,6 +297,12 @@ def getAllUsagesFiles(request):
     usages = Usage.objects.filter(doctor=request.user).all()
     return Response(UsageFilesSerializer(usages, many=True).data)
 
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def getAllUsagesFilesFrontFriendly(request):
+    usages = Usage.objects.filter(doctor=request.user).exclude(report__isnull=True).all().order_by('-date_of_creation')
+    return Response(UsageFilesSerializer(usages, many=True).data)
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def downloadFile(request):
@@ -305,6 +311,17 @@ def downloadFile(request):
     response = FileResponse(open(file_path, 'rb'))
     response['Content-Type'] = 'application/octet-stream'
     response['Content-Disposition'] = f'attachment; filename="{image.photo.name}"'
+    return response
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def downloadReport(request):
+    report = Report.objects.get(id=request.data['id'])
+    file_path = report.file.path
+    response = FileResponse(open(file_path, 'rb'))
+    response['Content-Type'] = 'application/octet-stream'
+    response['Content-Disposition'] = f'attachment; filename="{report.file.name}"'
     return response
 
 
@@ -340,6 +357,7 @@ def multipleImageCheck(request):
         network,best_model = loadNetwork()
     except Exception as e:
         return Response({'reason':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
     
     if not 'patients' in request.data:
         return Response('No patients key',status=status.HTTP_400_BAD_REQUEST)

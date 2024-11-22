@@ -7,7 +7,7 @@ import {
   } from "@chakra-ui/react";
   import { useNavigate } from "react-router-dom";
   import { useState } from "react";
-  import { changePassword } from "../endpoints/api";
+  import { changePassword,refresh } from "../endpoints/api";
   
   const ChangePasasword = () => {
     const [new_password, setNewPassword] = useState("");
@@ -20,12 +20,24 @@ import {
   
     const handleCreateUser = async () => {
         if (repeat_password === new_password){
-            try {
+          try {
+            await changePassword(new_password); 
+            nav("/login"); 
+          } catch (error) {
+            if (error.response && error.response.status === 401) {
+              try {
+                await refresh();
                 await changePassword(new_password);
                 nav("/login");
-              } catch (error) {
-                alert(error.response.data.reason);
+              } catch (refreshError) {
+                console.error("Nie udało się odświeżyć tokena", refreshError);
+                alert("Twoja sesja wygasła. Zaloguj się ponownie.");
+                nav("/login");
               }
+            } else {
+              alert(error.response?.data?.reason || "Wystąpił błąd.");
+            }
+          }
         } else {
             alert('Pola muszą się zgadzać')
         }

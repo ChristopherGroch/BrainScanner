@@ -7,7 +7,7 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { createUser } from "../endpoints/api";
+import { createUser,refresh } from "../endpoints/api";
 
 const CreateUser = () => {
   const [username, setUsername] = useState("");
@@ -22,16 +22,34 @@ const CreateUser = () => {
   };
 
   const handleCreateUser = async () => {
+    // try {
+    //   // console.log(username);
+    //   // console.log(first_name);
+    //   // console.log(last_name);
+    //   // console.log(email);
+    //   // console.log(PESEL);
+    //   await createUser(username, first_name, last_name, email, PESEL);
+    // } catch (error) {
+    //   alert(error.response.data.reason);
+    // }
+
     try {
-      // console.log(username);
-      // console.log(first_name);
-      // console.log(last_name);
-      // console.log(email);
-      // console.log(PESEL);
       await createUser(username, first_name, last_name, email, PESEL);
     } catch (error) {
-      alert(error.response.data.reason);
+      if (error.response && error.response.status === 401) {
+        try {
+          await refresh();
+          await createUser(username, first_name, last_name, email, PESEL);
+        } catch (refreshError) {
+          console.error("Nie udało się odświeżyć tokena", refreshError);
+          alert("Twoja sesja wygasła. Zaloguj się ponownie.");
+          nav("/login");
+        }
+      } else {
+        alert(error.response?.data?.reason || "Wystąpił błąd.");
+      }
     }
+
   };
 
   return (

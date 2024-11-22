@@ -18,6 +18,10 @@ const Menu = () => {
     nav("/changePassword");
   };
 
+  const moveToReportHistory = () => {
+    nav("/reportHistory");
+  };
+
   const handleLogout = async () => {
     await logoutUser();
   };
@@ -28,6 +32,9 @@ const Menu = () => {
       </Button>
       <Button onClick={moveToChangepassword} colorScheme="yellow">
         Change Password
+      </Button>
+      <Button onClick={moveToReportHistory} colorScheme="orange">
+        Report History
       </Button>
       <Button onClick={handleLogout} colorScheme="red">
         Logout
