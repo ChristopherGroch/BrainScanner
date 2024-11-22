@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
       setADmin(isAdmin)
       nav("/menu");
     } catch (error) {
-      alert("Incorrect username or password");
+      alert(error);
     }
   };
 

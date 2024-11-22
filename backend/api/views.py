@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from django.http import FileResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.core.files.base import ContentFile
 from .serializers import (
@@ -295,6 +296,16 @@ def getAllUsagesFrontFriendly(request):
 def getAllUsagesFiles(request):
     usages = Usage.objects.filter(doctor=request.user).all()
     return Response(UsageFilesSerializer(usages, many=True).data)
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def downloadFile(request):
+    image = Image.objects.get(id=request.data['id'])
+    file_path = image.photo.path
+    response = FileResponse(open(file_path, 'rb'))
+    response['Content-Type'] = 'application/octet-stream'
+    response['Content-Disposition'] = f'attachment; filename="{image.photo.name}"'
+    return response
 
 
 @api_view(["POST"])

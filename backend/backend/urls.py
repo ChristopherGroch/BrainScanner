@@ -30,7 +30,8 @@ from api.views import (
     multipleImageCheck,
     getAllUsagesFiles,
     is_admin,
-    getAllUsagesFrontFriendly
+    getAllUsagesFrontFriendly,
+    downloadFile
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -50,7 +51,8 @@ urlpatterns = [
     path("api/createUser/", createUser),
     path("api/checkMultipleFiles/", multipleImageCheck),
     path("api/getReports/", getAllUsagesFiles),
-    path("api/checkAdmin/",is_admin)
+    path("api/checkAdmin/",is_admin),
+    path("api/downloadFile/",downloadFile)
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

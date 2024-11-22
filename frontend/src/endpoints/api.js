@@ -12,7 +12,10 @@ const LOGOUT_URL = `${BASE_URL}logout/`;
 const ADMIN_URL = `${BASE_URL}checkAdmin/`;
 const CREATE_USER = `${BASE_URL}createUser/`;
 const PASSWORD_URL = `${BASE_URL}changePassword/1/`;
+const DOWNLOAD_FILE = `${BASE_URL}downloadFile/`;
 // axios.defaults.withCredentials = true;
+
+var fileDownload = require('js-file-download');
 
 export const login = async (username, password) => {
   await axios.post(
@@ -30,23 +33,24 @@ export const logout = async (username, password) => {
   return true;
 };
 
-export const createUser = async (username, first_name, last_name, email, PESEL) => {
+export const createUser = async (
+  username,
+  first_name,
+  last_name,
+  email,
+  PESEL
+) => {
   await axios.post(
     CREATE_USER,
-    { username, first_name, last_name, email , PESEL},
+    { username, first_name, last_name, email, PESEL },
     { withCredentials: true }
   );
 
   return true;
 };
 
-
 export const changePassword = async (new_password) => {
-  await axios.put(
-    PASSWORD_URL,
-    { new_password},
-    { withCredentials: true }
-  );
+  await axios.put(PASSWORD_URL, { new_password }, { withCredentials: true });
 
   return true;
 };
@@ -64,6 +68,22 @@ export const getUsages = async () => {
 export const getIsAdmin = async () => {
   const response = await axios.get(ADMIN_URL, { withCredentials: true });
   return response.data.is_admin;
+};
+
+export const downloadFile = async (id,filename) => {
+  axios
+    .post(
+      DOWNLOAD_FILE,
+      { id },
+      { withCredentials: true, responseType: "blob" }
+    )
+    .then((res) => {
+      fileDownload(res.data, filename);
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 export const refresh = async () => {

@@ -207,7 +207,7 @@ def frontedHappyReformatHistory(data):
             image = classification.get('image', {})
             patient = image.get('patient', {})
             result.append({
-                "id": f"{id_usage}-{id_class}",
+                "id": f"{id_class}",
                 "patient": f"{patient.get("first_name")} {patient.get("last_name")}",
                 "image_id":(image.get('id')),
                 "date": (item.get("date_of_creation")),
