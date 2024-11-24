@@ -22,6 +22,10 @@ const Menu = () => {
     nav("/reportHistory");
   };
 
+  const moveToSingleImage= () => {
+    nav("/singleImage");
+  };
+
   const handleLogout = async () => {
     await logoutUser();
   };
@@ -29,6 +33,9 @@ const Menu = () => {
     <VStack alignItems="start">
       <Button onClick={moveToHistory} colorScheme="blue">
         Classification History
+      </Button>
+      <Button onClick={moveToSingleImage} colorScheme="pink">
+        Single Image Classification
       </Button>
       <Button onClick={moveToChangepassword} colorScheme="yellow">
         Change Password

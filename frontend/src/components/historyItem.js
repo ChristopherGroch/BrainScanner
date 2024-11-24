@@ -69,6 +69,7 @@ const HistoryItem = ({
       }
     }
     setShowForm(false);
+    onCloseModal2();
   };
 
   const handleDownloadFile = async () => {
@@ -77,6 +78,8 @@ const HistoryItem = ({
   };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isOpenModal2, onOpen: onOpenModal2, onClose: onCloseModal2 } = useDisclosure();
+
   return (
     <>
       <Flex
@@ -148,7 +151,7 @@ const HistoryItem = ({
               <Button
                 colorScheme="blue"
                 mt={4}
-                onClick={handleFormSubmit}
+                onClick={onOpenModal2}
                 isDisabled={!selectedOption}
               >
                 Submit
@@ -180,6 +183,34 @@ const HistoryItem = ({
               <Text fontWeight="bold" fontSize="lg">
                 {patient}
               </Text>
+            </Box>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+      <Modal isOpen={isOpenModal2} onClose={onCloseModal2} isCentered>
+        <ModalOverlay />
+        <ModalContent maxW="80%">
+          <ModalCloseButton />
+          <ModalBody
+            p={4}
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            gap={4}
+          >
+            <Image
+              src={image}
+              alt={patient}
+              objectFit="contain"
+              w="100%"
+              borderRadius="md"
+            />
+
+            <Box textAlign="center">
+              <Text fontWeight="bold" fontSize="lg">
+                {TUMOR_TYPES[selectedOption]}
+              </Text>
+              <Button onClick={handleFormSubmit}>CLASSIFY</Button>
             </Box>
           </ModalBody>
         </ModalContent>

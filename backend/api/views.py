@@ -283,6 +283,13 @@ def getAllUsages(request):
     usages = Usage.objects.filter(doctor=request.user).all()
     return Response(UsageSerializer(usages, many=True).data)
 
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def getAllPatients(request):
+    usages = Patient.objects.filter().all()
+    return Response(PatientSerializer(usages, many=True).data)
+
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def getAllUsagesFrontFriendly(request):

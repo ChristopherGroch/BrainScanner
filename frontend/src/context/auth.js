@@ -14,15 +14,19 @@ export const AuthProvider = ({ children }) => {
   const get_authenticated = async () => {
     try {
       await is_auth();
-      console.log('true_auth')
+      const isAdmin = await getIsAdmin();
+      setADmin(isAdmin);
+      console.log("true_auth");
       setUser(true);
     } catch (error) {
       try {
         await refresh();
-        console.log('true_refresh')
-        setUser(true)
+        const isAdmin = await getIsAdmin();
+        setADmin(isAdmin);
+        console.log("true_refresh");
+        setUser(true);
       } catch {
-        console.log('false')
+        console.log("false");
         setUser(false);
       }
     } finally {
@@ -35,7 +39,7 @@ export const AuthProvider = ({ children }) => {
       const info = await login(username, password);
       setUser(info);
       const isAdmin = await getIsAdmin();
-      setADmin(isAdmin)
+      setADmin(isAdmin);
       nav("/menu");
     } catch (error) {
       alert(error);
@@ -44,26 +48,27 @@ export const AuthProvider = ({ children }) => {
 
   const logoutUser = async () => {
     try {
-        await logout();
-    } catch(error) {
+      await logout();
+    } catch (error) {
       if (error.response && error.response.status === 401) {
         try {
           await refresh();
           await logout();
-        } catch (refreshError) {
-        }
+        } catch (refreshError) {}
       } else {
       }
     }
-    nav('/login')
-  }
+    nav("/login");
+  };
 
   useEffect(() => {
     get_authenticated();
   }, [window.location.pathname]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, loginUser, refresh, logoutUser,admin }}>
+    <AuthContext.Provider
+      value={{ user, loading, loginUser, refresh, logoutUser, admin }}
+    >
       {children}
     </AuthContext.Provider>
   );

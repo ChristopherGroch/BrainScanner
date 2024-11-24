@@ -4,99 +4,128 @@ import {
   FormLabel,
   Input,
   Button,
+  useDisclosure,
+  FormErrorMessage,
+  Text,
+  Modal,
+  ModalOverlay,
+  ModalBody,
+  ModalContent,
+  ModalCloseButton,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { createUser,refresh } from "../endpoints/api";
+import { createUser, refresh } from "../endpoints/api";
 
 const CreateUser = () => {
-  const [username, setUsername] = useState("");
-  const [first_name, setFirstName] = useState("");
-  const [last_name, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [PESEL, setPESEL] = useState("");
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [formData, setFormData] = useState({
+    username: "",
+    first_name: "",
+    last_name: "",
+    email: "",
+    PESEL: "",
+  });
+  const [errors, setErrors] = useState({});
   const nav = useNavigate();
 
   const moveToMenu = () => {
     nav("/menu");
   };
 
-  const handleCreateUser = async () => {
-    // try {
-    //   // console.log(username);
-    //   // console.log(first_name);
-    //   // console.log(last_name);
-    //   // console.log(email);
-    //   // console.log(PESEL);
-    //   await createUser(username, first_name, last_name, email, PESEL);
-    // } catch (error) {
-    //   alert(error.response.data.reason);
-    // }
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.username.trim()) newErrors.username = "Username is required";
+    if (!formData.first_name.trim())
+      newErrors.first_name = "First name is required";
+    if (!formData.last_name.trim())
+      newErrors.last_name = "Last name is required";
+    if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email))
+      newErrors.email = "Valid email is required";
+    if (!formData.PESEL.trim() || !/^\d{11}$/.test(formData.PESEL))
+      newErrors.PESEL = "PESEL must be 11 digits";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
+  const handleSubmit = () => {
+    if (validate()) {
+      onOpen();
+    }
+  };
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: "" }));
+  };
+
+  const handleCreateUser = async () => {
     try {
-      await createUser(username, first_name, last_name, email, PESEL);
+      await createUser(
+        formData.username,
+        formData.first_name,
+        formData.last_name,
+        formData.email,
+        formData.PESEL
+      );
     } catch (error) {
       if (error.response && error.response.status === 401) {
         try {
           await refresh();
-          await createUser(username, first_name, last_name, email, PESEL);
+          await createUser(
+            formData.username,
+            formData.first_name,
+            formData.last_name,
+            formData.email,
+            formData.PESEL
+          );
         } catch (refreshError) {
-          console.error("Nie udało się odświeżyć tokena", refreshError);
-          alert("Twoja sesja wygasła. Zaloguj się ponownie.");
-          nav("/login");
+          if (refreshError.response && refreshError.response.status === 401) {
+            console.error("Nie udało się odświeżyć tokena", refreshError);
+            alert("Twoja sesja wygasła. Zaloguj się ponownie.");
+            nav("/login");
+          } else {
+            alert(refreshError.response?.data?.reason || "Wystąpił błąd.");
+          }
         }
       } else {
         alert(error.response?.data?.reason || "Wystąpił błąd.");
       }
     }
-
   };
 
   return (
-    <VStack>
-      <Button onClick={moveToMenu}>Menu</Button>
-      <FormControl>
-        <FormLabel>Username</FormLabel>
-        <Input
-          onChange={(e) => setUsername(e.target.value)}
-          value={username}
-          type="text"
-        />
-      </FormControl>
-      <FormControl>
-        <FormLabel>First Name</FormLabel>
-        <Input
-          onChange={(e) => setFirstName(e.target.value)}
-          value={first_name}
-          type="text"
-        />
-      </FormControl>
-      <FormControl>
-        <FormLabel>Last Name</FormLabel>
-        <Input
-          onChange={(e) => setLastName(e.target.value)}
-          value={last_name}
-          type="text"
-        />
-      </FormControl>
-      <FormControl>
-        <FormLabel>Email</FormLabel>
-        <Input
-          onChange={(e) => setEmail(e.target.value)}
-          value={email}
-          type="email"
-        />
-      </FormControl>
-      <FormControl>
-        <FormLabel>PESEL</FormLabel>
-        <Input
-          onChange={(e) => setPESEL(e.target.value)}
-          value={PESEL}
-          type="text"
-        />
-      </FormControl>
-      <Button onClick={handleCreateUser}>Create User</Button>
-    </VStack>
+    <>
+      <VStack>
+        <Button onClick={moveToMenu}>Menu</Button>
+        {["username", "first_name", "last_name", "email", "PESEL"].map(
+          (field) => (
+            <FormControl key={field} isInvalid={!!errors[field]}>
+              <FormLabel>{field.replace("_", " ").toUpperCase()}</FormLabel>
+              <Input
+                value={formData[field]}
+                onChange={(e) => handleChange(field, e.target.value)}
+              />
+              <FormErrorMessage>{errors[field]}</FormErrorMessage>
+            </FormControl>
+          )
+        )}
+        <Button onClick={handleSubmit}>Create User</Button>
+      </VStack>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalBody p={4} textAlign="center">
+            <Text>{formData.username}</Text>
+            <Text>{formData.first_name}</Text>
+            <Text>{formData.last_name}</Text>
+            <Text>{formData.email}</Text>
+            <Text>{formData.PESEL}</Text>
+          </ModalBody>
+          <Button onClick={handleCreateUser}>Classify</Button>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 export default CreateUser;

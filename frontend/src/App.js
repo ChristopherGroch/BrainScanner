@@ -5,6 +5,7 @@ import CreateUser from "./routes/createUser";
 import NotFound from "./routes/nothing";
 import ChangePasasword from "./routes/changePassword";
 import ReportHistory from "./routes/reportsHistory";
+import SingleImage from "./routes/singleImage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 import { AuthProvider } from "./context/auth";
@@ -22,6 +23,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Menu />
+                </ProtectedRoute>
+              }
+            ></Route>
+             <Route
+              path="/singleImage"
+              element={
+                <ProtectedRoute>
+                  <SingleImage />
                 </ProtectedRoute>
               }
             ></Route>

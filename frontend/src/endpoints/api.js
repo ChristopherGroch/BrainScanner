@@ -16,6 +16,7 @@ const DOWNLOAD_FILE = `${BASE_URL}downloadFile/`;
 const DOWNLOAD_REPORT = `${BASE_URL}downloadReport/`;
 const CLASSIFY_URL = `${BASE_URL}classify/`;
 const REPORTS_URL = `${BASE_URL}getUsageReports/`
+const PATIENTS_URL = `${BASE_URL}getAllPatients/`
 // axios.defaults.withCredentials = true;
 
 var fileDownload = require('js-file-download');
@@ -66,6 +67,11 @@ export const classify = async (tumor_type,pk) => {
 
 export const getHistory = async () => {
   const response = await axios.get(HISTORY_URL, { withCredentials: true });
+  return response.data;
+};
+
+export const getPatients = async () => {
+  const response = await axios.get(PATIENTS_URL, { withCredentials: true });
   return response.data;
 };
 
