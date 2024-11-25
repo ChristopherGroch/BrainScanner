@@ -12,6 +12,7 @@ import { AuthProvider } from "./context/auth";
 import ProtectedRoute from "./routes/protected";
 import AdminedRoute from "./routes/admined";
 import {Toaster} from "sonner"
+import MultipleImagesList from "./routes/listMultipleImages";
 
 function App() {
   return (
@@ -25,6 +26,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Menu />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/multipleImages"
+              element={
+                <ProtectedRoute>
+                  <MultipleImagesList />
                 </ProtectedRoute>
               }
             ></Route>

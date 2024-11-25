@@ -16,6 +16,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { createUser, refresh } from "../endpoints/api";
+import { toast } from "sonner";
 
 const CreateUser = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -84,11 +85,15 @@ const CreateUser = () => {
             alert("Twoja sesja wygasła. Zaloguj się ponownie.");
             nav("/login");
           } else {
-            alert(refreshError.response?.data?.reason || "Wystąpił błąd.");
+            // alert(refreshError.response?.data?.reason || "Wystąpił błąd.");
+            toast.error(
+              refreshError.response?.data?.reason || "Wystąpił błąd."
+            );
           }
         }
       } else {
-        alert(error.response?.data?.reason || "Wystąpił błąd.");
+        // alert(error.response?.data?.reason || "Wystąpił błąd.");
+        toast.error(error.response?.data?.reason || "Wystąpił błąd.");
       }
     }
   };

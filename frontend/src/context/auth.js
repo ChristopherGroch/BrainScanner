@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { login, is_auth, refresh, logout, getIsAdmin } from "../endpoints/api";
+import { toast } from "sonner";
 
 const AuthContext = createContext();
 
@@ -42,7 +43,7 @@ export const AuthProvider = ({ children }) => {
       setADmin(isAdmin);
       nav("/menu");
     } catch (error) {
-      alert(error);
+      toast.error('Bad credentials')
     }
   };
 

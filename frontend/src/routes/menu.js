@@ -26,6 +26,10 @@ const Menu = () => {
     nav("/singleImage");
   };
 
+  const moveToMultipleImages= () => {
+    nav("/multipleImages");
+  };
+
   const handleLogout = async () => {
     await logoutUser();
   };
@@ -36,6 +40,9 @@ const Menu = () => {
       </Button>
       <Button onClick={moveToSingleImage} colorScheme="pink">
         Single Image Classification
+      </Button>
+      <Button onClick={moveToMultipleImages} colorScheme="gray">
+        Multiple Images Classification
       </Button>
       <Button onClick={moveToChangepassword} colorScheme="yellow">
         Change Password
