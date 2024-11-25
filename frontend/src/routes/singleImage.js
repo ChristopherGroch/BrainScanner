@@ -23,6 +23,7 @@ import { getPatients, singleImageCLassification } from "../endpoints/api";
 import { refresh } from "../endpoints/api";
 import Dropzone from "../components/dropzone";
 import ReactSelect from "react-select";
+import { toast } from "sonner";
 
 const SingleImage = () => {
   const nav = useNavigate();
@@ -141,6 +142,9 @@ const SingleImage = () => {
       const response = await singleImageCLassification(requestData, file);
       console.log(response);
       setClassificationResult(response.data);
+      if (!isDropdown){
+        toast.success('Patient created')
+      }
     } catch (error) {
       if (error.response && error.response.status === 401) {
         try {
@@ -148,17 +152,22 @@ const SingleImage = () => {
           const response = await singleImageCLassification(requestData, file);
           console.log(response);
           setClassificationResult(response.data);
+          if (!isDropdown){
+            toast.success('Patient created')
+          }
         } catch (refreshError) {
           if (refreshError.response && refreshError.response.status === 401) {
             console.error("Nie udało się odświeżyć tokena", refreshError);
             alert("Twoja sesja wygasła. Zaloguj się ponownie.");
             nav("/login");
           } else {
-            alert(refreshError.response?.data?.reason || "Wystąpił błąd.");
+            // alert(refreshError.response?.data?.reason || "Wystąpił błąd.");
+            toast.error(refreshError.response?.data?.reason || "Wystąpił błąd.")
           }
         }
       } else {
-        alert(error.response?.data?.reason || "Wystąpił błąd.");
+        // alert(error.response?.data?.reason || "Wystąpił błąd.");
+        toast.error(error.response?.data?.reason || "Wystąpił błąd.")
       }
     }
   };

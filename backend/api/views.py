@@ -191,9 +191,9 @@ def single_image_classification(request):
     except Exception as e:
         return Response({'reason':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     if not 'patient' in request.data:
-        return Response('No patient key',status=status.HTTP_400_BAD_REQUEST)
+        return Response({'reason':'No patient key'},status=status.HTTP_400_BAD_REQUEST)
     if not 'photo' in request.FILES:
-        return Response('No photo key',status=status.HTTP_400_BAD_REQUEST)
+        return Response({'reason':'No photo key'},status=status.HTTP_400_BAD_REQUEST)
     
     data = json.loads(request.data.get("patient"))
     data = {"patient": data}
@@ -241,7 +241,7 @@ def single_image_classification(request):
                 image.save()
 
     except IntegrityError as e:
-        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return Response(
             {"error": f"Unexpected error: {str(e)}"},

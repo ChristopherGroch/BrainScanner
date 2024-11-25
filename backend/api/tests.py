@@ -1011,7 +1011,7 @@ class singleImageTest(TestCase):
         )
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
-            response.data, {"error": "Exact imaage exists and its different patient"}
+            response.data, {"reason": "Exact imaage exists and its different patient"}
         )
         self.assertEqual(Patient.objects.all().count(), 1)
         self.assertEqual(Image.objects.all().count(), 1)
@@ -1094,7 +1094,7 @@ class singleImageTest(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
-            response.data, {"error": "Exact imaage exists and its different patient"}
+            response.data, {"reason": "Exact imaage exists and its different patient"}
         )
         self.assertEqual(Patient.objects.all().count(), 2)
         self.assertEqual(Image.objects.all().count(), 2)
@@ -1169,7 +1169,7 @@ class singleImageTest(TestCase):
             data={"pho6to": uploaded_image, "patient": json.dumps(patient_data)},
         )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data, "No photo key")
+        self.assertEqual(response.data,{'reason': "No photo key"})
 
         response = self.client.post(
             self.path,
@@ -1178,7 +1178,7 @@ class singleImageTest(TestCase):
             },
         )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data, "No patient key")
+        self.assertEqual(response.data,{'reason': "No patient key"})
 
         response = self.client.post(
             self.path,
@@ -1188,7 +1188,7 @@ class singleImageTest(TestCase):
         self.assertEqual(
             response.data,
             {
-                "error": "{'email': [ErrorDetail(string='Enter a valid email address.', code='invalid')]}"
+                "reason": "{'email': [ErrorDetail(string='Enter a valid email address.', code='invalid')]}"
             },
         )
 
@@ -1206,7 +1206,7 @@ class singleImageTest(TestCase):
         self.assertEqual(
             response.data,
             {
-                "error": "{'PESEL': [ErrorDetail(string='PESEL musi zawierać dokładnie 11 cyfr.', code='invalid')]}"
+                "reason": "{'PESEL': [ErrorDetail(string='PESEL musi zawierać dokładnie 11 cyfr.', code='invalid')]}"
             },
         )
 
@@ -1224,7 +1224,7 @@ class singleImageTest(TestCase):
         self.assertEqual(
             response.data,
             {
-                "error": "{'PESEL': [ErrorDetail(string='PESEL musi zawierać dokładnie 11 cyfr.', code='invalid')]}"
+                "reason": "{'PESEL': [ErrorDetail(string='PESEL musi zawierać dokładnie 11 cyfr.', code='invalid')]}"
             },
         )
 
@@ -1242,7 +1242,7 @@ class singleImageTest(TestCase):
         self.assertEqual(
             response.data,
             {
-                "error": "{'PESEL': [ErrorDetail(string='PESEL musi zawierać dokładnie 11 cyfr.', code='invalid')]}"
+                "reason": "{'PESEL': [ErrorDetail(string='PESEL musi zawierać dokładnie 11 cyfr.', code='invalid')]}"
             },
         )
 

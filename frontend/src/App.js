@@ -11,10 +11,12 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { AuthProvider } from "./context/auth";
 import ProtectedRoute from "./routes/protected";
 import AdminedRoute from "./routes/admined";
+import {Toaster} from "sonner"
 
 function App() {
   return (
     <ChakraProvider>
+      <Toaster richColors closeButton position="top-center"/>
       <Router>
         <AuthProvider>
           <Routes>
