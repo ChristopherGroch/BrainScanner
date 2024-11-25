@@ -49,6 +49,7 @@ const Dropzone = ({onFileChange}) => {
   }, [files]);
 
   const removeFile = (name) => {
+    onFileChange(null)
     setFiles((files) => files.filter((file) => file.name !== name));
   };
 

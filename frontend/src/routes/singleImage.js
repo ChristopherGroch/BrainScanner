@@ -19,7 +19,8 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getPatients } from "../endpoints/api";
+import { getPatients, singleImageCLassification } from "../endpoints/api";
+import { refresh } from "../endpoints/api";
 import Dropzone from "../components/dropzone";
 import ReactSelect from "react-select";
 
@@ -37,17 +38,37 @@ const SingleImage = () => {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [file, setFile] = useState(null);
   const [patients, setPatients] = useState([]);
+  const [classificationResult, setClassificationResult] = useState(null);
+  const [dropzoneKey, setDropzoneKey] = useState(0);
+
+
+  const resetStates = async () => {
+    setFormData({
+      first_name: "",
+      last_name: "",
+      email: "",
+      PESEL: "",
+    });
+    setErrors({});
+    setIsDropdown(false);
+    setSelectedPatient(null);
+    setFile(null);
+    setClassificationResult(null);
+    setDropzoneKey((prevKey) => prevKey + 1); 
+    await fetchPatients();
+  };
+
+  const fetchPatients = async () => {
+    try {
+      const patients = await getPatients();
+      console.log(patients);
+      setPatients(patients);
+    } catch (error) {
+      setPatients([]);
+    }
+  };
 
   useEffect(() => {
-    const fetchPatients = async () => {
-      try {
-        const patients = await getPatients();
-        console.log(patients);
-        setPatients(patients);
-      } catch (error) {
-        setPatients([]);
-      }
-    };
     fetchPatients();
   }, []);
 
@@ -81,6 +102,7 @@ const SingleImage = () => {
 
   const handleSubmit = () => {
     if (validate()) {
+        console.log(classificationResult)
       onOpen();
     }
   };
@@ -97,6 +119,48 @@ const SingleImage = () => {
   const handleSelectChange = (selectedOption) => {
     setSelectedPatient(patients.find((p) => p.id === selectedOption.value));
     setErrors((prev) => ({ ...prev, patient: "" }));
+  };
+
+  const handleCloseModal = async () => {
+    if (classificationResult) {
+      console.log("asdasdasd");
+      await resetStates();
+    }
+    onClose();
+  };
+
+  const handleClassify = async () => {
+    let requestData = {};
+    if (isDropdown) {
+      requestData = selectedPatient;
+    } else {
+      requestData = formData;
+    }
+
+    try {
+      const response = await singleImageCLassification(requestData, file);
+      console.log(response);
+      setClassificationResult(response.data);
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        try {
+          await refresh();
+          const response = await singleImageCLassification(requestData, file);
+          console.log(response);
+          setClassificationResult(response.data);
+        } catch (refreshError) {
+          if (refreshError.response && refreshError.response.status === 401) {
+            console.error("Nie udało się odświeżyć tokena", refreshError);
+            alert("Twoja sesja wygasła. Zaloguj się ponownie.");
+            nav("/login");
+          } else {
+            alert(refreshError.response?.data?.reason || "Wystąpił błąd.");
+          }
+        }
+      } else {
+        alert(error.response?.data?.reason || "Wystąpił błąd.");
+      }
+    }
   };
 
   return (
@@ -148,32 +212,69 @@ const SingleImage = () => {
           </Box>
         )}
 
-        <Dropzone onFileChange={handleFileChange} />
+        <Dropzone key={dropzoneKey} onFileChange={handleFileChange} />
         <Button onClick={handleSubmit}>Classify</Button>
       </VStack>
 
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      <Modal isOpen={isOpen} onClose={handleCloseModal} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
           <ModalBody p={4} textAlign="center">
-            {file && <Image src={file.preview} alt={file.name} />}
-            {isDropdown && selectedPatient ? (
+            {classificationResult ? (
               <>
-                <Text>{selectedPatient.first_name}</Text>
-                <Text>{selectedPatient.last_name}</Text>
-                <Text>{selectedPatient.email}</Text>
-                <Text>{selectedPatient.PESEL}</Text>
+                <Image
+                  src={`http://127.0.0.1:8000${classificationResult.image.photo}`}
+                  alt="Patient's Scan"
+                  mb={4}
+                />
+                <Text fontSize="lg" fontWeight="bold">
+                  Classification Results
+                </Text>
+                <Box mt={2}>
+                  <Text>
+                    No Tumor Probability: {classificationResult.no_tumor_prob}
+                  </Text>
+                  <Text>
+                    Pituitary Tumor Probability:{" "}
+                    {classificationResult.pituitary_prob}
+                  </Text>
+                  <Text>
+                    Meningioma Probability:{" "}
+                    {classificationResult.meningioma_prob}
+                  </Text>
+                  <Text>
+                    Glioma Probability: {classificationResult.glioma_prob}
+                  </Text>
+                </Box>
               </>
             ) : (
               <>
-                <Text>{formData.first_name}</Text>
-                <Text>{formData.last_name}</Text>
-                <Text>{formData.email}</Text>
-                <Text>{formData.PESEL}</Text>
+                {file && <Image src={file.preview} alt={file.name} />}
+                {isDropdown && selectedPatient ? (
+                  <>
+                    <Text>{selectedPatient.first_name}</Text>
+                    <Text>{selectedPatient.last_name}</Text>
+                    <Text>{selectedPatient.email}</Text>
+                    <Text>{selectedPatient.PESEL}</Text>
+                  </>
+                ) : (
+                  <>
+                    <Text>{formData.first_name}</Text>
+                    <Text>{formData.last_name}</Text>
+                    <Text>{formData.email}</Text>
+                    <Text>{formData.PESEL}</Text>
+                  </>
+                )}
               </>
             )}
           </ModalBody>
+          <Button
+            onClick={handleClassify}
+            display={!classificationResult ? "inline-flex" : "none"}
+          >
+            Classify
+          </Button>
         </ModalContent>
       </Modal>
     </>

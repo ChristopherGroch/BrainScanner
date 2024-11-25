@@ -122,7 +122,7 @@ const CreateUser = () => {
             <Text>{formData.email}</Text>
             <Text>{formData.PESEL}</Text>
           </ModalBody>
-          <Button onClick={handleCreateUser}>Classify</Button>
+          <Button onClick={handleCreateUser}>Create user</Button>
         </ModalContent>
       </Modal>
     </>
