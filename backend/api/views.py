@@ -483,6 +483,7 @@ def multipleImageCheck(request):
     )
     usage_data = UsageSerializer(usage).data
     usage_data["report"] = report.file.url
+    usage_data["reportID"] = report.id
     usage.report = report
     usage.save()
     return Response(usage_data)

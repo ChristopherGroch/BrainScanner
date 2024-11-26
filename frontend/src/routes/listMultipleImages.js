@@ -1,15 +1,30 @@
 import React, { useState } from "react";
-import { Box, Button, VStack, Heading, Text,IconButton,Modal,ModalContent,ModalOverlay,useDisclosure,ModalHeader,ModalCloseButton,ModalBody,ModalFooter } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  VStack,
+  Heading,
+  Text,
+  IconButton,
+  Modal,
+  ModalContent,
+  ModalOverlay,
+  useDisclosure,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+} from "@chakra-ui/react";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
 import MultipleImages from "../components/multipleImages";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { getPatients } from "../endpoints/api";
 import { toast } from "sonner";
-import { multipleImagesCLassification, refresh } from "../endpoints/api";
+import { multipleImagesCLassification, refresh, downloadReport } from "../endpoints/api";
 
 const MultipleImagesList = () => {
-    const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [childData, setChildData] = useState([
     { id: 0, formData: {}, files: [], errors: {}, isDropDown: false },
   ]);
@@ -24,10 +39,10 @@ const MultipleImagesList = () => {
     } catch (error) {
       if (error.response && error.response.status === 401) {
         try {
-          await refresh()
+          await refresh();
           const patients = await getPatients();
-          setPatients(patients)
-        }catch(error) {
+          setPatients(patients);
+        } catch (error) {
           setPatients([]);
         }
       } else {
@@ -38,6 +53,10 @@ const MultipleImagesList = () => {
   useEffect(() => {
     fetchPatients();
   }, []);
+
+  const handleDownloadFile = async () => {
+    await downloadReport(classificationResult.reportID, "Report.txt");
+  };
 
   const addChildComponent = () => {
     setChildData((prevData) => [
@@ -123,7 +142,7 @@ const MultipleImagesList = () => {
   };
   const handleCloseModal = async () => {
     if (classificationResult) {
-      nav(0)
+      nav(0);
     }
     onClose();
   };
@@ -137,7 +156,6 @@ const MultipleImagesList = () => {
 
     return { photos, patients };
   };
-
 
   const validatePeselUniqueness = async () => {
     const peselOccurrences = {};
@@ -233,14 +251,16 @@ const MultipleImagesList = () => {
             nav("/login");
           } else {
             // alert(refreshError.response?.data?.reason || "Wystąpił błąd.");
-            toast.error(refreshError.response?.data?.reason || "Wystąpił błąd.")
+            toast.error(
+              refreshError.response?.data?.reason || "Wystąpił błąd."
+            );
           }
         }
       } else {
         // alert(error.response?.data?.reason || "Wystąpił błąd.");
-        console.log('EEEEEEEEEEEEE')
-        console.log(error)
-        toast.error(error.response?.data?.reason || "Wystąpił błąd.")
+        console.log("EEEEEEEEEEEEE");
+        console.log(error);
+        toast.error(error.response?.data?.reason || "Wystąpił błąd.");
       }
     }
   };
@@ -305,44 +325,58 @@ const MultipleImagesList = () => {
           <ModalBody>
             {classificationResult ? (
               <VStack>
-                <Text>HALO</Text>
-              </VStack>
-            ):(
-              <VStack spacing={4} align="stretch">
-              {generateModalContent().map((patient, index) => (
-                <Box
-                  key={index}
-                  p={4}
-                  borderWidth="1px"
-                  borderRadius="md"
-                  bg="gray.50"
+                <a
+                  href={`http://127.0.0.1:8000${classificationResult.report}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  <Heading size="sm" mb={2}>
-                    Patient {index + 1}
-                  </Heading>
-                  <Box>
-                    <strong>First Name:</strong> {patient.first_name || "N/A"}
+                  <Button colorScheme="blue" size="sm">
+                    View Report
+                  </Button>
+                </a>
+                <Button
+                  colorScheme="green"
+                  size="sm"
+                  onClick={handleDownloadFile}
+                >
+                  Download Report
+                </Button>
+              </VStack>
+            ) : (
+              <VStack spacing={4} align="stretch">
+                {generateModalContent().map((patient, index) => (
+                  <Box
+                    key={index}
+                    p={4}
+                    borderWidth="1px"
+                    borderRadius="md"
+                    bg="gray.50"
+                  >
+                    <Heading size="sm" mb={2}>
+                      Patient {index + 1}
+                    </Heading>
+                    <Box>
+                      <strong>First Name:</strong> {patient.first_name || "N/A"}
+                    </Box>
+                    <Box>
+                      <strong>Last Name:</strong> {patient.last_name || "N/A"}
+                    </Box>
+                    <Box>
+                      <strong>Email:</strong> {patient.email || "N/A"}
+                    </Box>
+                    <Box>
+                      <strong>PESEL:</strong> {patient.PESEL || "N/A"}
+                    </Box>
+                    <Box>
+                      <strong>Photos:</strong>{" "}
+                      {patient.photos.length > 0
+                        ? patient.photos.join(", ")
+                        : "No photos uploaded"}
+                    </Box>
                   </Box>
-                  <Box>
-                    <strong>Last Name:</strong> {patient.last_name || "N/A"}
-                  </Box>
-                  <Box>
-                    <strong>Email:</strong> {patient.email || "N/A"}
-                  </Box>
-                  <Box>
-                    <strong>PESEL:</strong> {patient.PESEL || "N/A"}
-                  </Box>
-                  <Box>
-                    <strong>Photos:</strong>{" "}
-                    {patient.photos.length > 0
-                      ? patient.photos.join(", ")
-                      : "No photos uploaded"}
-                  </Box>
-                </Box>
-              ))}
-            </VStack>
+                ))}
+              </VStack>
             )}
-            
           </ModalBody>
           <ModalFooter>
             <Button onClick={handleClassify}>Classify</Button>
