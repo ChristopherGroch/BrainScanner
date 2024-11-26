@@ -18,6 +18,7 @@ const CLASSIFY_URL = `${BASE_URL}classify/`;
 const REPORTS_URL = `${BASE_URL}getUsageReports/`
 const PATIENTS_URL = `${BASE_URL}getAllPatients/`
 const SINGLE_CLASSIFY_URL = `${BASE_URL}singleImageClassification/`
+const MULTIPLE_CLASSIFY_URL = `${BASE_URL}checkMultipleFiles/`
 // axios.defaults.withCredentials = true;
 
 var fileDownload = require('js-file-download');
@@ -61,6 +62,17 @@ export const singleImageCLassification = async (patient,image) => {
   const response = await axios.post(SINGLE_CLASSIFY_URL,formData,{withCredentials: true});
   return response
 }
+
+export const multipleImagesCLassification = async (requestData) => {
+  const formData = new FormData();
+  formData.append('patients',JSON.stringify(requestData['patients']));
+  requestData['photos'].forEach(image => {
+    formData.append('photos', image);
+  });
+  const response = await axios.post(MULTIPLE_CLASSIFY_URL,formData,{withCredentials: true});
+  return response
+}
+
 
 export const changePassword = async (new_password) => {
   await axios.put(PASSWORD_URL, { new_password }, { withCredentials: true });

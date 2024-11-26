@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Box, Button, VStack, Heading, IconButton,Modal,ModalContent,ModalOverlay,useDisclosure,ModalHeader,ModalCloseButton,ModalBody,ModalFooter } from "@chakra-ui/react";
+import { Box, Button, VStack, Heading, Text,IconButton,Modal,ModalContent,ModalOverlay,useDisclosure,ModalHeader,ModalCloseButton,ModalBody,ModalFooter } from "@chakra-ui/react";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
 import MultipleImages from "../components/multipleImages";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { getPatients } from "../endpoints/api";
 import { toast } from "sonner";
+import { multipleImagesCLassification, refresh } from "../endpoints/api";
 
 const MultipleImagesList = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -14,13 +15,24 @@ const MultipleImagesList = () => {
   ]);
   const [patients, setPatients] = useState([]);
   const nav = useNavigate();
+  const [classificationResult, setClassificationResult] = useState(null);
 
   const fetchPatients = async () => {
     try {
       const patients = await getPatients();
       setPatients(patients);
     } catch (error) {
-      setPatients([]);
+      if (error.response && error.response.status === 401) {
+        try {
+          await refresh()
+          const patients = await getPatients();
+          setPatients(patients)
+        }catch(error) {
+          setPatients([]);
+        }
+      } else {
+        setPatients([]);
+      }
     }
   };
   useEffect(() => {
@@ -109,16 +121,23 @@ const MultipleImagesList = () => {
       prevChildData.filter((child) => child.id !== id)
     );
   };
+  const handleCloseModal = async () => {
+    if (classificationResult) {
+      nav(0)
+    }
+    onClose();
+  };
 
   const extractData = async () => {
-    const allFiles = childData.flatMap((child) => child.files);
-    const allFormDataWithPhotos = childData.map((child) => ({
+    const photos = childData.flatMap((child) => child.files);
+    const patients = childData.map((child) => ({
       ...child.formData,
-      photos: child.files.map((file) => file.name),
+      images: child.files.map((file) => file.name),
     }));
 
-    return { allFiles, allFormDataWithPhotos };
+    return { photos, patients };
   };
+
 
   const validatePeselUniqueness = async () => {
     const peselOccurrences = {};
@@ -180,13 +199,10 @@ const MultipleImagesList = () => {
       if (validation_result) {
         const validation_result = await validateFileUniqueness();
         if (validation_result) {
-          toast.success("SUCCESS");
-          console.log(await extractData());
           onOpen();
         }
       }
     }
-    console.log(childData);
   };
 
   const generateModalContent = () => {
@@ -194,6 +210,39 @@ const MultipleImagesList = () => {
       ...child.formData,
       photos: child.files.map((file) => file.name),
     }));
+  };
+
+  const handleClassify = async () => {
+    const requestData = await extractData();
+
+    try {
+      const response = await multipleImagesCLassification(requestData);
+      console.log(response);
+      setClassificationResult(response.data);
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        try {
+          await refresh();
+          const response = await multipleImagesCLassification(requestData);
+          console.log(response);
+          setClassificationResult(response.data);
+        } catch (refreshError) {
+          if (refreshError.response && refreshError.response.status === 401) {
+            console.error("Nie udało się odświeżyć tokena", refreshError);
+            alert("Twoja sesja wygasła. Zaloguj się ponownie.");
+            nav("/login");
+          } else {
+            // alert(refreshError.response?.data?.reason || "Wystąpił błąd.");
+            toast.error(refreshError.response?.data?.reason || "Wystąpił błąd.")
+          }
+        }
+      } else {
+        // alert(error.response?.data?.reason || "Wystąpił błąd.");
+        console.log('EEEEEEEEEEEEE')
+        console.log(error)
+        toast.error(error.response?.data?.reason || "Wystąpił błąd.")
+      }
+    }
   };
 
   return (
@@ -248,13 +297,18 @@ const MultipleImagesList = () => {
           Submit
         </Button>
       </VStack>
-      <Modal isOpen={isOpen} onClose={onClose} size="xl">
+      <Modal isOpen={isOpen} onClose={handleCloseModal} size="xl">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Patient Data</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <VStack spacing={4} align="stretch">
+            {classificationResult ? (
+              <VStack>
+                <Text>HALO</Text>
+              </VStack>
+            ):(
+              <VStack spacing={4} align="stretch">
               {generateModalContent().map((patient, index) => (
                 <Box
                   key={index}
@@ -287,8 +341,11 @@ const MultipleImagesList = () => {
                 </Box>
               ))}
             </VStack>
+            )}
+            
           </ModalBody>
           <ModalFooter>
+            <Button onClick={handleClassify}>Classify</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

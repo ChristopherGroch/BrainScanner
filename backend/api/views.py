@@ -365,11 +365,10 @@ def multipleImageCheck(request):
     except Exception as e:
         return Response({'reason':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
-    
     if not 'patients' in request.data:
-        return Response('No patients key',status=status.HTTP_400_BAD_REQUEST)
+        return Response({'reason':'No patients key'},status=status.HTTP_400_BAD_REQUEST)
     if not 'photos' in request.FILES:
-        return Response('No photos key',status=status.HTTP_400_BAD_REQUEST)
+        return Response({'reason':'No photos key'},status=status.HTTP_400_BAD_REQUEST)
     
     try:
         df = pd.DataFrame(columns=["name", "patient_id"])
@@ -418,10 +417,10 @@ def multipleImageCheck(request):
                         images.append(image)
                     photos_dict[name].seek(0)
     except IntegrityError as e:
-        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return Response(
-            {"error": f"Unexpected error: {str(e)}"},
+            {"reason": f"Unexpected error: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 

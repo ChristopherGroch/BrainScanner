@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }) => {
         setUser(true);
       } catch {
         console.log("false");
+        nav('/login')
         setUser(false);
       }
     } finally {

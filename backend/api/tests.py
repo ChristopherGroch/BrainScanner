@@ -1925,7 +1925,7 @@ class multipleImagesTest(TestCase):
             },
         )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data, "No photos key")
+        self.assertEqual(response.data, {'reason':"No photos key"})
 
         response = self.client.post(
             self.path,
@@ -1935,7 +1935,7 @@ class multipleImagesTest(TestCase):
             },
         )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data, "No patients key")
+        self.assertEqual(response.data,{"reason": "No patients key"})
 
         response = self.client.post(
             self.path,
@@ -1945,7 +1945,7 @@ class multipleImagesTest(TestCase):
         self.assertEqual(
             response.data,
             {
-                "error": "{'email': [ErrorDetail(string='Enter a valid email address.', code='invalid')]} for patient {'first_name': 'Test', 'last_name': 'Test', 'email': 'emailemail.com', 'PESEL': '88888888888', 'images': ['test_image1.jpg']}"
+                "reason": "{'email': [ErrorDetail(string='Enter a valid email address.', code='invalid')]} for patient {'first_name': 'Test', 'last_name': 'Test', 'email': 'emailemail.com', 'PESEL': '88888888888', 'images': ['test_image1.jpg']}"
             },
         )
 
@@ -1965,7 +1965,7 @@ class multipleImagesTest(TestCase):
         self.assertEqual(
             response.data,
             {
-                "error": "{'PESEL': [ErrorDetail(string='PESEL musi zawierać dokładnie 11 cyfr.', code='invalid')]} for patient {'first_name': 'Test', 'last_name': 'Test', 'email': 'email@email.com', 'PESEL': '8888888888', 'images': ['test_image1.jpg']}"
+                "reason": "{'PESEL': [ErrorDetail(string='PESEL musi zawierać dokładnie 11 cyfr.', code='invalid')]} for patient {'first_name': 'Test', 'last_name': 'Test', 'email': 'email@email.com', 'PESEL': '8888888888', 'images': ['test_image1.jpg']}"
             },
         )
 
@@ -2017,7 +2017,7 @@ class multipleImagesTest(TestCase):
         )
 
         self.assertEqual(
-            response.data, {"error": "Exact imaage exists and its different patient"}
+            response.data, {"reason": "Exact imaage exists and its different patient"}
         )
         self.assertEqual(response.status_code, 400)
 
