@@ -377,6 +377,7 @@ def multipleImageCheck(request):
         photos_dict = {photo.name: photo for photo in photos}
         patients = []
         images = []
+        saved_photos = []
         with transaction.atomic():
             for p in data:
                 if "id" in p:
@@ -410,6 +411,7 @@ def multipleImageCheck(request):
                         image = ImageSerializer(data=data)
                         if image.is_valid():
                             image = image.create(image.validated_data)
+                            saved_photos.append(image.photo.path)
                         else:
                             raise IntegrityError(f"{image.errors}")
                         image.patient = patient
@@ -417,8 +419,14 @@ def multipleImageCheck(request):
                         images.append(image)
                     photos_dict[name].seek(0)
     except IntegrityError as e:
+        for file_path in saved_photos:
+            if os.path.exists(file_path):
+                os.remove(file_path)
         return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
+        for file_path in saved_photos:
+            if os.path.exists(file_path):
+                os.remove(file_path)
         return Response(
             {"reason": f"Unexpected error: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,

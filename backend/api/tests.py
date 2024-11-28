@@ -2030,5 +2030,5 @@ class multipleImagesTest(TestCase):
 
         Image.objects.all().delete()
         os.remove("media/MlModels/model.pth")
-        os.remove("media/Images/test_image2.jpg")
+        # os.remove("media/Images/test_image2.jpg")
         Report.objects.all().delete()

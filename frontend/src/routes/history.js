@@ -68,7 +68,7 @@ const HistoryMenu = () => {
       </FormControl>
       <Flex direction="column" gap={6}>
         {classifications.filter((menuItem) => {
-          return searchBar.toLocaleLowerCase() === '' ? menuItem : menuItem.patient.toLocaleLowerCase().includes(searchBar)
+          return searchBar.toLocaleLowerCase() === '' ? menuItem : menuItem.patient.toLocaleLowerCase().includes(searchBar.toLocaleLowerCase())
         }).map((menuItem, key) => {
           return (
             <HistoryItem
