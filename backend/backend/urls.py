@@ -34,7 +34,8 @@ from api.views import (
     downloadFile,
     getAllUsagesFilesFrontFriendly,
     downloadReport,
-    getAllPatients
+    getAllPatients,
+    change_patient
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -49,6 +50,7 @@ urlpatterns = [
     path("api/singleImageClassification/", single_image_classification),
     path("api/classify/<int:pk>/", classifiy),
     path("api/changePassword/<int:pk>/", change_password),
+    path("api/changePatient/<int:pk>/", change_patient),
     path("api/history/", getAllUsages),
     path("api/getUsages/",getAllUsagesFrontFriendly),
     path("api/createUser/", createUser),

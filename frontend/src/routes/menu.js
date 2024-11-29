@@ -30,6 +30,10 @@ const Menu = () => {
     nav("/multipleImages");
   };
 
+  const moveToChangeData= () => {
+    nav("/changePatient");
+  };
+
   const handleLogout = async () => {
     await logoutUser();
   };
@@ -55,6 +59,9 @@ const Menu = () => {
       </Button>
       <Button onClick={moveToCreateUser} colorScheme="green" display={admin ? "inline-flex" : "none"} >
         Create User
+      </Button>
+      <Button onClick={moveToChangeData} colorScheme="green" display={admin ? "inline-flex" : "none"} >
+        Move to Change Patient
       </Button>
     </VStack>
   );

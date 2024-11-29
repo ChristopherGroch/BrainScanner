@@ -6,18 +6,24 @@ import {
   Button,
 } from "@chakra-ui/react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/auth";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  const { loginUser } = useAuth();
+  const nav = useNavigate();
+  const { loginUser, user, get_authenticated } = useAuth();
 
   const handleLogin = async () => {
     await loginUser(username, password);
   };
+  useEffect(() => {
+    if(user){
+      nav('/menu')
+    }
+  }, [user]);
 
   return (
     <VStack>

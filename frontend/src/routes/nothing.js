@@ -1,4 +1,11 @@
+import { useNavigate } from "react-router-dom"
+import { useEffect } from "react";
 const NotFound = () => {
-    return <h1>404 uśmieszek</h1>
+    const nav = useNavigate()
+    useEffect(() => {
+        nav('/menu');
+    }, [nav]);
+
+    return null; 
 }
 export default NotFound

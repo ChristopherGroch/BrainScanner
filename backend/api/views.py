@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from django.http import FileResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.shortcuts import get_object_or_404
+
 from django.core.files.base import ContentFile
 from .serializers import (
     UserSerializer,
@@ -179,6 +181,23 @@ def change_password(request, pk):
     response.delete_cookie("access", path="/", samesite="None")
     response.delete_cookie("refresh", path="/", samesite="None")
     return response
+
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def change_patient(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)
+    data = request.data
+    print(data)
+    for field in ['first_name', 'last_name', 'email', 'PESEL']:
+        if field in data:
+            setattr(patient, field, data[field])
+    try:
+        patient.save()
+        return Response({"message": "Patient updated successfully!"}, status=status.HTTP_200_OK)
+    except ValidationError as e:
+        return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["POST"])

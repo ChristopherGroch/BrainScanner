@@ -12,6 +12,7 @@ const LOGOUT_URL = `${BASE_URL}logout/`;
 const ADMIN_URL = `${BASE_URL}checkAdmin/`;
 const CREATE_USER = `${BASE_URL}createUser/`;
 const PASSWORD_URL = `${BASE_URL}changePassword/1/`;
+const PATIENT_DATA_URL = `${BASE_URL}changePatient/`;
 const DOWNLOAD_FILE = `${BASE_URL}downloadFile/`;
 const DOWNLOAD_REPORT = `${BASE_URL}downloadReport/`;
 const CLASSIFY_URL = `${BASE_URL}classify/`;
@@ -76,6 +77,12 @@ export const multipleImagesCLassification = async (requestData) => {
 
 export const changePassword = async (new_password) => {
   await axios.put(PASSWORD_URL, { new_password }, { withCredentials: true });
+
+  return true;
+};
+
+export const changePatient = async (request_data,pk) => {
+  await axios.patch(`${PATIENT_DATA_URL}${pk}/`, { ...request_data }, { withCredentials: true });
 
   return true;
 };
