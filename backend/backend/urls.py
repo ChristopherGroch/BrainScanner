@@ -37,7 +37,10 @@ from api.views import (
     getAllPatients,
     change_patient,
     getAllImages,
-    change_image
+    change_image,
+    getAllUsers,
+    change_user,
+    reset_password
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -54,6 +57,8 @@ urlpatterns = [
     path("api/changePassword/<int:pk>/", change_password),
     path("api/changePatient/<int:pk>/", change_patient),
     path("api/changeImage/<int:pk>/", change_image),
+    path("api/changeUser/<int:pk>/", change_user),
+    path("api/resetPassword/<int:pk>/", reset_password),
     path("api/history/", getAllUsages),
     path("api/getUsages/",getAllUsagesFrontFriendly),
     path("api/createUser/", createUser),
@@ -64,7 +69,8 @@ urlpatterns = [
     path("api/downloadFile/",downloadFile),
     path("api/downloadReport/",downloadReport),
     path("api/getAllPatients/",getAllPatients),
-    path("api/getAllImages/",getAllImages)
+    path("api/getAllImages/",getAllImages),
+    path("api/getAllUsers/",getAllUsers)
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

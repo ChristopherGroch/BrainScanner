@@ -37,6 +37,10 @@ const Menu = () => {
     nav("/changeImages");
   };
 
+  const moveToChangeUser= () => {
+    nav("/changeUsers");
+  };
+
   const handleLogout = async () => {
     await logoutUser();
   };
@@ -68,6 +72,9 @@ const Menu = () => {
       </Button>
       <Button onClick={moveToChangeImage} colorScheme="green" display={admin ? "inline-flex" : "none"} >
         Move to Change Images
+      </Button>
+      <Button onClick={moveToChangeUser} colorScheme="green" display={admin ? "inline-flex" : "none"} >
+        Move to Change Users
       </Button>
     </VStack>
   );

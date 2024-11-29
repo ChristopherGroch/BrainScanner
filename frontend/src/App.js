@@ -15,6 +15,7 @@ import {Toaster} from "sonner"
 import MultipleImagesList from "./routes/listMultipleImages";
 import ChangePatientData from "./routes/changePatientData";
 import ChangeImagesData from "./routes/changeImage";
+import ChangeUserData from "./routes/changeUserData";
 
 function App() {
   return (
@@ -89,6 +90,16 @@ function App() {
                 <ProtectedRoute>
                   <AdminedRoute>
                     <ChangeImagesData />
+                  </AdminedRoute>
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/changeUsers"
+              element={
+                <ProtectedRoute>
+                  <AdminedRoute>
+                    <ChangeUserData />
                   </AdminedRoute>
                 </ProtectedRoute>
               }

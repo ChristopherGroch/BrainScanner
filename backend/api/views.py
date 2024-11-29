@@ -15,7 +15,8 @@ from .serializers import (
     ClassificationSerializer,
     UsageSerializer,
     UsageFilesSerializer,
-    UserCreateSerializer
+    UserCreateSerializer,
+    UserChangeSerializer
 )
 from django.core.exceptions import ValidationError
 from rest_framework.decorators import parser_classes
@@ -182,6 +183,55 @@ def change_password(request, pk):
     response.delete_cookie("refresh", path="/", samesite="None")
     return response
 
+@api_view(["PUT"])
+@permission_classes([IsAuthenticated])
+def reset_password(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    print(request.data)
+    password = generate_password()
+    user.set_password(password)
+    password_file = generatePasswordFile(password=password)
+    zip_file = generateZipFile(password_file=password_file, PESEL=request.data["PESEL"])
+    sendEmail(user.email, zip_file)
+    if os.path.exists(password_file):
+        os.remove(password_file)
+    if os.path.exists(zip_file):
+        os.remove(zip_file)
+    
+    user.save()
+    return Response({"message": "User updated successfully!"}, status=status.HTTP_200_OK)
+
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def change_user(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    data = request.data
+    for field in ['first_name', 'last_name', 'username']:
+        if field in data:
+            setattr(user, field, data[field])
+    password = 'password'
+    if 'email' in data:
+        setattr(user, 'email', data['email'])
+        password = generate_password()
+        user.set_password(password)
+    try:
+        user.save()
+        if 'email' in data:
+            password_file = generatePasswordFile(password=password)
+            zip_file = generateZipFile(password_file=password_file, PESEL=request.data["PESEL"])
+            sendEmail(user.email, zip_file)
+            if os.path.exists(password_file):
+                os.remove(password_file)
+            if os.path.exists(zip_file):
+                os.remove(zip_file)
+        return Response({"message": "User updated successfully!"}, status=status.HTTP_200_OK)
+    except ValidationError as e:
+        return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
 @api_view(["PATCH"])
 @permission_classes([IsAuthenticated])
 def change_patient(request, pk):
@@ -325,6 +375,12 @@ def getAllUsages(request):
 def getAllPatients(request):
     usages = Patient.objects.filter().all()
     return Response(PatientSerializer(usages, many=True).data)
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def getAllUsers(request):
+    users = User.objects.filter(is_superuser=False)
+    return Response(UserChangeSerializer(users, many=True).data)
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])

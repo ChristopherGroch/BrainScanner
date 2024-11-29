@@ -23,6 +23,21 @@ class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username','first_name','last_name','email','PESEL']
+        
+        
+class UserChangeSerializer(serializers.ModelSerializer):
+    PESEL = serializers.CharField(
+        write_only=True,  
+        required=True,  
+        validators=[
+            RegexValidator(
+                r"^\d{11}$", message="PESEL musi zawierać dokładnie 11 cyfr."
+            )
+        ],
+    )
+    class Meta:
+        model = User
+        fields = ['id','username','first_name','last_name','email','PESEL']
 
 
 class PatientSerializer(serializers.ModelSerializer):

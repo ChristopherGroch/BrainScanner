@@ -189,7 +189,7 @@ def sendEmail(email,file):
     email_message = EmailMessage(
         subject="Twoje konto zostało utworzone",
         body=(
-            "fsdfsd"
+            "Password was encrypted by your PESEL number"
         ),
         from_email=EMAIL_HOST_USER,
         to=[email],
