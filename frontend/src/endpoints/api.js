@@ -13,6 +13,8 @@ const ADMIN_URL = `${BASE_URL}checkAdmin/`;
 const CREATE_USER = `${BASE_URL}createUser/`;
 const PASSWORD_URL = `${BASE_URL}changePassword/1/`;
 const PATIENT_DATA_URL = `${BASE_URL}changePatient/`;
+const IMAGE_DATA_URL = `${BASE_URL}changeImage/`;
+const IMAGES_URL = `${BASE_URL}getAllImages/`;
 const DOWNLOAD_FILE = `${BASE_URL}downloadFile/`;
 const DOWNLOAD_REPORT = `${BASE_URL}downloadReport/`;
 const CLASSIFY_URL = `${BASE_URL}classify/`;
@@ -87,6 +89,12 @@ export const changePatient = async (request_data,pk) => {
   return true;
 };
 
+export const changeImage = async (request_data,pk) => {
+  await axios.patch(`${IMAGE_DATA_URL}${pk}/`, { ...request_data }, { withCredentials: true });
+
+  return true;
+};
+
 export const classify = async (tumor_type,pk) => {
   await axios.put(`${CLASSIFY_URL}${pk}/`, { tumor_type }, { withCredentials: true });
 
@@ -100,6 +108,11 @@ export const getHistory = async () => {
 
 export const getPatients = async () => {
   const response = await axios.get(PATIENTS_URL, { withCredentials: true });
+  return response.data;
+};
+
+export const getImages = async () => {
+  const response = await axios.get(IMAGES_URL, { withCredentials: true });
   return response.data;
 };
 

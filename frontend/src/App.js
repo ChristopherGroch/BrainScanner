@@ -14,6 +14,7 @@ import AdminedRoute from "./routes/admined";
 import {Toaster} from "sonner"
 import MultipleImagesList from "./routes/listMultipleImages";
 import ChangePatientData from "./routes/changePatientData";
+import ChangeImagesData from "./routes/changeImage";
 
 function App() {
   return (
@@ -78,6 +79,16 @@ function App() {
                 <ProtectedRoute>
                   <AdminedRoute>
                     <ChangePatientData />
+                  </AdminedRoute>
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/changeImages"
+              element={
+                <ProtectedRoute>
+                  <AdminedRoute>
+                    <ChangeImagesData />
                   </AdminedRoute>
                 </ProtectedRoute>
               }

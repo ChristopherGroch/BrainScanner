@@ -187,13 +187,30 @@ def change_password(request, pk):
 def change_patient(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
     data = request.data
-    print(data)
     for field in ['first_name', 'last_name', 'email', 'PESEL']:
         if field in data:
             setattr(patient, field, data[field])
     try:
         patient.save()
         return Response({"message": "Patient updated successfully!"}, status=status.HTTP_200_OK)
+    except ValidationError as e:
+        return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def change_image(request, pk):
+    image = get_object_or_404(Image, pk=pk)
+    data = request.data
+    if 'patient' in data:
+        patient = get_object_or_404(Patient, pk=data['patient'])
+        setattr(image, 'patient', patient)
+    if 'tumor_type' in data:
+        setattr(image, 'tumor_type', data['tumor_type'])
+    try:
+        image.save()
+        return Response({"message": "Image updated successfully!"}, status=status.HTTP_200_OK)
     except ValidationError as e:
         return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
@@ -322,6 +339,12 @@ def getAllUsagesFrontFriendly(request):
 def getAllUsagesFiles(request):
     usages = Usage.objects.filter(doctor=request.user).all()
     return Response(UsageFilesSerializer(usages, many=True).data)
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def getAllImages(request):
+    images = Image.objects.all()
+    return Response(ImageSerializer(images, many=True).data)
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
