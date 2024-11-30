@@ -169,7 +169,7 @@ def getSingleImagePrediction(Im,network):
         probabilities = softmax(outputs, dim=1)
         predicted_probs = probabilities.squeeze().cpu().numpy()
         # predicted_probs = outputs.squeeze().cpu().numpy()
-    return predicted_probs
+    return predicted_probs *100
 
 
 def generate_password():

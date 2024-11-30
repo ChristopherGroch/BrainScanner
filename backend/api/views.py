@@ -344,7 +344,7 @@ def single_image_classification(request):
     usage = Usage(doctor=user)
     usage.save()
     try:
-        glioma, menin, no_t, pituitary = set(getSingleImagePrediction(image,network))
+        glioma, menin, no_t, pituitary = (getSingleImagePrediction(image,network))
     except Exception as e:
         return Response({'reason':str(e)},status=status.HTTP_400_BAD_REQUEST)
     classification = Classification(
@@ -475,7 +475,7 @@ def multipleImageCheck(request):
         return Response({'reason':'No photos key'},status=status.HTTP_400_BAD_REQUEST)
     
     try:
-        df = pd.DataFrame(columns=["name", "patient_id"])
+        df = pd.DataFrame(columns=["name", "patient_id",'first_name','last_name'])
         data = json.loads(request.data["patients"])
         photos = request.FILES.getlist("photos")
         photos_dict = {photo.name: photo for photo in photos}
@@ -499,7 +499,7 @@ def multipleImageCheck(request):
 
             for patient in patients:
                 for name in patient.cur_images:
-                    df.loc[len(df)] = [name, patient.id]
+                    df.loc[len(df)] = [name, patient.id,patient.first_name,patient.last_name]
                     im_bytes = photos_dict[name].read()
                     ob, im_hash = checkIfImageExists(im_bytes)
                     if ob:
@@ -548,8 +548,7 @@ def multipleImageCheck(request):
     i = 0
 
     for image in images:
-        glioma, menin, no_t, pituitary = set(getSingleImagePrediction(image,network))
-
+        glioma, menin, no_t, pituitary = (getSingleImagePrediction(image,network))
         no_t = round(float(no_t), 7)
         glioma = round(float(glioma), 7)
         menin = round(float(menin), 7)
@@ -583,6 +582,7 @@ def multipleImageCheck(request):
     df["mean"] = df.groupby(by="patient_id")["max_value"].transform("mean")
     df = df.sort_values(by=["mean", "max_value"], ascending=False)
     buffer = StringIO()
+    buffer.write("ddddddddddddddddddddddddddddddddd\n") 
     df.to_string(buffer, index=False)
     buffer.seek(0)
     usage.refresh_from_db()

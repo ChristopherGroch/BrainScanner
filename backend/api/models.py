@@ -132,10 +132,10 @@ class Classification(models.Model):
     ml_model = models.ForeignKey(
         MlModel, on_delete=models.SET_NULL, null=True, related_name="classifications"
     )
-    no_tumor_prob = models.DecimalField(max_digits=8, decimal_places=7)
-    pituitary_prob = models.DecimalField(max_digits=8, decimal_places=7)
-    meningioma_prob = models.DecimalField(max_digits=8, decimal_places=7)
-    glioma_prob = models.DecimalField(max_digits=8, decimal_places=7)
+    no_tumor_prob = models.DecimalField(max_digits=10, decimal_places=7)
+    pituitary_prob = models.DecimalField(max_digits=10, decimal_places=7)
+    meningioma_prob = models.DecimalField(max_digits=10, decimal_places=7)
+    glioma_prob = models.DecimalField(max_digits=10, decimal_places=7)
 
     def __str__(self) -> str:
         return f"""CLASSIFICATION

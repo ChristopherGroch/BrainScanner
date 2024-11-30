@@ -20,7 +20,11 @@ export const AuthProvider = ({ children }) => {
       setADmin(isAdmin);
       console.log("true_auth");
       setUser(true);
-      setUserName(`${response.data.first_name} ${response.data.last_name}`)
+      if (response.data.first_name === ''){
+        setUserName('admin')
+      }else {
+        setUserName(`${response.data.first_name} ${response.data.last_name}`)
+      }
     } catch (error) {
       try {
         await refresh();

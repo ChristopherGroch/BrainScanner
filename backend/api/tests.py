@@ -842,16 +842,16 @@ class singleImageTest(TestCase):
             data={"photo": uploaded_image, "patient": json.dumps(patient_data)},
         )
         self.assertGreaterEqual(Decimal(response.data["no_tumor_prob"]), 0)
-        self.assertLessEqual(Decimal(response.data["no_tumor_prob"]), 1)
+        self.assertLessEqual(Decimal(response.data["no_tumor_prob"]), 100)
 
         self.assertGreaterEqual(Decimal(response.data["pituitary_prob"]), 0)
-        self.assertLessEqual(Decimal(response.data["pituitary_prob"]), 1)
+        self.assertLessEqual(Decimal(response.data["pituitary_prob"]), 100)
 
         self.assertGreaterEqual(Decimal(response.data["meningioma_prob"]), 0)
-        self.assertLessEqual(Decimal(response.data["meningioma_prob"]), 1)
+        self.assertLessEqual(Decimal(response.data["meningioma_prob"]), 100)
 
         self.assertGreaterEqual(Decimal(response.data["glioma_prob"]), 0)
-        self.assertLessEqual(Decimal(response.data["glioma_prob"]), 1)
+        self.assertLessEqual(Decimal(response.data["glioma_prob"]), 100)
 
         self.assertEqual(response.data["image"]["patient"]["first_name"], "Test")
         self.assertEqual(response.data["image"]["patient"]["last_name"], "Test")
@@ -1674,75 +1674,75 @@ class multipleImagesTest(TestCase):
             Decimal(response.data["classifications"][0]["no_tumor_prob"]), 0
         )
         self.assertLessEqual(
-            Decimal(response.data["classifications"][0]["no_tumor_prob"]), 1
+            Decimal(response.data["classifications"][0]["no_tumor_prob"]), 100
         )
         self.assertGreaterEqual(
             Decimal(response.data["classifications"][0]["pituitary_prob"]), 0
         )
         self.assertLessEqual(
-            Decimal(response.data["classifications"][0]["pituitary_prob"]), 1
+            Decimal(response.data["classifications"][0]["pituitary_prob"]), 100
         )
         self.assertGreaterEqual(
             Decimal(response.data["classifications"][0]["meningioma_prob"]), 0
         )
         self.assertLessEqual(
-            Decimal(response.data["classifications"][0]["meningioma_prob"]), 1
+            Decimal(response.data["classifications"][0]["meningioma_prob"]), 100
         )
         self.assertGreaterEqual(
             Decimal(response.data["classifications"][0]["glioma_prob"]), 0
         )
         self.assertLessEqual(
-            Decimal(response.data["classifications"][0]["glioma_prob"]), 1
+            Decimal(response.data["classifications"][0]["glioma_prob"]), 100
         )
 
         self.assertGreaterEqual(
             Decimal(response.data["classifications"][1]["no_tumor_prob"]), 0
         )
         self.assertLessEqual(
-            Decimal(response.data["classifications"][1]["no_tumor_prob"]), 1
+            Decimal(response.data["classifications"][1]["no_tumor_prob"]), 100
         )
         self.assertGreaterEqual(
             Decimal(response.data["classifications"][1]["pituitary_prob"]), 0
         )
         self.assertLessEqual(
-            Decimal(response.data["classifications"][1]["pituitary_prob"]), 1
+            Decimal(response.data["classifications"][1]["pituitary_prob"]), 100
         )
         self.assertGreaterEqual(
             Decimal(response.data["classifications"][1]["meningioma_prob"]), 0
         )
         self.assertLessEqual(
-            Decimal(response.data["classifications"][1]["meningioma_prob"]), 1
+            Decimal(response.data["classifications"][1]["meningioma_prob"]), 100
         )
         self.assertGreaterEqual(
             Decimal(response.data["classifications"][1]["glioma_prob"]), 0
         )
         self.assertLessEqual(
-            Decimal(response.data["classifications"][1]["glioma_prob"]), 1
+            Decimal(response.data["classifications"][1]["glioma_prob"]), 100
         )
 
         self.assertGreaterEqual(
             Decimal(response.data["classifications"][2]["no_tumor_prob"]), 0
         )
         self.assertLessEqual(
-            Decimal(response.data["classifications"][2]["no_tumor_prob"]), 1
+            Decimal(response.data["classifications"][2]["no_tumor_prob"]), 100
         )
         self.assertGreaterEqual(
             Decimal(response.data["classifications"][2]["pituitary_prob"]), 0
         )
         self.assertLessEqual(
-            Decimal(response.data["classifications"][2]["pituitary_prob"]), 1
+            Decimal(response.data["classifications"][2]["pituitary_prob"]), 100
         )
         self.assertGreaterEqual(
             Decimal(response.data["classifications"][2]["meningioma_prob"]), 0
         )
         self.assertLessEqual(
-            Decimal(response.data["classifications"][2]["meningioma_prob"]), 1
+            Decimal(response.data["classifications"][2]["meningioma_prob"]), 100
         )
         self.assertGreaterEqual(
             Decimal(response.data["classifications"][2]["glioma_prob"]), 0
         )
         self.assertLessEqual(
-            Decimal(response.data["classifications"][2]["glioma_prob"]), 1
+            Decimal(response.data["classifications"][2]["glioma_prob"]), 100
         )
 
         self.assertIsNone(response.data["classifications"][0]["image"]["tumor_type"])
