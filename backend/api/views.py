@@ -201,6 +201,12 @@ def reset_password(request, pk):
     user.save()
     return Response({"message": "User updated successfully!"}, status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_userName(request):
+    user = request.user
+    return Response({'user':f'{user.first_name} {user.last_name}'}, status=status.HTTP_200_OK)
+    
 @api_view(["PATCH"])
 @permission_classes([IsAuthenticated])
 def change_user(request, pk):

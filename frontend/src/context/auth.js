@@ -8,24 +8,28 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(false);
+  const [userName, setUserName] = useState('');
   const [admin, setADmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const nav = useNavigate();
 
   const get_authenticated = async () => {
     try {
-      await is_auth();
+      const response = await is_auth();
       const isAdmin = await getIsAdmin();
       setADmin(isAdmin);
       console.log("true_auth");
       setUser(true);
+      setUserName(`${response.data.first_name} ${response.data.last_name}`)
     } catch (error) {
       try {
         await refresh();
+        const response = await is_auth();
         const isAdmin = await getIsAdmin();
         setADmin(isAdmin);
         console.log("true_refresh");
         setUser(true);
+        setUserName(`${response.data.first_name} ${response.data.last_name}`)
       } catch {
         console.log("false");
         nav('/login')
@@ -69,7 +73,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, loginUser, refresh, logoutUser, admin }}
+      value={{ user, loading, loginUser, refresh, logoutUser, admin, userName }}
     >
       {children}
     </AuthContext.Provider>

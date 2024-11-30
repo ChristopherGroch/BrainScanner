@@ -25,6 +25,7 @@ const SINGLE_CLASSIFY_URL = `${BASE_URL}singleImageClassification/`
 const MULTIPLE_CLASSIFY_URL = `${BASE_URL}checkMultipleFiles/`
 const USERS_URL = `${BASE_URL}getAllUsers/`
 const RESET_PASSWORD_URL = `${BASE_URL}resetPassword/`
+const USERNAME_URL = `${BASE_URL}getUserName/`
 // axios.defaults.withCredentials = true;
 
 var fileDownload = require('js-file-download');
@@ -190,6 +191,11 @@ export const refresh = async () => {
 };
 
 export const is_auth = async () => {
-  await axios.get(AUTH_CHECK_URL, { withCredentials: true });
-  return true;
+  const response = await axios.get(AUTH_CHECK_URL, { withCredentials: true });
+  return response;
+};
+
+export const getUserName = async () => {
+  const response = await axios.get(USERNAME_URL, { withCredentials: true });
+  return response;
 };

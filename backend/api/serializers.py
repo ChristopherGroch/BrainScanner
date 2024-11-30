@@ -8,7 +8,7 @@ from django.core.validators import MinLengthValidator, RegexValidator
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username", "id"]
+        fields = ["username","first_name","last_name", "id"]
         
 class UserCreateSerializer(serializers.ModelSerializer):
     PESEL = serializers.CharField(

@@ -40,7 +40,8 @@ from api.views import (
     change_image,
     getAllUsers,
     change_user,
-    reset_password
+    reset_password,
+    get_userName
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -70,7 +71,8 @@ urlpatterns = [
     path("api/downloadReport/",downloadReport),
     path("api/getAllPatients/",getAllPatients),
     path("api/getAllImages/",getAllImages),
-    path("api/getAllUsers/",getAllUsers)
+    path("api/getAllUsers/",getAllUsers),
+    path("api/getUserName/",get_userName)
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
