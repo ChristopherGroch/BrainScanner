@@ -7,7 +7,12 @@ import {
   useDisclosure,
   FormErrorMessage,
   Text,
+  Flex,
+  Stack,
   Modal,
+  Heading,
+  useColorModeValue,
+  Box,
   ModalOverlay,
   ModalBody,
   ModalContent,
@@ -17,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { createUser, refresh } from "../endpoints/api";
 import { toast } from "sonner";
+import { parseErrorsFromString, formatErrorsToString } from "../utils/utils";
 
 const CreateUser = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -28,10 +34,20 @@ const CreateUser = () => {
     PESEL: "",
   });
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
   const nav = useNavigate();
 
-  const moveToMenu = () => {
-    nav("/menu");
+  const reset = () => {
+    setFormData({
+      username: "",
+      first_name: "",
+      last_name: "",
+      email: "",
+      PESEL: "",
+    });
+    setLoading(false);
+    toast.success("User has benn successfully craeted.")
+    onClose();
   };
 
   const validate = () => {
@@ -61,6 +77,7 @@ const CreateUser = () => {
 
   const handleCreateUser = async () => {
     try {
+      setLoading(true);
       await createUser(
         formData.username,
         formData.first_name,
@@ -68,6 +85,7 @@ const CreateUser = () => {
         formData.email,
         formData.PESEL
       );
+      reset();
     } catch (error) {
       if (error.response && error.response.status === 401) {
         try {
@@ -79,6 +97,7 @@ const CreateUser = () => {
             formData.email,
             formData.PESEL
           );
+          reset();
         } catch (refreshError) {
           if (refreshError.response && refreshError.response.status === 401) {
             console.error("Nie udało się odświeżyć tokena", refreshError);
@@ -86,51 +105,147 @@ const CreateUser = () => {
             nav("/login");
           } else {
             // alert(refreshError.response?.data?.reason || "Wystąpił błąd.");
+            setLoading(false);
             toast.error(
-              refreshError.response?.data?.reason || "Wystąpił błąd."
+              formatErrorsToString(
+                parseErrorsFromString(refreshError.response?.data?.reason)
+              ) || "Unexpected error."
             );
           }
         }
       } else {
         // alert(error.response?.data?.reason || "Wystąpił błąd.");
-        toast.error(error.response?.data?.reason || "Wystąpił błąd.");
+        setLoading(false);
+        toast.error(
+          formatErrorsToString(
+            parseErrorsFromString(error.response?.data?.reason)
+          ) || "Unexpected error."
+        );
       }
     }
   };
 
   return (
-    <>
-      <VStack>
-        <Button onClick={moveToMenu}>Menu</Button>
-        {["username", "first_name", "last_name", "email", "PESEL"].map(
-          (field) => (
-            <FormControl key={field} isInvalid={!!errors[field]}>
-              <FormLabel>{field.replace("_", " ").toUpperCase()}</FormLabel>
-              <Input
-                value={formData[field]}
-                onChange={(e) => handleChange(field, e.target.value)}
-              />
-              <FormErrorMessage>{errors[field]}</FormErrorMessage>
-            </FormControl>
-          )
-        )}
-        <Button onClick={handleSubmit}>Create User</Button>
-      </VStack>
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalCloseButton />
-          <ModalBody p={4} textAlign="center">
-            <Text>{formData.username}</Text>
-            <Text>{formData.first_name}</Text>
-            <Text>{formData.last_name}</Text>
-            <Text>{formData.email}</Text>
-            <Text>{formData.PESEL}</Text>
-          </ModalBody>
-          <Button onClick={handleCreateUser}>Create user</Button>
-        </ModalContent>
-      </Modal>
-    </>
+    <Flex
+      minH={"100%"}
+      maxW={"100%"}
+      align={"center"}
+      justify={"center"}
+      bg="#DAE3E5"
+      flex="1"
+    >
+      <Stack
+        spacing={5}
+        mx={"auto"}
+        maxW={"100%"}
+        width={"34%"}
+        py={5}
+        px={6}
+        //  border="4px solid black"
+      >
+        <Stack align={"center"}>
+          <Heading fontSize={"4xl"} color="#04080F">
+            Create user
+          </Heading>
+        </Stack>
+        <Box
+          rounded={"lg"}
+          bg={useColorModeValue("white", "gray.700")}
+          boxShadow={"lg"}
+          p={8}
+        >
+          <Stack spacing={4}>
+            {["username", "first_name", "last_name", "email", "PESEL"].map(
+              (field) => (
+                <FormControl key={field} isInvalid={!!errors[field]}>
+                  <FormLabel color="#04080F">
+                    {field.charAt(0).toUpperCase() +
+                      field.replace("_", " ").slice(1)}
+                  </FormLabel>
+                  <Input
+                    color="#04080F"
+                    value={formData[field]}
+                    onChange={(e) => handleChange(field, e.target.value)}
+                  />
+                  <FormErrorMessage>{errors[field]}</FormErrorMessage>
+                </FormControl>
+              )
+            )}
+            <Button
+              bg="#507DBC"
+              color={"white"}
+              _hover={{
+                bg: "blue.700",
+              }}
+              onClick={handleSubmit}
+            >
+              Create User
+            </Button>
+          </Stack>
+        </Box>
+        <Modal isOpen={isOpen} onClose={onClose} isCentered>
+          <ModalOverlay />
+          <ModalContent bg="#DAE3E5" rounded="lg" boxShadow="xl">
+            <ModalCloseButton />
+            <ModalBody p={6} textAlign="center">
+              <Heading size="md" color="#04080F" mb={4}>
+                Confirm User Creation
+              </Heading>
+              <Text fontSize="lg" color="#04080F" mb={2}>
+                Are you sure you want to create a user with the following
+                details?
+              </Text>
+              <Box bg="white" p={4} rounded="md" shadow="md" mb={4}>
+                <Text color="#507DBC" fontWeight="semibold">
+                  Username:{" "}
+                  <Text as="span" color="#04080F" fontWeight="normal">
+                    {formData.username}
+                  </Text>
+                </Text>
+                <Text color="#507DBC" fontWeight="semibold">
+                  First Name:{" "}
+                  <Text as="span" color="#04080F" fontWeight="normal">
+                    {formData.first_name}
+                  </Text>
+                </Text>
+                <Text color="#507DBC" fontWeight="semibold">
+                  Last Name:{" "}
+                  <Text as="span" color="#04080F" fontWeight="normal">
+                    {formData.last_name}
+                  </Text>
+                </Text>
+                <Text color="#507DBC" fontWeight="semibold">
+                  Email:{" "}
+                  <Text as="span" color="#04080F" fontWeight="normal">
+                    {formData.email}
+                  </Text>
+                </Text>
+                <Text color="#507DBC" fontWeight="semibold">
+                  PESEL:{" "}
+                  <Text as="span" color="#04080F" fontWeight="normal">
+                    {formData.PESEL}
+                  </Text>
+                </Text>
+              </Box>
+              <Stack direction="row" justify="center" spacing={4}>
+                <Button
+                  bg="#507DBC"
+                  color="white"
+                  _hover={{ bg: "blue.700" }}
+                  onClick={handleCreateUser}
+                  isLoading={loading}
+                >
+                  Confirm
+                </Button>
+                <Button variant="outline" color="#507DBC" onClick={onClose}>
+                  Cancel
+                </Button>
+              </Stack>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      </Stack>
+    </Flex>
   );
 };
 export default CreateUser;

@@ -12,7 +12,7 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, Stack } from "@chakra-ui/react";
 import { AuthProvider } from "./context/auth";
 import ProtectedRoute from "./routes/protected";
 import AdminedRoute from "./routes/admined";
@@ -23,7 +23,7 @@ import ChangeImagesData from "./routes/changeImage";
 import ChangeUserData from "./routes/changeUserData";
 import Navbar from "./components/navbar";
 import { Outlet } from "react-router-dom";
-
+import { Flex,Box } from "@chakra-ui/react";
 function App() {
   return (
     <ChakraProvider>
@@ -33,10 +33,15 @@ function App() {
           <Routes>
             <Route
               element={
-                <>
+                <Flex
+                  direction="column"
+                  minH="100vh"
+                >
                   <Navbar />
-                  <Outlet />
-                </>
+                  <Flex flex='1'>
+                    <Outlet/>
+                  </Flex>
+                </Flex>
               }
             >
               <Route

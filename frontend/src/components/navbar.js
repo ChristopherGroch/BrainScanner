@@ -25,7 +25,7 @@ const Navbar = () => {
 
   return (
     <Box
-      bg={useColorModeValue("blue.900", "gray.800")}
+      bg="#507DBC"
       color="white"
       position="sticky"
       top="0"
@@ -43,7 +43,7 @@ const Navbar = () => {
         <ChakraLink
           as={RouterLink}
           to="/"
-          fontSize="1.5rem"
+          fontSize="1.7rem"
           fontWeight="bold"
           textDecoration="none"
           color="white"
@@ -75,9 +75,10 @@ const Navbar = () => {
               to="/history"
               px="3"
               py="2"
+              fontSize="1.2rem"
               borderRadius="md"
               _hover={{ bg: "blue.700" }}
-              _activeLink={{ bg: "blue.600" }}
+              _activeLink={{ bg: "blue.700"}}
             >
               Usage History
             </ChakraLink>
@@ -88,9 +89,10 @@ const Navbar = () => {
               to="/reportHistory"
               px="3"
               py="2"
+              fontSize="1.2rem"
               borderRadius="md"
               _hover={{ bg: "blue.700" }}
-              _activeLink={{ bg: "blue.600" }}
+              _activeLink={{ bg: "blue.700" }}
             >
               Report History
             </ChakraLink>
@@ -101,9 +103,10 @@ const Navbar = () => {
               to="/singleImage"
               px="3"
               py="2"
+              fontSize="1.2rem"
               borderRadius="md"
               _hover={{ bg: "blue.700" }}
-              _activeLink={{ bg: "blue.600" }}
+              _activeLink={{ bg: "blue.700" }}
             >
               Single Image
             </ChakraLink>
@@ -114,9 +117,10 @@ const Navbar = () => {
               to="/multipleImages"
               px="3"
               py="2"
+              fontSize="1.2rem"
               borderRadius="md"
               _hover={{ bg: "blue.700" }}
-              _activeLink={{ bg: "blue.600" }}
+              _activeLink={{ bg: "blue.700" }}
             >
               Multiple Images
             </ChakraLink>
@@ -129,6 +133,7 @@ const Navbar = () => {
                 gap="2"
                 px="3"
                 py="2"
+                fontSize="1.2rem"
                 borderRadius="md"
                 _hover={{ bg: "blue.700" }}
               >
@@ -136,14 +141,15 @@ const Navbar = () => {
                 <ChevronDownIcon />
               </MenuButton>
               <MenuList
-                bg={useColorModeValue("blue.900", "gray.700")}
+                bg="#507DBC"
                 color="white"
-                borderColor="gray.600"
+                borderColor="gray.700"
               >
                 <MenuItem
                   as={RouterLink}
                   to="/changePassword"
-                  bg={"blue.900"}
+                  fontSize="1.2rem"
+                  bg="#507DBC"
                   _hover={{ bg: "blue.700" }}
                 >
                   Change Password
@@ -151,7 +157,8 @@ const Navbar = () => {
                 <MenuItem
                   as={RouterLink}
                   to="/createUser"
-                  bg={"blue.900"}
+                  bg="#507DBC"
+                  fontSize="1.2rem"
                   _hover={{ bg: "blue.700" }}
                   display={admin ? "block" : "none"}
                 >
@@ -160,7 +167,8 @@ const Navbar = () => {
                 <MenuItem
                   as={RouterLink}
                   to="/changeusers"
-                  bg={"blue.900"}
+                  fontSize="1.2rem"
+                  bg="#507DBC"
                   _hover={{ bg: "blue.700" }}
                   display={admin ? "block" : "none"}
                 >
@@ -169,7 +177,8 @@ const Navbar = () => {
                 <MenuItem
                   as={RouterLink}
                   to="/changeImages"
-                  bg={"blue.900"}
+                  fontSize="1.2rem"
+                  bg="#507DBC"
                   _hover={{ bg: "blue.700" }}
                   display={admin ? "block" : "none"}
                 >
@@ -178,7 +187,8 @@ const Navbar = () => {
                 <MenuItem
                   as={RouterLink}
                   to="/changePatient"
-                  bg={"blue.900"}
+                  fontSize="1.2rem"
+                  bg="#507DBC"
                   _hover={{ bg: "blue.700" }}
                   display={admin ? "block" : "none"}
                 >
@@ -186,8 +196,9 @@ const Navbar = () => {
                 </MenuItem>
                 <MenuItem
                   onClick={handleLogout}
-                  _hover={{ bg: "blue.700" }}
-                  bg={"blue.900"}
+                  _hover= {{ bg: "blue.700" }}
+                  fontSize="1.2rem"
+                  bg="#507DBC"
                 >
                   Logout
                 </MenuItem>

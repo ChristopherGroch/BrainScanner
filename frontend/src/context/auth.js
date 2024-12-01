@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
       console.log("true_auth");
       setUser(true);
       if (response.data.first_name === ''){
-        setUserName('admin')
+        setUserName('Admin')
       }else {
         setUserName(`${response.data.first_name} ${response.data.last_name}`)
       }
