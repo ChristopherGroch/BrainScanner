@@ -88,7 +88,7 @@ const ChangePasasword = () => {
         spacing={8}
         mx={"auto"}
         maxW={"100%"}
-        width={"30%"}
+        width={"34%"}
         height={"70%"}
         py={12}
         px={6}

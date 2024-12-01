@@ -5,6 +5,7 @@ import {
   VStack,
   Heading,
   Text,
+  Flex,
   IconButton,
   Modal,
   ModalContent,
@@ -266,13 +267,10 @@ const MultipleImagesList = () => {
   };
 
   return (
-    <>
+    <Flex flex='1'>
       <VStack spacing={6} align="stretch">
-        <Button size="sm" onClick={() => nav("/menu")} alignSelf="start">
-          Menu
-        </Button>
         <Heading size="md" textAlign="center">
-          Multiple Images Components
+          Multiple Images
         </Heading>
 
         {childData.map((child) => (
@@ -311,7 +309,7 @@ const MultipleImagesList = () => {
           colorScheme="blue"
           alignSelf="center"
         >
-          Add Component
+          Add Patient
         </Button>
         <Button alignSelf="center" onClick={handleSubmit}>
           Submit
@@ -383,7 +381,7 @@ const MultipleImagesList = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </>
+    </Flex>
   );
 };
 

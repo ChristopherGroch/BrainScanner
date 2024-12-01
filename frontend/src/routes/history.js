@@ -51,10 +51,7 @@ const HistoryMenu = () => {
       alignItems="flex-start"
       pb="50px"
     >
-      <Button onClick={moveToMenu}>Menu</Button>
-      <Button onClick={handleLogout} colorScheme="red">
-        Logout
-      </Button>
+
       <Heading as="h1" mb={6} textAlign="center">
         Patient Images
       </Heading>

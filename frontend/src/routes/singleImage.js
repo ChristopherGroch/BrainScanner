@@ -1,15 +1,16 @@
 import {
-  VStack,
   FormControl,
   FormLabel,
   Input,
   Button,
-  Switch,
   Text,
-  Select,
+  Flex,
   FormErrorMessage,
   Box,
   useDisclosure,
+  Stack,
+  Heading,
+  useColorModeValue,
   Modal,
   ModalBody,
   ModalOverlay,
@@ -24,6 +25,11 @@ import { refresh } from "../endpoints/api";
 import Dropzone from "../components/dropzone";
 import ReactSelect from "react-select";
 import { toast } from "sonner";
+import {
+  containsBraces,
+  parseErrorsFromString,
+  formatErrorsToString,
+} from "../utils/utils";
 
 const SingleImage = () => {
   const nav = useNavigate();
@@ -42,6 +48,9 @@ const SingleImage = () => {
   const [classificationResult, setClassificationResult] = useState(null);
   const [dropzoneKey, setDropzoneKey] = useState(0);
 
+  const handleSwitchClick = (option) => {
+    setIsDropdown(!isDropdown);
+  };
 
   const resetStates = async () => {
     setFormData({
@@ -55,7 +64,7 @@ const SingleImage = () => {
     setSelectedPatient(null);
     setFile(null);
     setClassificationResult(null);
-    setDropzoneKey((prevKey) => prevKey + 1); 
+    setDropzoneKey((prevKey) => prevKey + 1);
     await fetchPatients();
   };
 
@@ -65,6 +74,19 @@ const SingleImage = () => {
       console.log(patients);
       setPatients(patients);
     } catch (error) {
+      if (error.response && error.response.status === 401) {
+        try {
+          await refresh();
+          const patients = await getPatients();
+          console.log(patients);
+          setPatients(patients);
+        } catch (refresherror) {
+          alert("Twoja sesja wygasła. Zaloguj się ponownie.");
+          nav("/login");
+        }
+      } else {
+        setPatients([]);
+      }
       setPatients([]);
     }
   };
@@ -75,7 +97,7 @@ const SingleImage = () => {
 
   const patientOptions = patients.map((p) => ({
     value: p.id,
-    label: `${p.first_name} ${p.last_name} (${p.PESEL})`,
+    label: `${p.first_name} ${p.last_name} - PESEL: ${p.PESEL}`,
   }));
 
   const validate = () => {
@@ -103,7 +125,7 @@ const SingleImage = () => {
 
   const handleSubmit = () => {
     if (validate()) {
-        console.log(classificationResult)
+      console.log(classificationResult);
       onOpen();
     }
   };
@@ -142,8 +164,8 @@ const SingleImage = () => {
       const response = await singleImageCLassification(requestData, file);
       console.log(response);
       setClassificationResult(response.data);
-      if (!isDropdown){
-        toast.success('Patient created')
+      if (!isDropdown) {
+        toast.success("Patient created");
       }
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -152,8 +174,8 @@ const SingleImage = () => {
           const response = await singleImageCLassification(requestData, file);
           console.log(response);
           setClassificationResult(response.data);
-          if (!isDropdown){
-            toast.success('Patient created')
+          if (!isDropdown) {
+            toast.success("Patient created");
           }
         } catch (refreshError) {
           if (refreshError.response && refreshError.response.status === 401) {
@@ -162,131 +184,331 @@ const SingleImage = () => {
             nav("/login");
           } else {
             // alert(refreshError.response?.data?.reason || "Wystąpił błąd.");
-            toast.error(refreshError.response?.data?.reason || "Wystąpił błąd.")
+            if (containsBraces(refreshError.response?.data?.reason)) {
+              toast.error(
+                formatErrorsToString(
+                  parseErrorsFromString(refreshError.response?.data?.reason)
+                ) || "Unexpoected error"
+              );
+            } else {
+              toast.error(
+                refreshError.response?.data?.reason || "Unexpoected error"
+              );
+            }
           }
         }
       } else {
         // alert(error.response?.data?.reason || "Wystąpił błąd.");
-        toast.error(error.response?.data?.reason || "Wystąpił błąd.")
+        if (containsBraces(error.response?.data?.reason)) {
+          toast.error(
+            formatErrorsToString(
+              parseErrorsFromString(error.response?.data?.reason)
+            ) || "Unexpoected error"
+          );
+        } else {
+          toast.error(error.response?.data?.reason || "Unexpoected error");
+        }
       }
     }
   };
 
   return (
-    <>
-      <VStack spacing={4}>
-        <Button onClick={() => nav("/menu")}>Menu</Button>
-
-        <FormControl display="flex" alignItems="center">
-          <FormLabel mb="0">Use Dropdown</FormLabel>
-          <Switch
-            isChecked={isDropdown}
-            onChange={(e) => setIsDropdown(e.target.checked)}
-          />
-        </FormControl>
-
-        {isDropdown ? (
-          <FormControl isInvalid={!!errors.patient}>
-            <FormLabel>Choose a Patient</FormLabel>
-            <ReactSelect
-              options={patientOptions}
-              onChange={handleSelectChange}
-              value={
-                selectedPatient
-                  ? {
-                      value: selectedPatient.id,
-                      label: `${selectedPatient.first_name} ${selectedPatient.last_name} (${selectedPatient.PESEL})`,
-                    }
-                  : null
-              }
-            />
-            <FormErrorMessage>{errors.patient}</FormErrorMessage>
-          </FormControl>
-        ) : (
-          ["first_name", "last_name", "email", "PESEL"].map((field) => (
-            <FormControl key={field} isInvalid={!!errors[field]}>
-              <FormLabel>{field.replace("_", " ").toUpperCase()}</FormLabel>
-              <Input
-                value={formData[field]}
-                onChange={(e) => handleChange(field, e.target.value)}
-              />
-              <FormErrorMessage>{errors[field]}</FormErrorMessage>
-            </FormControl>
-          ))
-        )}
-
-        {errors.file && (
-          <Box color="white" bg="red.500" p={2} borderRadius="md">
-            {errors.file}
-          </Box>
-        )}
-
-        <Dropzone key={dropzoneKey} onFileChange={handleFileChange} />
-        <Button onClick={handleSubmit}>Classify</Button>
-      </VStack>
-
-      <Modal isOpen={isOpen} onClose={handleCloseModal} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalCloseButton />
-          <ModalBody p={4} textAlign="center">
-            {classificationResult ? (
-              <>
-                <Image
-                  src={`http://127.0.0.1:8000${classificationResult.image.photo}`}
-                  alt="Patient's Scan"
-                  mb={4}
-                />
-                <Text fontSize="lg" fontWeight="bold">
-                  Classification Results
-                </Text>
-                <Box mt={2}>
-                  <Text>
-                    No Tumor Probability: {classificationResult.no_tumor_prob}
-                  </Text>
-                  <Text>
-                    Pituitary Tumor Probability:{" "}
-                    {classificationResult.pituitary_prob}
-                  </Text>
-                  <Text>
-                    Meningioma Probability:{" "}
-                    {classificationResult.meningioma_prob}
-                  </Text>
-                  <Text>
-                    Glioma Probability: {classificationResult.glioma_prob}
-                  </Text>
+    <Flex
+      minH={"100%"}
+      maxW={"100%"}
+      align={"center"}
+      justify={"center"}
+      bg="#DAE3E5"
+      flex="1"
+    >
+      <Stack
+        spacing={3}
+        mx={"auto"}
+        maxW={"100%"}
+        width={"34%"}
+        py={5}
+        px={6}
+        //  border="4px solid black"
+      >
+        <Stack align={"center"}>
+          <Heading fontSize={"4xl"} color="#04080F">
+            Classify image
+          </Heading>
+        </Stack>
+        <Box
+          rounded={"lg"}
+          bg={useColorModeValue("white", "gray.700")}
+          boxShadow={"lg"}
+          p={6}
+        >
+          <Stack spacing={2}>
+            <FormControl display="flex" alignItems="center">
+              <Flex
+                bg="#DAE3E5"
+                p="0"
+                borderRadius="full"
+                align="center"
+                justify="space-between"
+                w="350px"
+                h='40px'
+                mx="auto"
+                my="0"
+                boxShadow="md"
+              >
+                <Box
+                  flex="1"
+                  textAlign="center"
+                  py="2"
+                  px="4"
+                  cursor="pointer"
+                  borderRadius="full"
+                  bg={!isDropdown ? "#507DBC" : "transparent"}
+                  color={!isDropdown ? "white" : "#04080F"}
+                  fontWeight={!isDropdown ? "bold" : "normal"}
+                  boxShadow={!isDropdown ? "md" : "none"}
+                  transition="background-color 0.3s, color 0.3s"
+                  onClick={() => handleSwitchClick()}
+                  width="50%"
+                  height="40px"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <Text fontSize="md">Create patient</Text>
                 </Box>
-              </>
+                <Box
+                  flex="1"
+                  textAlign="center"
+                  py="2"
+                  px="4"
+                  cursor="pointer"
+                  borderRadius="full"
+                  bg={isDropdown ? "#507DBC" : "transparent"}
+                  color={isDropdown ? "white" : "#04080F"}
+                  fontWeight={isDropdown ? "bold" : "normal"}
+                  boxShadow={isDropdown ? "md" : "none"}
+                  transition="background-color 0.3s, color 0.3s"
+                  onClick={() => handleSwitchClick()}
+                  width="50%"
+                  height="40px" 
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center" 
+                >
+                  <Text fontSize="md">Select patient</Text>
+                </Box>
+              </Flex>
+            </FormControl>
+
+            {isDropdown ? (
+              <FormControl isInvalid={!!errors.patient}>
+                <FormLabel>Choose a Patient</FormLabel>
+                <ReactSelect
+                  options={patientOptions}
+                  onChange={handleSelectChange}
+                  value={
+                    selectedPatient
+                      ? {
+                          value: selectedPatient.id,
+                          label: `${selectedPatient.first_name} ${selectedPatient.last_name} - PESEL: ${selectedPatient.PESEL}`,
+                        }
+                      : null
+                  }
+                />
+                <FormErrorMessage>{errors.patient}</FormErrorMessage>
+              </FormControl>
             ) : (
-              <>
-                {file && <Image src={file.preview} alt={file.name} />}
-                {isDropdown && selectedPatient ? (
+              ["first_name", "last_name", "email", "PESEL"].map((field) => (
+                <FormControl key={field} isInvalid={!!errors[field]}>
+                  <FormLabel>
+                    {field.charAt(0).toUpperCase() +
+                      field.replace("_", " ").slice(1)}
+                  </FormLabel>
+                  <Input
+                    value={formData[field]}
+                    onChange={(e) => handleChange(field, e.target.value)}
+                  />
+                  <FormErrorMessage>{errors[field]}</FormErrorMessage>
+                </FormControl>
+              ))
+            )}
+            <Dropzone
+              key={dropzoneKey}
+              onFileChange={handleFileChange}
+              errorFile={errors.file}
+            />
+            <Button
+              onClick={handleSubmit}
+              bg="#507DBC"
+              color={"white"}
+              _hover={{
+                bg: "blue.700",
+              }}
+            >
+              Classify
+            </Button>
+          </Stack>
+
+          <Modal isOpen={isOpen} onClose={handleCloseModal} isCentered>
+            <ModalOverlay />
+            <ModalContent bg="#DAE3E5" rounded="lg" boxShadow="xl">
+              <ModalCloseButton />
+              <ModalBody p={6} textAlign="center">
+                {!classificationResult ? (
                   <>
-                    <Text>{selectedPatient.first_name}</Text>
-                    <Text>{selectedPatient.last_name}</Text>
-                    <Text>{selectedPatient.email}</Text>
-                    <Text>{selectedPatient.PESEL}</Text>
+                    <Heading size="md" color="#04080F" mb={4}>
+                      Confirm Patient Data
+                    </Heading>
+                    <Text fontSize="lg" color="#04080F" mb={2}>
+                      Are you sure the following details are correct?
+                    </Text>
+                    <Box bg="white" p={4} rounded="md" shadow="md" mb={4}>
+                      {isDropdown && selectedPatient ? (
+                        <>
+                          <Text color="#507DBC" fontWeight="semibold">
+                            First Name:{" "}
+                            <Text as="span" color="#04080F" fontWeight="normal">
+                              {selectedPatient.first_name}
+                            </Text>
+                          </Text>
+                          <Text color="#507DBC" fontWeight="semibold">
+                            Last Name:{" "}
+                            <Text as="span" color="#04080F" fontWeight="normal">
+                              {selectedPatient.last_name}
+                            </Text>
+                          </Text>
+                          <Text color="#507DBC" fontWeight="semibold">
+                            Email:{" "}
+                            <Text as="span" color="#04080F" fontWeight="normal">
+                              {selectedPatient.email}
+                            </Text>
+                          </Text>
+                          <Text color="#507DBC" fontWeight="semibold">
+                            PESEL:{" "}
+                            <Text as="span" color="#04080F" fontWeight="normal">
+                              {selectedPatient.PESEL}
+                            </Text>
+                          </Text>
+                        </>
+                      ) : (
+                        <>
+                          <Text color="#507DBC" fontWeight="semibold">
+                            First Name:{" "}
+                            <Text as="span" color="#04080F" fontWeight="normal">
+                              {formData.first_name}
+                            </Text>
+                          </Text>
+                          <Text color="#507DBC" fontWeight="semibold">
+                            Last Name:{" "}
+                            <Text as="span" color="#04080F" fontWeight="normal">
+                              {formData.last_name}
+                            </Text>
+                          </Text>
+                          <Text color="#507DBC" fontWeight="semibold">
+                            Email:{" "}
+                            <Text as="span" color="#04080F" fontWeight="normal">
+                              {formData.email}
+                            </Text>
+                          </Text>
+                          <Text color="#507DBC" fontWeight="semibold">
+                            PESEL:{" "}
+                            <Text as="span" color="#04080F" fontWeight="normal">
+                              {formData.PESEL}
+                            </Text>
+                          </Text>
+                        </>
+                      )}
+                    </Box>
+                    <Stack direction="row" justify="center" spacing={4}>
+                      <Button
+                        bg="#507DBC"
+                        color="white"
+                        _hover={{ bg: "blue.700" }}
+                        onClick={handleClassify}
+                      >
+                        Confirm and Classify
+                      </Button>
+                      <Button
+                        variant="outline"
+                        color="#507DBC"
+                        onClick={handleCloseModal}
+                      >
+                        Cancel
+                      </Button>
+                    </Stack>
                   </>
                 ) : (
                   <>
-                    <Text>{formData.first_name}</Text>
-                    <Text>{formData.last_name}</Text>
-                    <Text>{formData.email}</Text>
-                    <Text>{formData.PESEL}</Text>
+                    <Heading size="md" color="#04080F" mb={4}>
+                      Classification Results
+                    </Heading>
+                    {classificationResult.image && (
+                      <Box
+                        mb={4}
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                      >
+                        <Image
+                          src={`http://127.0.0.1:8000${classificationResult.image.photo}`}
+                          alt="Patient's Scan"
+                          width="224px"
+                          height="224px"
+                          objectFit="cover"
+                          borderRadius="md"
+                          boxShadow="md"
+                        />
+                      </Box>
+                    )}
+                    <Box
+                      bg="white"
+                      p={4}
+                      rounded="md"
+                      shadow="md"
+                      textAlign="left"
+                      mb={4}
+                    >
+                      <Text color="#507DBC" fontWeight="semibold">
+                        No Tumor Probability:{" "}
+                        <Text as="span" color="#04080F" fontWeight="normal">
+                          {classificationResult.no_tumor_prob}
+                        </Text>
+                      </Text>
+                      <Text color="#507DBC" fontWeight="semibold">
+                        Pituitary Tumor Probability:{" "}
+                        <Text as="span" color="#04080F" fontWeight="normal">
+                          {classificationResult.pituitary_prob}
+                        </Text>
+                      </Text>
+                      <Text color="#507DBC" fontWeight="semibold">
+                        Meningioma Probability:{" "}
+                        <Text as="span" color="#04080F" fontWeight="normal">
+                          {classificationResult.meningioma_prob}
+                        </Text>
+                      </Text>
+                      <Text color="#507DBC" fontWeight="semibold">
+                        Glioma Probability:{" "}
+                        <Text as="span" color="#04080F" fontWeight="normal">
+                          {classificationResult.glioma_prob}
+                        </Text>
+                      </Text>
+                    </Box>
+                    <Button
+                      bg="#507DBC"
+                      color="white"
+                      _hover={{ bg: "blue.700" }}
+                      onClick={handleCloseModal}
+                    >
+                      Close
+                    </Button>
                   </>
                 )}
-              </>
-            )}
-          </ModalBody>
-          <Button
-            onClick={handleClassify}
-            display={!classificationResult ? "inline-flex" : "none"}
-          >
-            Classify
-          </Button>
-        </ModalContent>
-      </Modal>
-    </>
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        </Box>
+      </Stack>
+    </Flex>
   );
 };
 
