@@ -1,34 +1,27 @@
 import {
-  VStack,
   FormControl,
   FormLabel,
   Input,
   Button,
-  Switch,
   Text,
-  Select,
   FormErrorMessage,
   Box,
   useDisclosure,
   Modal,
   ModalBody,
+  Stack,
+  Heading,
   ModalOverlay,
   ModalHeader,
-  ModalFooter,
   ModalContent,
   ModalCloseButton,
-  Image,
+  Flex,
+  HStack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import {
-  getPatients,
-  getUsers,
-  changeUser,
-  resetPasword,
-} from "../endpoints/api";
-import { refresh, changePatient } from "../endpoints/api";
-import Dropzone from "../components/dropzone";
+import { getUsers, changeUser, resetPasword } from "../endpoints/api";
+import { refresh } from "../endpoints/api";
 import ReactSelect from "react-select";
 import { toast } from "sonner";
 
@@ -83,7 +76,24 @@ const ChangeUserData = () => {
         }))
       );
     } catch (error) {
-      toast.error("Failed to load users");
+      if (error.response && error.response.status === 401) {
+        try {
+          await refresh();
+          const users = await getUsers();
+          setUsers(users);
+          setUserOptions(
+            users.map((u) => ({
+              value: u.id,
+              label: `${u.username} (${u.email})`,
+            }))
+          );
+        } catch (refresherror) {
+          alert("Twoja sesja wygasła. Zaloguj się ponownie.");
+          nav("/login");
+        }
+      } else {
+        setUsers([])
+      }
     }
   };
 
@@ -119,7 +129,9 @@ const ChangeUserData = () => {
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (field === "email" && value !== selectedUser?.email) {
-      setShowPesel(true);
+      if (selectedUser) {
+        setShowPesel(true);
+      }
     }
     if (field === "email" && value === selectedUser?.email) {
       setShowPesel(false);
@@ -185,14 +197,24 @@ const ChangeUserData = () => {
             nav("/login");
           } else {
             // alert(refreshError.response?.data?.reason || "Wystąpił błąd.");
-            toast.error(
-              refreshError.response?.data?.reason || "Wystąpił błąd."
-            );
+            if (
+              refreshError.response?.data?.reason.split(" ")[0] === "duplicate"
+            ) {
+              toast.error("User with that username already exists");
+            } else {
+              toast.error(
+                refreshError.response?.data?.reason || "Unexpected error"
+              );
+            }
           }
         }
       } else {
         // alert(error.response?.data?.reason || "Wystąpił błąd.");
-        toast.error(error.response?.data?.reason || "Wystąpił błąd.");
+        if (error.response?.data?.reason.split(" ")[0] === "duplicate") {
+          toast.error("User with that username already exists");
+        } else {
+          toast.error(error.response?.data?.reason || "Unexpected error");
+        }
       }
     }
     setLoading(false);
@@ -213,7 +235,7 @@ const ChangeUserData = () => {
 
   const handleResetPassword = async () => {
     if (validatePesel()) {
-        const PESEL = resetPesel
+      const PESEL = resetPesel;
       setLoading(true);
       try {
         const response = await resetPasword(PESEL, selectedUser.id);
@@ -248,103 +270,223 @@ const ChangeUserData = () => {
   };
 
   return (
-    <>
-      <Box p={4}>
-        <FormControl isInvalid={!!errors.user}>
-          <FormLabel>Choose a User</FormLabel>
-          <ReactSelect
-            options={userOptions}
-            onChange={handleSelectChange}
-            value={
-              selectedUser
-                ? {
-                    value: selectedUser.id,
-                    label: `${selectedUser.username} (${selectedUser.email})`,
-                  }
-                : null
-            }
-          />
-          <FormErrorMessage>{errors.user}</FormErrorMessage>
-        </FormControl>
-
-        {["username", "first_name", "last_name", "email"].map((field) => (
-          <FormControl key={field} isInvalid={!!errors[field]} mt={4}>
-            <FormLabel>{field.replace("_", " ").toUpperCase()}</FormLabel>
-            <Input
-              value={formData[field]}
-              onChange={(e) => handleChange(field, e.target.value)}
-            />
-            <FormErrorMessage>{errors[field]}</FormErrorMessage>
-          </FormControl>
-        ))}
-
-        {showPesel && (
-          <FormControl isInvalid={!!errors.PESEL} mt={4}>
-            <FormLabel>PESEL</FormLabel>
-            <Input
-              value={formData.PESEL}
-              onChange={(e) => handleChange("PESEL", e.target.value)}
-            />
-            <FormErrorMessage>{errors.PESEL}</FormErrorMessage>
-          </FormControl>
-        )}
-
-        <Button
-          mt={4}
-          colorScheme="blue"
-          onClick={handleSubmit}
-          isDisabled={equal}
+    <Flex
+      minH={"100%"}
+      maxW={"100%"}
+      align={"center"}
+      justify={"center"}
+      bg="#DAE3E5"
+      flex="1"
+    >
+      <Stack
+        spacing={2}
+        display={"flex"}
+        align={"center"}
+        justify={"center"}
+        width={"34%"}
+        height="100%"
+        maxW={"100%"}
+        py={5}
+        // border="4px solid black"
+      >
+        <Stack align={"center"}>
+          <Heading fontSize={"4xl"} color="#04080F">
+            Change user data
+          </Heading>
+        </Stack>
+        <Box
+          rounded={"lg"}
+          bg={"white"}
+          boxShadow={"lg"}
+          px={6}
+          py={4}
+          minH="77%"
+          width={"100%"}
         >
-          Save Changes
-        </Button>
-        {selectedUser && (
-          <Button mt={4} colorScheme="red" onClick={onResetOpen}>
-            Reset Password
-          </Button>
-        )}
-      </Box>
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalCloseButton />
-          <ModalBody p={4} textAlign="center">
-            <Text>{formData.first_name}</Text>
-            <Text>{formData.last_name}</Text>
-            <Text>{formData.email}</Text>
-            <Text>{formData.username}</Text>
-            {formData.PESEL !== "" && <Text>{formData.PESEL}</Text>}
-          </ModalBody>
-          <Button onClick={handleEdit} isLoading={loading}>
-            EDIT
-          </Button>
-        </ModalContent>
-      </Modal>
-      <Modal isOpen={isResetOpen} onClose={onResetClose} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Reset Password</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text mb={4}>
-              To reset the password, please provide the user's PESEL:
-            </Text>
-            <FormControl isInvalid={!!resetError}>
-              <FormLabel>PESEL</FormLabel>
-              <Input
-                value={resetPesel}
-                onChange={(e) => handleResetPeselChange(e.target.value)}
+          <Stack
+            spacing={0}
+            justify="space-between"
+            align="stretch"
+            height="100%"
+          >
+            <FormControl isInvalid={!!errors.user}>
+              <FormLabel>Choose a User</FormLabel>
+              <ReactSelect
+                options={userOptions}
+                onChange={handleSelectChange}
+                value={
+                  selectedUser
+                    ? {
+                        value: selectedUser.id,
+                        label: `${selectedUser.username} (${selectedUser.email})`,
+                      }
+                    : null
+                }
               />
-              <FormErrorMessage>{resetError}</FormErrorMessage>
+              <FormErrorMessage>{errors.user}</FormErrorMessage>
             </FormControl>
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="blue" onClick={handleResetPassword} isLoading={loading}>
+
+            {["username", "first_name", "last_name", "email"].map((field) => (
+              <FormControl key={field} isInvalid={!!errors[field]} mt={3}>
+                <FormLabel>
+                  {" "}
+                  {field.charAt(0).toUpperCase() +
+                    field.replace("_", " ").slice(1)}
+                </FormLabel>
+                <Input
+                  value={formData[field]}
+                  onChange={(e) => handleChange(field, e.target.value)}
+                />
+                <FormErrorMessage>{errors[field]}</FormErrorMessage>
+              </FormControl>
+            ))}
+
+            {showPesel && (
+              <FormControl isInvalid={!!errors.PESEL} mt={3}>
+                <FormLabel>PESEL</FormLabel>
+                <Input
+                  value={formData.PESEL}
+                  onChange={(e) => handleChange("PESEL", e.target.value)}
+                />
+                <FormErrorMessage>{errors.PESEL}</FormErrorMessage>
+              </FormControl>
+            )}
+            <HStack justify="space-evenly" align="stretch">
+              <Button
+                mt={3}
+                bg="#507DBC"
+                color={"white"}
+                _hover={{
+                  bg: "blue.700",
+                }}
+                onClick={handleSubmit}
+                isDisabled={equal}
+              >
+                Save Changes
+              </Button>
+              {selectedUser && (
+                <Button
+                  mt={3}
+                  bg="#DB504A"
+                  color={"white"}
+                  _hover={{
+                    bg: "red.700",
+                  }}
+                  onClick={onResetOpen}
+                >
+                  Reset Password
+                </Button>
+              )}
+            </HStack>
+          </Stack>
+        </Box>
+        <Modal isOpen={isOpen} onClose={onClose} isCentered>
+          <ModalOverlay />
+          <ModalContent bg="#DAE3E5" rounded="lg" boxShadow="xl">
+            <ModalCloseButton />
+            <ModalBody p={6} textAlign="center">
+              <Heading size="md" color="#04080F" mb={4}>
+                User Details
+              </Heading>
+              <Box bg="white" p={4} rounded="md" shadow="md" mb={4}>
+                <Text color="#507DBC" fontWeight="semibold">
+                  First Name:{" "}
+                  <Text as="span" color="#04080F" fontWeight="normal">
+                    {formData.first_name}
+                  </Text>
+                </Text>
+                <Text color="#507DBC" fontWeight="semibold">
+                  Last Name:{" "}
+                  <Text as="span" color="#04080F" fontWeight="normal">
+                    {formData.last_name}
+                  </Text>
+                </Text>
+                <Text color="#507DBC" fontWeight="semibold">
+                  Email:{" "}
+                  <Text as="span" color="#04080F" fontWeight="normal">
+                    {formData.email}
+                  </Text>
+                </Text>
+                <Text color="#507DBC" fontWeight="semibold">
+                  Username:{" "}
+                  <Text as="span" color="#04080F" fontWeight="normal">
+                    {formData.username}
+                  </Text>
+                </Text>
+                {formData.PESEL && (
+                  <Text color="#507DBC" fontWeight="semibold">
+                    PESEL:{" "}
+                    <Text as="span" color="#04080F" fontWeight="normal">
+                      {formData.PESEL}
+                    </Text>
+                  </Text>
+                )}
+              </Box>
+              <Stack direction="row" justify="center" spacing={4}>
+                <Button
+                  onClick={handleEdit}
+                  bg="#507DBC"
+                  color="white"
+                  _hover={{ bg: "blue.700" }}
+                  isLoading={loading}
+                >
+                  Edit
+                </Button>
+                <Button variant="outline" color="#507DBC" onClick={onClose}>
+                  Cancel
+                </Button>
+              </Stack>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+        <Modal isOpen={isResetOpen} onClose={onResetClose} isCentered>
+          <ModalOverlay />
+          <ModalContent bg="#DAE3E5" rounded="lg" boxShadow="xl">
+            <ModalHeader textAlign="center" color="#04080F">
               Reset Password
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+            </ModalHeader>
+            <ModalCloseButton />
+            <ModalBody p={6} textAlign="center">
+              <Text mb={4} fontSize="lg" color="#04080F">
+                Email with new password will be send to {selectedUser?.email},
+                please provide the user's PESEL:
+              </Text>
+              <FormControl isInvalid={!!resetError}>
+                <FormLabel color="#507DBC">PESEL</FormLabel>
+                <Input
+                  value={resetPesel}
+                  onChange={(e) => handleResetPeselChange(e.target.value)}
+                  bg="white"
+                  color="#04080F"
+                  shadow="md"
+                  rounded="md"
+                  mb={4}
+                />
+                <FormErrorMessage>{resetError}</FormErrorMessage>
+              </FormControl>
+              <Stack direction="row" justify="center" spacing={4}>
+                <Button
+                  onClick={handleResetPassword}
+                  bg="#507DBC"
+                  color="white"
+                  _hover={{ bg: "blue.700" }}
+                  isLoading={loading}
+                >
+                  Reset Password
+                </Button>
+                <Button
+                  variant="outline"
+                  color="#507DBC"
+                  onClick={onResetClose}
+                >
+                  Cancel
+                </Button>
+              </Stack>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      </Stack>
+    </Flex>
   );
 };
 export default ChangeUserData;

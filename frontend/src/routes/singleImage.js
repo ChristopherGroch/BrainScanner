@@ -17,6 +17,7 @@ import {
   ModalContent,
   ModalCloseButton,
   Image,
+  HStack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -87,7 +88,6 @@ const SingleImage = () => {
       } else {
         setPatients([]);
       }
-      setPatients([]);
     }
   };
 
@@ -211,6 +211,12 @@ const SingleImage = () => {
       }
     }
   };
+  const customStyles = {
+    control: (provided) => ({
+      ...provided,
+      height: "40px",
+    }),
+  };
 
   return (
     <Flex
@@ -224,11 +230,15 @@ const SingleImage = () => {
       <Stack
         spacing={3}
         mx={"auto"}
-        maxW={"100%"}
+        // maxW={"100%"}
+        minH="100%"
+        display={"flex"}
+        align={"center"}
+        justify={"center"}
         width={"34%"}
+        height="100%"
         py={5}
-        px={6}
-        //  border="4px solid black"
+        // border="4px solid black"
       >
         <Stack align={"center"}>
           <Heading fontSize={"4xl"} color="#04080F">
@@ -240,8 +250,16 @@ const SingleImage = () => {
           bg={useColorModeValue("white", "gray.700")}
           boxShadow={"lg"}
           p={6}
+          minH="77%"
+          width={"100%"}
+          // border="4px solid black"
         >
-          <Stack spacing={2}>
+          <Stack
+            spacing={2}
+            justify="space-between"
+            align="stretch"
+            height="100%"
+          >
             <FormControl display="flex" alignItems="center">
               <Flex
                 bg="#DAE3E5"
@@ -250,7 +268,7 @@ const SingleImage = () => {
                 align="center"
                 justify="space-between"
                 w="350px"
-                h='40px'
+                h="40px"
                 mx="auto"
                 my="0"
                 boxShadow="md"
@@ -290,10 +308,10 @@ const SingleImage = () => {
                   transition="background-color 0.3s, color 0.3s"
                   onClick={() => handleSwitchClick()}
                   width="50%"
-                  height="40px" 
+                  height="40px"
                   display="flex"
                   alignItems="center"
-                  justifyContent="center" 
+                  justifyContent="center"
                 >
                   <Text fontSize="md">Select patient</Text>
                 </Box>
@@ -301,36 +319,81 @@ const SingleImage = () => {
             </FormControl>
 
             {isDropdown ? (
-              <FormControl isInvalid={!!errors.patient}>
-                <FormLabel>Choose a Patient</FormLabel>
-                <ReactSelect
-                  options={patientOptions}
-                  onChange={handleSelectChange}
-                  value={
-                    selectedPatient
-                      ? {
-                          value: selectedPatient.id,
-                          label: `${selectedPatient.first_name} ${selectedPatient.last_name} - PESEL: ${selectedPatient.PESEL}`,
-                        }
-                      : null
-                  }
-                />
-                <FormErrorMessage>{errors.patient}</FormErrorMessage>
-              </FormControl>
-            ) : (
-              ["first_name", "last_name", "email", "PESEL"].map((field) => (
-                <FormControl key={field} isInvalid={!!errors[field]}>
-                  <FormLabel>
-                    {field.charAt(0).toUpperCase() +
-                      field.replace("_", " ").slice(1)}
-                  </FormLabel>
-                  <Input
-                    value={formData[field]}
-                    onChange={(e) => handleChange(field, e.target.value)}
+              <Stack spacing={2}>
+                <FormControl isInvalid={!!errors.patient}>
+                  <FormLabel>Choose a Patient</FormLabel>
+                  <ReactSelect
+                    options={patientOptions}
+                    onChange={handleSelectChange}
+                    styles={customStyles}
+                    value={
+                      selectedPatient
+                        ? {
+                            value: selectedPatient.id,
+                            label: `${selectedPatient.first_name} ${selectedPatient.last_name} - PESEL: ${selectedPatient.PESEL}`,
+                          }
+                        : null
+                    }
                   />
-                  <FormErrorMessage>{errors[field]}</FormErrorMessage>
+                  <FormErrorMessage>{errors.patient}</FormErrorMessage>
                 </FormControl>
-              ))
+                <HStack>
+                  <FormControl>
+                    <FormLabel>First name</FormLabel>
+                    <Input
+                      value={selectedPatient?.first_name}
+                      isDisabled={true} _disabled={{
+                        cursor: "not-allowed",
+                        opacity: "1",
+                      }}
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>Last name</FormLabel>
+                    <Input
+                      value={selectedPatient?.last_name}
+                      isDisabled={true} _disabled={{
+                        cursor: "not-allowed",
+                        opacity: "1",
+                      }}
+                    />
+                  </FormControl>
+                </HStack>
+                <FormControl>
+                  <FormLabel>Email</FormLabel>
+                  <Input value={selectedPatient?.email} isDisabled={true} _disabled={{
+                      cursor: "not-allowed",
+                      opacity: "1",
+                    }}/>
+                </FormControl>
+                <FormControl>
+                  <FormLabel>PESEL</FormLabel>
+                  <Input
+                    value={selectedPatient?.PESEL}
+                    isDisabled={true}
+                    _disabled={{
+                      cursor: "not-allowed",
+                      opacity: "1",
+                    }}
+                  />
+                </FormControl>
+              </Stack>
+            ) : (
+              <Stack spacing={2}>
+                {["first_name", "last_name", "email", "PESEL"].map((field) => (
+                  <FormControl key={field} isInvalid={!!errors[field]}>
+                    <FormLabel>
+                      {field.charAt(0).toUpperCase() +
+                        field.replace("_", " ").slice(1)}
+                    </FormLabel>
+                    <Input
+                      value={formData[field]}
+                      onChange={(e) => handleChange(field, e.target.value)}
+                    />
+                    <FormErrorMessage>{errors[field]}</FormErrorMessage>
+                  </FormControl>
+                ))}
+              </Stack>
             )}
             <Dropzone
               key={dropzoneKey}

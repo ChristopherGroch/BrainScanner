@@ -46,7 +46,7 @@ const Menu = () => {
   };
   return (
     <VStack alignItems="start">
-      <Button onClick={moveToHistory} colorScheme="blue">
+      {/* <Button onClick={moveToHistory} colorScheme="blue">
         Classification History
       </Button>
       <Button onClick={moveToSingleImage} colorScheme="pink">
@@ -75,7 +75,7 @@ const Menu = () => {
       </Button>
       <Button onClick={moveToChangeUser} colorScheme="green" display={admin ? "inline-flex" : "none"} >
         Move to Change Users
-      </Button>
+      </Button> */}
     </VStack>
   );
 };

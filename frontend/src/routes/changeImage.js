@@ -87,7 +87,33 @@ const ChangeImagesData = () => {
         }))
       );
     } catch (error) {
-      console.log(error);
+      if (error.response && error.response.status === 401) {
+        try {
+          await refresh();
+          const images = await getImages();
+          const patients = await getPatients();
+          setImages(images);
+          setPatients(patients);
+          setpatientOptions(
+            patients.map((p) => ({
+              value: p.id,
+              label: `${p.first_name} ${p.last_name} (${p.PESEL})`,
+            }))
+          );
+          setImageOptions(
+            images.map((p) => ({
+              value: p.id,
+              label: `${p.patient?.first_name} ${p.patient?.last_name} (${p.photo})`,
+            }))
+          );
+        } catch (refresherror) {
+          alert("Twoja sesja wygasła. Zaloguj się ponownie.");
+          nav("/login");
+        }
+      } else {
+        setPatients([]);
+        setImages([]);
+      }
     }
   };
 
