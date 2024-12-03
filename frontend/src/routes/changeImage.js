@@ -409,7 +409,7 @@ const ChangeImagesData = () => {
                       color="gray.800"
                       textAlign="center"
                     >
-                      Patient: 
+                      Patient:
                       <br />
                       Tumor type:
                     </Heading>
@@ -445,7 +445,11 @@ const ChangeImagesData = () => {
               </Flex>
             )}
             <Button
-              colorScheme="blue"
+              bg="#507DBC"
+              color={"white"}
+              _hover={{
+                bg: "blue.700",
+              }}
               size="sm"
               // isDisabled={equal}
               leftIcon={<EditIcon />}

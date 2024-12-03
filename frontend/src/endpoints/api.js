@@ -153,7 +153,7 @@ export const getIsAdmin = async () => {
 };
 
 export const downloadFile = async (id,filename) => {
-  axios
+  await axios
     .post(
       DOWNLOAD_FILE,
       { id },
@@ -163,14 +163,11 @@ export const downloadFile = async (id,filename) => {
       fileDownload(res.data, filename);
       console.log(res);
     })
-    .catch((err) => {
-      console.log(err);
-    });
 };
 
 
 export const downloadReport = async (id,filename) => {
-  axios
+  await axios
     .post(
       DOWNLOAD_REPORT,
       { id },
@@ -180,9 +177,6 @@ export const downloadReport = async (id,filename) => {
       fileDownload(res.data, filename);
       console.log(res);
     })
-    .catch((err) => {
-      console.log(err);
-    });
 };
 
 export const refresh = async () => {
