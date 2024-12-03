@@ -263,7 +263,11 @@ def change_image(request, pk):
         patient = get_object_or_404(Patient, pk=data['patient'])
         setattr(image, 'patient', patient)
     if 'tumor_type' in data:
-        setattr(image, 'tumor_type', data['tumor_type'])
+        if data['tumor_type'] == '0':
+            setattr(image, 'tumor_type', None)
+        else:
+            setattr(image, 'tumor_type', data['tumor_type'])
+        setattr(image, 'classified_by',request.user)
     try:
         image.save()
         return Response({"message": "Image updated successfully!"}, status=status.HTTP_200_OK)

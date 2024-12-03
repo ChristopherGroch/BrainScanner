@@ -33,7 +33,11 @@ export const AuthProvider = ({ children }) => {
         setADmin(isAdmin);
         console.log("true_refresh");
         setUser(true);
-        setUserName(`${response.data.first_name} ${response.data.last_name}`)
+        if (response.data.first_name === ''){
+          setUserName('Admin')
+        }else {
+          setUserName(`${response.data.first_name} ${response.data.last_name}`)
+        }
       } catch {
         console.log("false");
         nav('/login')

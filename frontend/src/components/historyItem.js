@@ -33,7 +33,7 @@ const HistoryItem = ({
   classifyFunction,
 }) => {
   const TUMOR_TYPES = {
-    0: "not_classified",
+    0: "Unknown",
     1: "glioma",
     2: "meningioma",
     3: "pituitary",
@@ -124,7 +124,7 @@ const HistoryItem = ({
           <Button
             colorScheme="blue"
             size="sm"
-            display={tumor_type === null ? "inline-flex" : "none"}
+            display={tumor_type === null ? "inline-flex" : tumor_type === '0' ? "inline-flex" : " none"}
             onClick={handleClassifyClick}
           >
             Classify

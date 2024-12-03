@@ -151,7 +151,9 @@ const ChangePatientData = () => {
     }
   };
   const handleClick = () => {
-    if (validate()) {
+    if (equal) {
+      toast.warning("Every field is the same as before");
+    } else if (validate()) {
       onOpen();
     }
   };
@@ -226,7 +228,7 @@ const ChangePatientData = () => {
         >
           <Stack
             spacing={0}
-            justify="space-between"
+            justify="space-around"
             align="stretch"
             height="100%"
           >
@@ -247,7 +249,7 @@ const ChangePatientData = () => {
               <FormErrorMessage>{errors.patient}</FormErrorMessage>
             </FormControl>
             {["first_name", "last_name", "email", "PESEL"].map((field) => (
-              <FormControl key={field} isInvalid={!!errors[field]}>
+              <FormControl key={field} isInvalid={!!errors[field]} mt={3}>
                 <FormLabel>
                   {" "}
                   {field.charAt(0).toUpperCase() +
@@ -261,15 +263,16 @@ const ChangePatientData = () => {
               </FormControl>
             ))}
             <Button
+              mt={3}
               onClick={handleClick}
-              isDisabled={equal}
+              // isDisabled={equal}
               bg="#507DBC"
               color={"white"}
               _hover={{
                 bg: "blue.700",
               }}
             >
-              Edit
+              Save changes
             </Button>
           </Stack>
         </Box>

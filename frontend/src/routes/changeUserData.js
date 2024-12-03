@@ -160,7 +160,9 @@ const ChangeUserData = () => {
   };
 
   const handleSubmit = async () => {
-    if (validate()) {
+    if (equal){
+      toast.warning("Every field is the same as before")
+    } else if (validate()){
       onOpen();
     }
   };
@@ -305,7 +307,7 @@ const ChangeUserData = () => {
         >
           <Stack
             spacing={0}
-            justify="space-between"
+            justify="space-around"
             align="stretch"
             height="100%"
           >
@@ -351,7 +353,7 @@ const ChangeUserData = () => {
                 <FormErrorMessage>{errors.PESEL}</FormErrorMessage>
               </FormControl>
             )}
-            <HStack justify="space-evenly" align="stretch">
+            <HStack justify="space-evenly" >
               <Button
                 mt={3}
                 bg="#507DBC"
@@ -360,7 +362,8 @@ const ChangeUserData = () => {
                   bg: "blue.700",
                 }}
                 onClick={handleSubmit}
-                isDisabled={equal}
+                // isDisabled={equal}
+                width={selectedUser ? "50%" : "100%"}
               >
                 Save Changes
               </Button>
@@ -373,6 +376,7 @@ const ChangeUserData = () => {
                     bg: "red.700",
                   }}
                   onClick={onResetOpen}
+                  width="50%"
                 >
                   Reset Password
                 </Button>
