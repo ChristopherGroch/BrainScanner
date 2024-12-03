@@ -342,7 +342,8 @@ const SingleImage = () => {
                     <FormLabel>First name</FormLabel>
                     <Input
                       value={selectedPatient?.first_name}
-                      isDisabled={true} _disabled={{
+                      isDisabled={true}
+                      _disabled={{
                         cursor: "not-allowed",
                         opacity: "1",
                       }}
@@ -352,7 +353,8 @@ const SingleImage = () => {
                     <FormLabel>Last name</FormLabel>
                     <Input
                       value={selectedPatient?.last_name}
-                      isDisabled={true} _disabled={{
+                      isDisabled={true}
+                      _disabled={{
                         cursor: "not-allowed",
                         opacity: "1",
                       }}
@@ -361,10 +363,14 @@ const SingleImage = () => {
                 </HStack>
                 <FormControl>
                   <FormLabel>Email</FormLabel>
-                  <Input value={selectedPatient?.email} isDisabled={true} _disabled={{
+                  <Input
+                    value={selectedPatient?.email}
+                    isDisabled={true}
+                    _disabled={{
                       cursor: "not-allowed",
                       opacity: "1",
-                    }}/>
+                    }}
+                  />
                 </FormControl>
                 <FormControl>
                   <FormLabel>PESEL</FormLabel>
@@ -531,30 +537,33 @@ const SingleImage = () => {
                       textAlign="left"
                       mb={4}
                     >
-                      <Text color="#507DBC" fontWeight="semibold">
-                        No Tumor Probability:{" "}
-                        <Text as="span" color="#04080F" fontWeight="normal">
-                          {classificationResult.no_tumor_prob}
-                        </Text>
-                      </Text>
-                      <Text color="#507DBC" fontWeight="semibold">
-                        Pituitary Tumor Probability:{" "}
-                        <Text as="span" color="#04080F" fontWeight="normal">
-                          {classificationResult.pituitary_prob}
-                        </Text>
-                      </Text>
-                      <Text color="#507DBC" fontWeight="semibold">
-                        Meningioma Probability:{" "}
-                        <Text as="span" color="#04080F" fontWeight="normal">
-                          {classificationResult.meningioma_prob}
-                        </Text>
-                      </Text>
-                      <Text color="#507DBC" fontWeight="semibold">
-                        Glioma Probability:{" "}
-                        <Text as="span" color="#04080F" fontWeight="normal">
-                          {classificationResult.glioma_prob}
-                        </Text>
-                      </Text>
+                      {Object.entries({
+                        "No Tumor Probability": parseFloat(
+                          classificationResult.no_tumor_prob
+                        ),
+                        "Pituitary Tumor Probability": parseFloat(
+                          classificationResult.pituitary_prob
+                        ),
+                        "Meningioma Probability": parseFloat(
+                          classificationResult.meningioma_prob
+                        ),
+                        "Glioma Probability": parseFloat(
+                          classificationResult.glioma_prob
+                        ),
+                      })
+                        .sort(([, a], [, b]) => b - a)
+                        .map(([label, value]) => (
+                          <Text
+                            color="#507DBC"
+                            fontWeight="semibold"
+                            key={label}
+                          >
+                            {label}:{" "}
+                            <Text as="span" color="#04080F" fontWeight="normal">
+                              {value.toFixed(2)}%
+                            </Text>
+                          </Text>
+                        ))}
                     </Box>
                     <Button
                       bg="#507DBC"

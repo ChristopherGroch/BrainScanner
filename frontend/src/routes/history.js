@@ -1,8 +1,7 @@
-import { Text, Button, Stack } from "@chakra-ui/react";
+import { Text, Stack } from "@chakra-ui/react";
 import {
   Box,
   Flex,
-  Image,
   Heading,
   VStack,
   Spinner,
@@ -13,16 +12,21 @@ import {
 
 import Pagination from "@mui/material/Pagination";
 import { useEffect, useState } from "react";
-import { useAuth } from "../context/auth";
 import { getUsages, refresh } from "../endpoints/api";
 import { useNavigate } from "react-router-dom";
 import HistoryItem from "../components/historyItem";
 
 const HistoryMenu = () => {
+  const TUMOR_TYPES = {
+    0: "Unknown",
+    1: "glioma",
+    2: "meningioma",
+    3: "pituitary",
+    4: "no_tumor",
+  };
   const BASE_URL = "http://127.0.0.1:8000";
   const [classifications, setClassifications] = useState([]);
   const [searchBar, setSearchBar] = useState("");
-  const { logoutUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const nav = useNavigate();
   const [page, setPage] = useState(1);
@@ -68,19 +72,22 @@ const HistoryMenu = () => {
   }, []);
 
   useEffect(() => {
-    setNumberOfPages(Math.ceil(classifications
+    const number = Math.ceil(classifications
       .filter((menuItem) => {
         return searchBar.toLocaleLowerCase() === ""
           ? menuItem
           : menuItem.patient
               .toLocaleLowerCase()
-              .includes(searchBar.toLocaleLowerCase());
-      }).length / 10))
+              .includes(searchBar.toLocaleLowerCase()) ||
+              (TUMOR_TYPES[menuItem.tumor_type] || "Unknown").toLocaleLowerCase().includes(searchBar.toLocaleLowerCase());
+      }).length / 10)
+    setNumberOfPages(number)
+    if (number < page){
+      setPage(1)
+    }
   }, [searchBar]);
 
-  const handleLogout = async () => {
-    await logoutUser();
-  };
+
 
   const updateTumorType = (image_id, tumor_type) => {
     const updatedClassifications = classifications.map((item) => {
@@ -154,7 +161,8 @@ const HistoryMenu = () => {
                       ? menuItem
                       : menuItem.patient
                           .toLocaleLowerCase()
-                          .includes(searchBar.toLocaleLowerCase());
+                          .includes(searchBar.toLocaleLowerCase()) ||
+                          (TUMOR_TYPES[menuItem.tumor_type] || "Unknown").toLocaleLowerCase().includes(searchBar.toLocaleLowerCase());
                   })
                   .slice((page * 10) - 10, page * 10)
                   .map((menuItem, key) => {

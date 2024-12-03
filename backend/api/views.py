@@ -6,13 +6,14 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from django.http import FileResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.shortcuts import get_object_or_404
-
+from collections import defaultdict
 from django.core.files.base import ContentFile
 from .serializers import (
     UserSerializer,
     PatientSerializer,
     ImageSerializer,
     ClassificationSerializer,
+    ReportSerializer,
     UsageSerializer,
     UsageFilesSerializer,
     UserCreateSerializer,
@@ -415,8 +416,32 @@ def getAllImages(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def getAllUsagesFilesFrontFriendly(request):
-    usages = Usage.objects.filter(doctor=request.user).exclude(report__isnull=True).all().order_by('-date_of_creation')
-    return Response(UsageFilesSerializer(usages, many=True).data)
+    usages = Usage.objects.filter(doctor=request.user).exclude(report__isnull=True).order_by('-date_of_creation')
+
+    response_data = []
+
+    for usage in usages:
+        report_data = {
+            "report": UsageFilesSerializer(usage).data,
+            "patients": []
+        }
+
+        patient_classification_counts = defaultdict(int)
+
+        for classification in usage.classifications.all():
+            if classification.image and classification.image.patient:
+                patient = classification.image.patient
+                full_name = f"{patient.first_name} {patient.last_name}"
+                patient_classification_counts[full_name] += 1
+
+        report_data["patients"] = [
+            {"patient": name, "classification_count": count}
+            for name, count in patient_classification_counts.items()
+        ]
+
+        response_data.append(report_data)
+
+    return Response(response_data)
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
