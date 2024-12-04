@@ -524,7 +524,7 @@ def multipleImageCheck(request):
                         patient.cur_images = p["images"]
                         patients.append(patient)
                     else:
-                        raise IntegrityError(f"{patient.errors} for patient {p}")
+                        raise IntegrityError(f"{patient.errors} {p['first_name']} {p['last_name']}")
 
             for patient in patients:
                 for name in patient.cur_images:
@@ -534,7 +534,7 @@ def multipleImageCheck(request):
                     if ob:
                         if ob.patient.PESEL != patient.PESEL:
                             raise IntegrityError(
-                                f"Exact imaage exists and its different patient"
+                                f"Exact imaage exists and its different patient. Image {name}, patient {patient.first_name} {patient.last_name}, exisitng patient {ob.patient.first_name} {ob.patient.last_name}"
                             )
                         else:
                             images.append(ob)

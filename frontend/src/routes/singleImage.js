@@ -98,7 +98,7 @@ const SingleImage = () => {
   const patientOptions = patients.map((p) => ({
     value: p.id,
     label: `${p.first_name} ${p.last_name} - PESEL: ${p.PESEL}`,
-  }));
+  })) || [];
 
   const validate = () => {
     const newErrors = {};
@@ -235,7 +235,7 @@ const SingleImage = () => {
         display={"flex"}
         align={"center"}
         justify={"center"}
-        width={"34%"}
+        width={"650px"}
         height="100%"
         py={5}
         // border="4px solid black"
@@ -341,7 +341,7 @@ const SingleImage = () => {
                   <FormControl>
                     <FormLabel>First name</FormLabel>
                     <Input
-                      value={selectedPatient?.first_name}
+                      value={selectedPatient?.first_name || ""}
                       isDisabled={true}
                       _disabled={{
                         cursor: "not-allowed",
@@ -352,7 +352,7 @@ const SingleImage = () => {
                   <FormControl>
                     <FormLabel>Last name</FormLabel>
                     <Input
-                      value={selectedPatient?.last_name}
+                      value={selectedPatient?.last_name || ""}
                       isDisabled={true}
                       _disabled={{
                         cursor: "not-allowed",
@@ -364,7 +364,7 @@ const SingleImage = () => {
                 <FormControl>
                   <FormLabel>Email</FormLabel>
                   <Input
-                    value={selectedPatient?.email}
+                    value={selectedPatient?.email || ""}
                     isDisabled={true}
                     _disabled={{
                       cursor: "not-allowed",
@@ -375,7 +375,7 @@ const SingleImage = () => {
                 <FormControl>
                   <FormLabel>PESEL</FormLabel>
                   <Input
-                    value={selectedPatient?.PESEL}
+                    value={selectedPatient?.PESEL || ""}
                     isDisabled={true}
                     _disabled={{
                       cursor: "not-allowed",

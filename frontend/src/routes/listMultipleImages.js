@@ -7,6 +7,7 @@ import {
   Text,
   Flex,
   IconButton,
+  Stack,
   Modal,
   ModalContent,
   ModalOverlay,
@@ -22,7 +23,16 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { getPatients } from "../endpoints/api";
 import { toast } from "sonner";
-import { multipleImagesCLassification, refresh, downloadReport } from "../endpoints/api";
+import {
+  multipleImagesCLassification,
+  refresh,
+  downloadReport,
+} from "../endpoints/api";
+import {
+  containsBraces,
+  parseErrorsFromString,
+  formatErrorsToString,
+} from "../utils/utils";
 
 const MultipleImagesList = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -252,135 +262,189 @@ const MultipleImagesList = () => {
             nav("/login");
           } else {
             // alert(refreshError.response?.data?.reason || "Wystąpił błąd.");
-            toast.error(
-              refreshError.response?.data?.reason || "Wystąpił błąd."
-            );
+            if (containsBraces(refreshError.response?.data?.reason)) {
+              toast.error(
+                formatErrorsToString(
+                  parseErrorsFromString(refreshError.response?.data?.reason)
+                ) || "Unexpoected error"
+              );
+            } else {
+              toast.error(
+                refreshError.response?.data?.reason || "Unexpoected error"
+              );
+            }
           }
         }
       } else {
         // alert(error.response?.data?.reason || "Wystąpił błąd.");
-        console.log("EEEEEEEEEEEEE");
         console.log(error);
-        toast.error(error.response?.data?.reason || "Wystąpił błąd.");
+        if (containsBraces(error.response?.data?.reason)) {
+          toast.error(
+            formatErrorsToString(
+              parseErrorsFromString(error.response?.data?.reason)
+            ) || "Unexpoected error"
+          );
+        } else {
+          toast.error(error.response?.data?.reason || "Unexpoected error");
+        }
       }
     }
   };
 
   return (
-    <Flex flex='1'>
-      <VStack spacing={6} align="stretch">
-        <Heading size="md" textAlign="center">
-          Multiple Images
-        </Heading>
-
-        {childData.map((child) => (
-          <Box
-            key={child.id}
-            borderWidth="1px"
-            borderRadius="md"
-            p={4}
-            shadow="sm"
-            bg="gray.50"
-            position="relative"
+    <Flex
+      minH={"100%"}
+      maxW={"100%"}
+      align={"center"}
+      justify={"center"}
+      bg="#DAE3E5"
+      flex="1"
+    >
+      <Stack
+        spacing={2}
+        display={"flex"}
+        align={"center"}
+        justify={"center"}
+        width={"650px"}
+        height="100%"
+        maxW={"100%"}
+        py={5}
+        // border="4px solid black"
+      >
+        <Stack align={"center"} >
+          <Heading fontSize={"4xl"} color="#04080F">
+            Multiple images
+          </Heading>
+        </Stack>
+        <Stack  width={"100%"}>
+          {childData.map((child) => (
+            <Box
+              key={child.id}
+              rounded={"lg"}
+              bg={"white"}
+              boxShadow={"lg"}
+              px={6}
+              py={4}
+              minH={"500"}
+              width={"100%"}
+              spacing={5}
+              // border="4px solid black"
+              position="relative"
+            >
+              <IconButton
+                aria-label="Remove component"
+                icon={<TrashIcon />}
+                size="sm"
+                colorScheme="red"
+                position="absolute"
+                top="4px"
+                right="4px"
+                onClick={() => removeChildData(child.id)}
+              />
+              <MultipleImages
+                patients={patients}
+                errors={child.errors}
+                id={child.id}
+                onChange={updateChildData}
+                clearError={clearFieldError}
+              />
+            </Box>
+          ))}
+        </Stack>
+        <VStack width={"95%"}>
+          <Button
+            onClick={addChildComponent}
+            bg="#4CAF50"
+            color={"white"}
+            _hover={{
+              bg: "green.700",
+            }}
+            alignSelf="center"
+            width={"100%"}
+            leftIcon={<PlusIcon style={{ color: "white", width: "20px", height: "20px" }}/>}
           >
-            <IconButton
-              aria-label="Remove component"
-              icon={<TrashIcon />}
-              size="sm"
-              colorScheme="red"
-              position="absolute"
-              top="4px"
-              right="4px"
-              onClick={() => removeChildData(child.id)}
-            />
-            <MultipleImages
-              patients={patients}
-              errors={child.errors}
-              id={child.id}
-              onChange={updateChildData}
-              clearError={clearFieldError}
-            />
-          </Box>
-        ))}
-
-        <Button
-          onClick={addChildComponent}
-          leftIcon={<PlusIcon />}
-          colorScheme="blue"
-          alignSelf="center"
-        >
-          Add Patient
-        </Button>
-        <Button alignSelf="center" onClick={handleSubmit}>
-          Submit
-        </Button>
-      </VStack>
-      <Modal isOpen={isOpen} onClose={handleCloseModal} size="xl">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Patient Data</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            {classificationResult ? (
-              <VStack>
-                <a
-                  href={`http://127.0.0.1:8000${classificationResult.report}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button colorScheme="blue" size="sm">
-                    View Report
-                  </Button>
-                </a>
-                <Button
-                  colorScheme="green"
-                  size="sm"
-                  onClick={handleDownloadFile}
-                >
-                  Download Report
-                </Button>
-              </VStack>
-            ) : (
-              <VStack spacing={4} align="stretch">
-                {generateModalContent().map((patient, index) => (
-                  <Box
-                    key={index}
-                    p={4}
-                    borderWidth="1px"
-                    borderRadius="md"
-                    bg="gray.50"
+            Add Patient
+          </Button>
+          <Button
+            alignSelf="center"
+            onClick={handleSubmit}
+            width={"100%"}
+            bg="#507DBC"
+            color="white"
+            _hover={{ bg: "blue.700" }} 
+            display={childData.length === 0 ? 'none' : 'inline-block'}
+          >
+            Submit
+          </Button>
+        </VStack>
+        <Modal isOpen={isOpen} onClose={handleCloseModal} size="xl">
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Patient Data</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              {classificationResult ? (
+                <VStack>
+                  <a
+                    href={`http://127.0.0.1:8000${classificationResult.report}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    <Heading size="sm" mb={2}>
-                      Patient {index + 1}
-                    </Heading>
-                    <Box>
-                      <strong>First Name:</strong> {patient.first_name || "N/A"}
+                    <Button colorScheme="blue" size="sm">
+                      View Report
+                    </Button>
+                  </a>
+                  <Button
+                    colorScheme="green"
+                    size="sm"
+                    onClick={handleDownloadFile}
+                  >
+                    Download Report
+                  </Button>
+                </VStack>
+              ) : (
+                <VStack spacing={4} align="stretch">
+                  {generateModalContent().map((patient, index) => (
+                    <Box
+                      key={index}
+                      p={4}
+                      borderWidth="1px"
+                      borderRadius="md"
+                      bg="gray.50"
+                    >
+                      <Heading size="sm" mb={2}>
+                        Patient {index + 1}
+                      </Heading>
+                      <Box>
+                        <strong>First Name:</strong>{" "}
+                        {patient.first_name || "N/A"}
+                      </Box>
+                      <Box>
+                        <strong>Last Name:</strong> {patient.last_name || "N/A"}
+                      </Box>
+                      <Box>
+                        <strong>Email:</strong> {patient.email || "N/A"}
+                      </Box>
+                      <Box>
+                        <strong>PESEL:</strong> {patient.PESEL || "N/A"}
+                      </Box>
+                      <Box>
+                        <strong>Photos:</strong>{" "}
+                        {patient.photos.length > 0
+                          ? patient.photos.join(", ")
+                          : "No photos uploaded"}
+                      </Box>
                     </Box>
-                    <Box>
-                      <strong>Last Name:</strong> {patient.last_name || "N/A"}
-                    </Box>
-                    <Box>
-                      <strong>Email:</strong> {patient.email || "N/A"}
-                    </Box>
-                    <Box>
-                      <strong>PESEL:</strong> {patient.PESEL || "N/A"}
-                    </Box>
-                    <Box>
-                      <strong>Photos:</strong>{" "}
-                      {patient.photos.length > 0
-                        ? patient.photos.join(", ")
-                        : "No photos uploaded"}
-                    </Box>
-                  </Box>
-                ))}
-              </VStack>
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={handleClassify}>Classify</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+                  ))}
+                </VStack>
+              )}
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={handleClassify}>Classify</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </Stack>
     </Flex>
   );
 };

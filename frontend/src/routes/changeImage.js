@@ -1,10 +1,7 @@
 import {
-  VStack,
   FormControl,
   FormLabel,
-  Input,
   Button,
-  Switch,
   Text,
   Select,
   Flex,
@@ -92,7 +89,9 @@ const ChangeImagesData = () => {
       setImageOptions(
         images.map((p) => ({
           value: p.id,
-          label: `${p.patient?.first_name} ${p.patient?.last_name} (${p.photo})`,
+          label: `${p.photo.split("/").pop()} (${p.patient?.first_name} ${
+            p.patient?.last_name
+          })`,
         }))
       );
     } catch (error) {
@@ -114,7 +113,9 @@ const ChangeImagesData = () => {
           setImageOptions(
             images.map((p) => ({
               value: p.id,
-              label: `${p.patient?.first_name} ${p.patient?.last_name} (${p.photo})`,
+              label: `${p.photo.split("/").pop()} (${p.patient?.first_name} ${
+                p.patient?.last_name
+              })`,
             }))
           );
         } catch (refresherror) {
@@ -238,7 +239,7 @@ const ChangeImagesData = () => {
         display={"flex"}
         align={"center"}
         justify={"center"}
-        width={"34%"}
+        width={"650px"}
         height="100%"
         maxW={"100%"}
         py={5}
@@ -272,7 +273,9 @@ const ChangeImagesData = () => {
                   selectedImage
                     ? {
                         value: selectedImage.id,
-                        label: `${selectedImage.patient.first_name} ${selectedImage.patient.last_name} (${selectedImage.photo})`,
+                        label: `${selectedImage.photo.split("/").pop()} (${
+                          selectedImage.patient.first_name
+                        } ${selectedImage.patient.last_name})`,
                       }
                     : null
                 }
@@ -306,8 +309,9 @@ const ChangeImagesData = () => {
                   />
                   <Stack
                     spacing={3}
-                    flex="1"
+                    // flex="1"
                     maxH="224px"
+                    width={"50%"}
                     // border="4px solid black"
                   >
                     <Heading
@@ -399,7 +403,7 @@ const ChangeImagesData = () => {
                   </Box>
                   <Stack
                     spacing={3}
-                    flex="1"
+                    width={"50%"}
                     maxH="224px"
                     // border="4px solid black"
                   >
@@ -420,7 +424,7 @@ const ChangeImagesData = () => {
                       <FormLabel textAlign="center">
                         Select new tumor type
                       </FormLabel>
-                      <Select value={"0"}>
+                      <Select value={"0"} readOnly>
                         <option value="0">Unknown</option>
                         <option value="1">Glioma</option>
                         <option value="2">Meningioma</option>
@@ -436,6 +440,7 @@ const ChangeImagesData = () => {
                         options={patientOptions}
                         value={null}
                         styles={customStyles}
+                        readOnly
                         menuPlacement="auto"
                         menuPortalTarget={document.body}
                       />

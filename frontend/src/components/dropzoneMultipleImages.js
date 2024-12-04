@@ -4,6 +4,7 @@ import {
   Box,
   HStack,
   IconButton,
+  Stack,
   Button,
   VStack,
 } from "@chakra-ui/react";
@@ -12,26 +13,29 @@ import { useDropzone } from "react-dropzone";
 import { ArrowUpTrayIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import { toast } from "sonner";
 
-const DropzoneMultiple = ({ onFileChange, onFileRemove }) => {
+const DropzoneMultiple = ({ onFileChange, onFileRemove, errorFile }) => {
   const [files, setFiles] = useState([]);
+  const [error, setError] = useState("");
 
   const onDrop = useCallback(
     (acceptedFiles, rejectedFiles) => {
       let error = "";
-
+      setError('')
       const duplicateFiles = acceptedFiles.filter((newFile) =>
         files.some((existingFile) => existingFile.name === newFile.name)
       );
 
       if (duplicateFiles.length > 0) {
-        toast.error(
-          "Some files are already added. Please select different files"
-        );
+        // toast.error(
+        //   "Some files are already added. Please select different files"
+        // );
+        setError( "Some files are already added. Please select different files")
         return;
       }
 
       if (acceptedFiles.length + files.length > 5) {
-        toast.error("You can only send five files");
+        // toast.error("You can only send five files");
+        setError("You can only send five files")
         return;
       }
 
@@ -46,13 +50,14 @@ const DropzoneMultiple = ({ onFileChange, onFileRemove }) => {
         onFileChange(acceptedFiles);
       }
       if (rejectedFiles.length > 0) {
-        error = "The file is too large. Maximum file size is 5MB";
+        error = "The file is too large or isn't an image file. Maximum file size is 5MB";
       }
       if (rejectedFiles.length > 5) {
         error = "You can only send five files";
       }
       if (error) {
         toast.error(error);
+        setError(error)
       }
     },
     [files]
@@ -72,74 +77,25 @@ const DropzoneMultiple = ({ onFileChange, onFileRemove }) => {
   }, [files]);
 
   const removeFile = (name) => {
+    setError('')
     onFileRemove(name);
     setFiles((files) => files.filter((file) => file.name !== name));
   };
 
-  const removeAll = () => {
-    console.log(files);
-    // setFiles([]);
-  };
-
-  const handleSubmit = async (e) => {
-    console.log(files);
-  };
-
   return (
-    <VStack align="stretch" spacing={3}>
-      {/* Dropzone Box */}
-      {files.length < 5 && (
-        <Box
-          {...getRootProps()}
-          border="1px dashed"
-          borderColor="gray.300"
-          p={4}
-          textAlign="center"
-          borderRadius="md"
-          cursor="pointer"
-          _hover={{ borderColor: "blue.500" }}
-          fontSize="sm"
-        >
-          <input {...getInputProps()} />
-          <VStack spacing={1}>
-            <ArrowUpTrayIcon
-              style={{ width: "20px", height: "20px", color: "gray" }}
-            />
-
-            {isDragActive ? (
-              <Text>Drop the files here...</Text>
-            ) : (
-              <Text>Drag & drop files, or click to select</Text>
-            )}
-          </VStack>
-        </Box>
-      )}
-
-      {/* Files Preview */}
-      <HStack
-        spacing={3}
-        wrap="wrap"
-        justify="start"
-        align="start"
-        gap={3}
-        mt={2}
-      >
+    <Stack>
+      <HStack wrap="wrap" justify="center" align="center">
         {files.map((file) => (
           <Box
             key={file.name}
             position="relative"
-            width="80px"
-            height="80px"
+            width="90px"
+            height="90px"
             borderRadius="md"
             overflow="hidden"
             boxShadow="md"
           >
-            <Image
-              src={file.preview}
-              alt={file.name}
-              boxSize="80px"
-              objectFit="cover"
-            />
+            <Image src={file.preview} alt={file.name} width={90} height={90} />
             <IconButton
               aria-label="Remove file"
               icon={<XMarkIcon />}
@@ -155,7 +111,40 @@ const DropzoneMultiple = ({ onFileChange, onFileRemove }) => {
           </Box>
         ))}
       </HStack>
-    </VStack>
+      {files.length < 5 && (
+        <Box
+          {...getRootProps()}
+          border="2px dashed"
+          borderColor={error ? "red" : errorFile ? "red" : "gray.300"}
+          p={5}
+          textAlign="center"
+          borderRadius="md"
+          cursor="pointer"
+          _hover={{ borderColor: "blue.700" }}
+        >
+          <input {...getInputProps()} />
+          <VStack spacing={2} align="center">
+            {errorFile && (
+              <Text color="red" fontWeight="bold">
+                {errorFile}
+              </Text>
+            )}
+            {error && (
+              <Text color="red" fontWeight="bold">
+                {error}
+              </Text>
+            )}
+            <ArrowUpTrayIcon style={{ width: "30px", height: "30px" }} />
+
+            {isDragActive ? (
+              <Text>Drop the files here...</Text>
+            ) : (
+              <Text>Drag & drop files, or click to select</Text>
+            )}
+          </VStack>
+        </Box>
+      )}
+    </Stack>
   );
 };
 

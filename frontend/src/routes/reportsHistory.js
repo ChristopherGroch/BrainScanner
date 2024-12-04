@@ -100,7 +100,7 @@ const ReportHistory = () => {
         display={"flex"}
         align={"center"}
         justify={"center"}
-        width={"30%"}
+        width={"600px"}
         height="100%"
         maxW={"100%"}
         py={5}

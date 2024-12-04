@@ -55,7 +55,7 @@ const ReportItem = ({ file, date, file_id, patients }) => {
         <Heading as="h2" size="md" mb={2}>
           Report created on {new Date(date).toLocaleString()}
         </Heading>
-        <Text fontSize="md" fontWeight="bold" textAlign={'center'}>
+        <Text fontSize="md" fontWeight="bold" textAlign={"center"}>
           Patients included in report:
         </Text>
         <UnorderedList width="fit-content">
@@ -68,7 +68,11 @@ const ReportItem = ({ file, date, file_id, patients }) => {
         </UnorderedList>
         <HStack justify="space-between" width={"100%"} height={"100%"}>
           <Button
-            colorScheme="green"
+            bg="#4CAF50"
+            color={"white"}
+            _hover={{
+              bg: "green.700",
+            }}
             size="md"
             onClick={handleDownloadFile}
             width={"50%"}
@@ -81,7 +85,13 @@ const ReportItem = ({ file, date, file_id, patients }) => {
             style={{ flex: 1 }}
             rel="noopener noreferrer"
           >
-            <Button colorScheme="blue" width={"100%"} size="md">
+            <Button
+              bg="#507DBC"
+              color="white"
+              _hover={{ bg: "blue.700" }}
+              width={"100%"}
+              size="md"
+            >
               View Report
             </Button>
           </a>
