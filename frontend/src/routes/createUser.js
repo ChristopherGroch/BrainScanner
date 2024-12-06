@@ -135,12 +135,14 @@ const CreateUser = () => {
       flex="1"
     >
       <Stack
-        spacing={5}
-        mx={"auto"}
+        spacing={2}
+        display={"flex"}
+        align={"center"}
+        justify={"center"}
+        width={"600px"}
+        height="100%"
         maxW={"100%"}
-        width={"34%"}
         py={5}
-        px={6}
         //  border="4px solid black"
       >
         <Stack align={"center"}>
@@ -150,9 +152,12 @@ const CreateUser = () => {
         </Stack>
         <Box
           rounded={"lg"}
-          bg={useColorModeValue("white", "gray.700")}
+          bg={"white"}
           boxShadow={"lg"}
-          p={8}
+          px={6}
+          py={4}
+          // minH="77%"
+          width={"100%"}
         >
           <Stack spacing={4}>
             {["username", "first_name", "last_name", "email", "PESEL"].map(
@@ -164,6 +169,7 @@ const CreateUser = () => {
                   </FormLabel>
                   <Input
                     color="#04080F"
+                    boxShadow="md"
                     value={formData[field]}
                     onChange={(e) => handleChange(field, e.target.value)}
                   />
@@ -178,6 +184,7 @@ const CreateUser = () => {
                 bg: "blue.700",
               }}
               onClick={handleSubmit}
+              boxShadow="md"
             >
               Create User
             </Button>
@@ -234,6 +241,7 @@ const CreateUser = () => {
                   _hover={{ bg: "blue.700" }}
                   onClick={handleCreateUser}
                   isLoading={loading}
+                  boxShadow="md"
                   width={'100%'}
                 >
                   Confirm
@@ -246,6 +254,7 @@ const CreateUser = () => {
                     bg: "red.700",
                   }}
                   onClick={onClose}
+                  boxShadow="md"
                   width={'100%'}
                 >
                   Cancel

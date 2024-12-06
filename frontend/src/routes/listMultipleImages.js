@@ -324,11 +324,11 @@ const MultipleImagesList = () => {
         py={5}
         // border="4px solid black"
       >
-        <Stack align={"center"}>
+        {/* <Stack align={"center"}>
           <Heading fontSize={"4xl"} color="#04080F">
             Multiple images
           </Heading>
-        </Stack>
+        </Stack> */}
         <Stack width={"100%"}>
           <AnimatePresence initial={false}>
             {childData.map((child) => (
@@ -379,6 +379,7 @@ const MultipleImagesList = () => {
             onClick={addChildComponent}
             bg="#4CAF50"
             color={"white"}
+            boxShadow="md"
             _hover={{
               bg: "green.700",
             }}
@@ -398,6 +399,7 @@ const MultipleImagesList = () => {
             width={"100%"}
             bg="#507DBC"
             color="white"
+            boxShadow="md"
             _hover={{ bg: "blue.700" }}
             display={childData.length === 0 ? "none" : "inline-block"}
           >
@@ -426,6 +428,7 @@ const MultipleImagesList = () => {
                         color="white"
                         _hover={{ bg: "blue.700" }}
                         size="sm"
+                        boxShadow="md"
                         w="100%"
                       >
                         View Report
@@ -435,6 +438,7 @@ const MultipleImagesList = () => {
                       bg="#00A676"
                       color="white"
                       _hover={{ bg: "#007A55" }}
+                      boxShadow="md"
                       size="sm"
                       w="100%"
                       onClick={handleDownloadFile}
@@ -491,6 +495,7 @@ const MultipleImagesList = () => {
                   width={"50%"}
                   isLoading={loading}
                   display={classificationResult ? "none" : "inline-block"}
+                  boxShadow="md"
                 >
                   Classify
                 </Button>
@@ -503,6 +508,7 @@ const MultipleImagesList = () => {
                   onClick={onClose}
                   width={"50%"}
                   display={classificationResult ? "none" : "inline-block"}
+                  boxShadow="md"
                 >
                   Cancel
                 </Button>
@@ -511,6 +517,7 @@ const MultipleImagesList = () => {
                   color="white"
                   _hover={{ bg: "blue.700" }}
                   onClick={handleCloseModal}
+                  boxShadow="md"
                   display={classificationResult ? "inline-block" : "none"}
                 >
                   Close

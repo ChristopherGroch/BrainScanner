@@ -69,6 +69,7 @@ const MultipleImages = ({ patients, id, errors, onChange, clearError }) => {
     control: (provided) => ({
       ...provided,
       height: "40px",
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06)", 
     }),
   };
 
@@ -158,6 +159,7 @@ const MultipleImages = ({ patients, id, errors, onChange, clearError }) => {
                 <Input
                   value={selectedPatient?.first_name || ""}
                   isDisabled={true}
+                  boxShadow="md"
                   _disabled={{
                     cursor: "not-allowed",
                     opacity: "1",
@@ -169,6 +171,7 @@ const MultipleImages = ({ patients, id, errors, onChange, clearError }) => {
                 <Input
                   value={selectedPatient?.last_name || ""}
                   isDisabled={true}
+                  boxShadow="md"
                   _disabled={{
                     cursor: "not-allowed",
                     opacity: "1",
@@ -181,6 +184,7 @@ const MultipleImages = ({ patients, id, errors, onChange, clearError }) => {
               <Input
                 value={selectedPatient?.email || ""}
                 isDisabled={true}
+                boxShadow="md"
                 _disabled={{
                   cursor: "not-allowed",
                   opacity: "1",
@@ -192,6 +196,7 @@ const MultipleImages = ({ patients, id, errors, onChange, clearError }) => {
               <Input
                 value={selectedPatient?.PESEL || ""}
                 isDisabled={true}
+                boxShadow="md"
                 _disabled={{
                   cursor: "not-allowed",
                   opacity: "1",
@@ -209,6 +214,7 @@ const MultipleImages = ({ patients, id, errors, onChange, clearError }) => {
                 </FormLabel>
                 <Input
                   value={formData[field]}
+                  boxShadow="md"
                   onChange={(e) => handleChange(field, e.target.value)}
                 />
                 <FormErrorMessage>{errors[field]}</FormErrorMessage>

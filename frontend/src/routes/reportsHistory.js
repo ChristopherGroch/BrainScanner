@@ -105,16 +105,16 @@ const ReportHistory = () => {
         display={"flex"}
         align={"center"}
         justify={"center"}
-        width={"600px"}
+        width={"650px"}
         height="100%"
         maxW={"100%"}
         py={5}
       >
-        <Stack align={"center"}>
+        {/* <Stack align={"center"}>
           <Heading fontSize={"4xl"} color="#04080F">
             Report history
           </Heading>
-        </Stack>
+        </Stack> */}
         <Box
           rounded={"lg"}
           bg={"white"}
@@ -129,9 +129,11 @@ const ReportHistory = () => {
               <FormLabel>Search</FormLabel>
               <Input
                 onChange={(e) => setSearchBar(e.target.value)}
+                placeholder="Enter a term to search..."
                 value={searchBar}
                 type="text"
                 border="1px solid black"
+                boxShadow="md"
               />
             </FormControl>
             {loading && (
@@ -167,7 +169,17 @@ const ReportHistory = () => {
                 count={numberOfPages}
                 page={page}
                 onChange={handleChange}
-                size="large"
+                size="lg"
+                sx={{
+                  ".Mui-selected": {
+                    backgroundColor: "#A1C6EA",
+                    color: "black",
+                    fontWeight: "bold",
+                  },
+                  "button:hover": {
+                    backgroundColor: "#A1C6EA",
+                  },
+                }}
               />
               <Text fontSize="md" textAlign="center">
                 Current page: {page}

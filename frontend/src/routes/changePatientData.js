@@ -192,6 +192,12 @@ const ChangePatientData = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  const customStyles = {
+    control: (provided) => ({
+      ...provided,
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06)",
+    }),
+  };
 
   return (
     <Flex
@@ -207,7 +213,7 @@ const ChangePatientData = () => {
         display={"flex"}
         align={"center"}
         justify={"center"}
-        width={"34%"}
+        width={"600px"}
         height="100%"
         maxW={"100%"}
         py={5}
@@ -223,7 +229,7 @@ const ChangePatientData = () => {
           boxShadow={"lg"}
           px={6}
           py={4}
-          minH="77%"
+          minH="65%"
           width={"100%"}
         >
           <Stack
@@ -237,6 +243,7 @@ const ChangePatientData = () => {
               <ReactSelect
                 options={patientOptions}
                 onChange={handleSelectChange}
+                styles={customStyles}
                 value={
                   selectedPatient
                     ? {
@@ -257,6 +264,7 @@ const ChangePatientData = () => {
                 </FormLabel>
                 <Input
                   value={formData[field]}
+                  boxShadow={'md'}
                   onChange={(e) => handleChange(field, e.target.value)}
                 />
                 <FormErrorMessage>{errors[field]}</FormErrorMessage>
@@ -268,6 +276,7 @@ const ChangePatientData = () => {
               // isDisabled={equal}
               bg="#507DBC"
               color={"white"}
+              boxShadow={'md'}
               _hover={{
                 bg: "blue.700",
               }}
@@ -316,15 +325,22 @@ const ChangePatientData = () => {
                   bg="#507DBC"
                   color="white"
                   _hover={{ bg: "blue.700" }}
-                  width={'100%'}
+                  width={"100%"}
+                  boxShadow={'md'}
                 >
                   Edit
                 </Button>
-                <Button variant="outline" bg="#DB504A"
-                color={"white"}
-                _hover={{
-                  bg: "red.700",
-                }} onClick={onClose} width={'100%'}>
+                <Button
+                  variant="outline"
+                  bg="#DB504A"
+                  color={"white"}
+                  _hover={{
+                    bg: "red.700",
+                  }}
+                  boxShadow={'md'}
+                  onClick={onClose}
+                  width={"100%"}
+                >
                   Cancel
                 </Button>
               </Stack>

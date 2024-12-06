@@ -270,7 +270,13 @@ const ChangeUserData = () => {
     }
     setLoading(false);
   };
-
+  const customStyles = {
+    control: (provided) => ({
+      ...provided,
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06)", 
+    
+    }),
+  };
   return (
     <Flex
       minH={"100%"}
@@ -285,7 +291,7 @@ const ChangeUserData = () => {
         display={"flex"}
         align={"center"}
         justify={"center"}
-        width={"34%"}
+        width={"600px"}
         height="100%"
         maxW={"100%"}
         py={5}
@@ -302,13 +308,13 @@ const ChangeUserData = () => {
           boxShadow={"lg"}
           px={6}
           py={4}
-          minH="77%"
+          minH="65%"
           width={"100%"}
         >
           <Stack
             spacing={0}
             justify="space-around"
-            align="stretch"
+            // align="stretch"
             height="100%"
           >
             <FormControl isInvalid={!!errors.user}>
@@ -316,6 +322,7 @@ const ChangeUserData = () => {
               <ReactSelect
                 options={userOptions}
                 onChange={handleSelectChange}
+                styles={customStyles}
                 value={
                   selectedUser
                     ? {
@@ -336,6 +343,7 @@ const ChangeUserData = () => {
                     field.replace("_", " ").slice(1)}
                 </FormLabel>
                 <Input
+                boxShadow="md"
                   value={formData[field]}
                   onChange={(e) => handleChange(field, e.target.value)}
                 />
@@ -348,6 +356,7 @@ const ChangeUserData = () => {
                 <FormLabel>PESEL</FormLabel>
                 <Input
                   value={formData.PESEL}
+                  boxShadow="md"
                   onChange={(e) => handleChange("PESEL", e.target.value)}
                 />
                 <FormErrorMessage>{errors.PESEL}</FormErrorMessage>
@@ -363,6 +372,7 @@ const ChangeUserData = () => {
                 }}
                 onClick={handleSubmit}
                 // isDisabled={equal}
+                boxShadow="md"
                 width={selectedUser ? "50%" : "100%"}
               >
                 Save Changes
@@ -376,6 +386,7 @@ const ChangeUserData = () => {
                     bg: "red.700",
                   }}
                   onClick={onResetOpen}
+                  boxShadow="md"
                   width="50%"
                 >
                   Reset Password
@@ -433,6 +444,7 @@ const ChangeUserData = () => {
                   color="white"
                   _hover={{ bg: "blue.700" }}
                   isLoading={loading}
+                  boxShadow="md"
                   width={'100%'}
                 >
                   Edit
@@ -441,6 +453,7 @@ const ChangeUserData = () => {
                   variant="outline"
                   bg="#DB504A"
                   color={"white"}
+                  boxShadow="md"
                   _hover={{
                     bg: "red.700",
                   }}
@@ -485,6 +498,7 @@ const ChangeUserData = () => {
                   color="white"
                   _hover={{ bg: "blue.700" }}
                   isLoading={loading}
+                  boxShadow="md"
                   width={'100%'}
                 >
                   Reset Password
@@ -493,6 +507,7 @@ const ChangeUserData = () => {
                   variant="outline"
                   bg="#DB504A"
                   color={"white"}
+                  boxShadow="md"
                   _hover={{
                     bg: "red.700",
                   }}

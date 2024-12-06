@@ -24,9 +24,10 @@ import ChangeUserData from "./routes/changeUserData";
 import Navbar from "./components/navbar";
 import { Outlet } from "react-router-dom";
 import { Flex,Box } from "@chakra-ui/react";
+import theme from "./assets/theme";
 function App() {
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <Toaster richColors closeButton position="top-center" />
       <Router>
         <AuthProvider>

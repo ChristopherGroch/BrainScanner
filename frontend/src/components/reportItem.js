@@ -4,6 +4,7 @@ import {
   HStack,
   Button,
   VStack,
+  Stack,
   Text,
   UnorderedList,
   ListItem,
@@ -49,7 +50,10 @@ const ReportItem = ({ file, date, file_id, patients }) => {
       px={0}
       height={"auto"}
       width="100%"
-      border="1px solid gray"
+      // border="1px solid gray"
+      bg="gray.50"
+      boxShadow="md"
+      flex="1"
     >
       <VStack spacing={4} p={4} width="100%">
         <Heading as="h2" size="md" mb={2}>
@@ -66,30 +70,39 @@ const ReportItem = ({ file, date, file_id, patients }) => {
             </ListItem>
           ))}
         </UnorderedList>
-        <HStack justify="space-between" width={"100%"} height={"100%"}>
+        <HStack
+          justify="center"
+          align="center"
+          width="100%"
+          height="100%"
+          // border="1px solid gray"
+          spacing={4}
+        >
           <Button
             bg="#4CAF50"
-            color={"white"}
+            color="white"
             _hover={{
               bg: "green.700",
             }}
             size="md"
             onClick={handleDownloadFile}
-            width={"50%"}
+            width="30%"
+            boxShadow="md"
           >
             Download Report
           </Button>
           <a
             href={file}
             target="_blank"
-            style={{ flex: 1 }}
+            style={{ width: "30%" }}
             rel="noopener noreferrer"
           >
             <Button
               bg="#507DBC"
               color="white"
               _hover={{ bg: "blue.700" }}
-              width={"100%"}
+              width="100%"
+              boxShadow="md"
               size="md"
             >
               View Report

@@ -123,13 +123,13 @@ const HistoryItem = ({
         borderRadius="lg"
         overflow="hidden"
         align={"center"}
-        // bg="#BBD1EA"
+        bg="gray.50"
         boxShadow="lg"
         justify={"center"}
         px={0}
         width="100%"
-        height={"310px"}
-        border="1px solid black"
+        height={"270px"}
+        border="1px gray.700"
       >
         <HStack justify="space-between" width={"100%"} height={"100%"}>
           <Box
@@ -175,28 +175,29 @@ const HistoryItem = ({
                 {/* <Heading as="h1" size="lg" mb={2}>
                   {patient}
                 </Heading> */}
-                <Text fontSize="md" color="#04080F" mt={3} fontWeight={"bold"}>
+                <Text fontSize="sm" color="#04080F" mt={3} fontWeight={"bold"}>
                   No tumor probability:{" "}
                   {`${parseFloat(no_tumor_prob).toFixed(2)}%`}
                 </Text>
-                <Text fontSize="md" color="#04080F" fontWeight={"bold"}>
+                <Text fontSize="sm" color="#04080F" fontWeight={"bold"}>
                   Pituitary probability:{" "}
                   {`${parseFloat(pituitary_prob).toFixed(2)}%`}
                 </Text>
-                <Text fontSize="md" color="#04080F" fontWeight={"bold"}>
+                <Text fontSize="sm" color="#04080F" fontWeight={"bold"}>
                   Glioma probability: {`${parseFloat(glioma_prob).toFixed(2)}%`}
                 </Text>
-                <Text fontSize="md" color="#04080F" mb={3} fontWeight={"bold"}>
+                <Text fontSize="sm" color="#04080F" mb={0} fontWeight={"bold"}>
                   Meningioma probability:{" "}
                   {`${parseFloat(meningioma_prob).toFixed(2)}%`}
                 </Text>
                 <FormControl mt={3}>
-                  <FormLabel>Select tumor type</FormLabel>
+                  <FormLabel fontSize='13px'>Select tumor type</FormLabel>
                   <Select
                     value={selectedOption}
                     onChange={(e) => setSelectedOption(e.target.value)}
                     placeholder="Unknown"
                     boxShadow="md"
+                    size='sm'
                     // height={'30px'}
                   >
                     <option value="1">Glioma</option>
@@ -215,6 +216,8 @@ const HistoryItem = ({
                     size="md"
                     width={"50%"}
                     onClick={onOpenModal2}
+                    size='sm'
+                    boxShadow="md"
                     isDisabled={!selectedOption}
                   >
                     Submit
@@ -223,6 +226,8 @@ const HistoryItem = ({
                     width={"50%"}
                     bg="#DB504A"
                     color={"white"}
+                    boxShadow="md"
+                    size='sm'
                     _hover={{
                       bg: "red.700",
                     }}
@@ -234,27 +239,27 @@ const HistoryItem = ({
               </>
             ) : (
               <>
-                <Heading as="h1" size="lg" mb={1}>
+                <Heading as="h1" size="md" mb={1}>
                   {patient}
                 </Heading>
-                <Text fontSize="md" color="#04080F">
+                <Text fontSize="sm" color="#04080F">
                   Date: {new Date(date).toLocaleString()}
                 </Text>
-                <Text fontSize="md" color="#04080F">
+                <Text fontSize="sm" color="#04080F">
                   Class: {tumorName}
                 </Text>
-                <Text fontSize="md" color="#04080F">
+                <Text fontSize="sm" color="#04080F">
                   No tumor probability:{" "}
                   {`${parseFloat(no_tumor_prob).toFixed(2)}%`}
                 </Text>
-                <Text fontSize="md" color="#04080F">
+                <Text fontSize="sm" color="#04080F">
                   Pituitary probability:{" "}
                   {`${parseFloat(pituitary_prob).toFixed(2)}%`}
                 </Text>
-                <Text fontSize="md" color="#04080F">
+                <Text fontSize="sm" color="#04080F">
                   Glioma probability: {`${parseFloat(glioma_prob).toFixed(2)}%`}
                 </Text>
-                <Text fontSize="md" color="#04080F">
+                <Text fontSize="sm" color="#04080F">
                   Meningioma probability:{" "}
                   {`${parseFloat(meningioma_prob).toFixed(2)}%`}
                 </Text>
@@ -265,7 +270,7 @@ const HistoryItem = ({
                     _hover={{
                       bg: "blue.700",
                     }}
-                    size="md"
+                    size="sm"
                     width="50%"
                     // height={"35px"}
                     display={
@@ -276,6 +281,7 @@ const HistoryItem = ({
                         : " none"
                     }
                     onClick={handleClassifyClick}
+                    boxShadow="md"
                   >
                     Classify
                   </Button>
@@ -285,10 +291,11 @@ const HistoryItem = ({
                     _hover={{
                       bg: "green.700",
                     }}
-                    size="md"
+                    size="sm"
                     width={tumor_type ? "100%" : "50%"}
                     // height={"35px"}
                     onClick={handleDownloadFile}
+                    boxShadow="md"
                   >
                     Download
                   </Button>
@@ -370,6 +377,7 @@ const HistoryItem = ({
                 bg="#507DBC"
                 color="white"
                 _hover={{ bg: "blue.700" }}
+                boxShadow="md"
                 width={"50%"}
               >
                 Classify
@@ -381,6 +389,7 @@ const HistoryItem = ({
                 _hover={{
                   bg: "red.700",
                 }}
+                boxShadow="md"
                 onClick={onCloseModal2}
                 width={"50%"}
               >

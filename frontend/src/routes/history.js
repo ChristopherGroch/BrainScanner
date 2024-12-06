@@ -119,11 +119,11 @@ const HistoryMenu = () => {
           maxW={"100%"}
           py={5}
         >
-          <Stack align={"center"}>
+          {/* <Stack align={"center"}>
             <Heading fontSize={"4xl"} color="#04080F">
               Usage history
             </Heading>
-          </Stack>
+          </Stack> */}
           <Box
             rounded={"lg"}
             bg={"white"}

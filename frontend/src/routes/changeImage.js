@@ -61,6 +61,10 @@ const ChangeImagesData = () => {
       ...provided,
       zIndex: 9999,
     }),
+    control: (provided) => ({
+      ...provided,
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06)",
+    }),
   };
   const resetStates = async () => {
     setSelectedPatient(null);
@@ -340,6 +344,7 @@ const ChangeImagesData = () => {
                       </FormLabel>
                       <Select
                         value={selectedTumor}
+                        boxShadow={"md"}
                         onChange={(e) => setSelectedTumor(e.target.value)}
                       >
                         <option value="0">Unknown</option>
@@ -424,7 +429,7 @@ const ChangeImagesData = () => {
                       <FormLabel textAlign="center">
                         Select new tumor type
                       </FormLabel>
-                      <Select value={"0"} readOnly>
+                      <Select value={"0"} boxShadow={"md"} onChange={()=>{}} >
                         <option value="0">Unknown</option>
                         <option value="1">Glioma</option>
                         <option value="2">Meningioma</option>
@@ -455,8 +460,9 @@ const ChangeImagesData = () => {
               _hover={{
                 bg: "blue.700",
               }}
-              size="sm"
+              size="md"
               // isDisabled={equal}
+              boxShadow={"md"}
               leftIcon={<EditIcon />}
               onClick={() => {
                 if (selectedPatient) {
@@ -552,15 +558,22 @@ const ChangeImagesData = () => {
                 bg="#507DBC"
                 color="white"
                 _hover={{ bg: "blue.700" }}
-                width={'100%'}
+                width={"100%"}
+                boxShadow={"md"}
               >
                 Confirm
               </Button>
-              <Button variant="outline" bg="#DB504A"
+              <Button
+                variant="outline"
+                bg="#DB504A"
                 color={"white"}
                 _hover={{
                   bg: "red.700",
-                }} onClick={onClose} width={'100%'}>
+                }}
+                onClick={onClose}
+                width={"100%"}
+                boxShadow={"md"}
+              >
                 Cancel
               </Button>
             </Stack>

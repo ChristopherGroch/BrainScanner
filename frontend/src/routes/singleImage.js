@@ -216,6 +216,8 @@ const SingleImage = () => {
     control: (provided) => ({
       ...provided,
       height: "40px",
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06)", 
+    
     }),
   };
 
@@ -241,11 +243,11 @@ const SingleImage = () => {
         py={5}
         // border="4px solid black"
       >
-        <Stack align={"center"}>
+        {/* <Stack align={"center"}>
           <Heading fontSize={"4xl"} color="#04080F">
             Classify image
           </Heading>
-        </Stack>
+        </Stack> */}
         <Box
           rounded={"lg"}
           bg={useColorModeValue("white", "gray.700")}
@@ -344,6 +346,7 @@ const SingleImage = () => {
                     <Input
                       value={selectedPatient?.first_name || ""}
                       isDisabled={true}
+                      boxShadow="md"
                       _disabled={{
                         cursor: "not-allowed",
                         opacity: "1",
@@ -355,6 +358,7 @@ const SingleImage = () => {
                     <Input
                       value={selectedPatient?.last_name || ""}
                       isDisabled={true}
+                      boxShadow="md"
                       _disabled={{
                         cursor: "not-allowed",
                         opacity: "1",
@@ -367,6 +371,7 @@ const SingleImage = () => {
                   <Input
                     value={selectedPatient?.email || ""}
                     isDisabled={true}
+                    boxShadow="md"
                     _disabled={{
                       cursor: "not-allowed",
                       opacity: "1",
@@ -378,6 +383,7 @@ const SingleImage = () => {
                   <Input
                     value={selectedPatient?.PESEL || ""}
                     isDisabled={true}
+                    boxShadow="md"
                     _disabled={{
                       cursor: "not-allowed",
                       opacity: "1",
@@ -395,6 +401,7 @@ const SingleImage = () => {
                     </FormLabel>
                     <Input
                       value={formData[field]}
+                      boxShadow="md"
                       onChange={(e) => handleChange(field, e.target.value)}
                     />
                     <FormErrorMessage>{errors[field]}</FormErrorMessage>
@@ -411,6 +418,7 @@ const SingleImage = () => {
               onClick={handleSubmit}
               bg="#507DBC"
               color={"white"}
+              boxShadow="md"
               _hover={{
                 bg: "blue.700",
               }}
@@ -496,6 +504,7 @@ const SingleImage = () => {
                         _hover={{ bg: "blue.700" }}
                         onClick={handleClassify}
                         width={'100%'}
+                        boxShadow="md"
                       >
                         Confirm and Classify
                       </Button>
@@ -508,6 +517,7 @@ const SingleImage = () => {
                         }}
                         onClick={handleCloseModal}
                         width={'100%'}
+                        boxShadow="md"
                       >
                         Cancel
                       </Button>
@@ -543,6 +553,7 @@ const SingleImage = () => {
                       shadow="md"
                       textAlign="left"
                       mb={4}
+                      boxShadow="md"
                     >
                       {Object.entries({
                         "No Tumor Probability": parseFloat(
@@ -577,6 +588,7 @@ const SingleImage = () => {
                       color="white"
                       _hover={{ bg: "blue.700" }}
                       onClick={handleCloseModal}
+                      boxShadow="md"
                     >
                       Close
                     </Button>

@@ -111,6 +111,7 @@ const ChangePasasword = () => {
                 color="#04080F"
                 onChange={(e) => setNewPassword(e.target.value)}
                 value={new_password}
+                boxShadow="md"
                 type="password"
               />
             </FormControl>
@@ -122,6 +123,7 @@ const ChangePasasword = () => {
                   onChange={(e) => setRepeat(e.target.value)}
                   value={repeat_password}
                   type={showPassword ? "text" : "password"}
+                  boxShadow="md"
                 />
                 <InputRightElement>
                   <IconButton
@@ -141,6 +143,7 @@ const ChangePasasword = () => {
                 bg="#507DBC"
                 color={"white"}
                 onClick={handleCreateUser}
+                boxShadow="md"
                 _hover={{
                   bg: "blue.700",
                 }}

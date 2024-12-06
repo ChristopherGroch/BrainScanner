@@ -49,7 +49,7 @@ const Navbar = () => {
           textDecoration="none"
           color="white"
         >
-          Website
+          BrainScanner
         </ChakraLink>
 
         <IconButton
