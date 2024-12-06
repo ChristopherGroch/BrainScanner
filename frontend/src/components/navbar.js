@@ -29,6 +29,7 @@ const Navbar = () => {
       color="white"
       position="sticky"
       top="0"
+      boxShadow="md"
       zIndex="1000"
     >
       <Flex

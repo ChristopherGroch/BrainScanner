@@ -16,6 +16,7 @@ import {
   ModalCloseButton,
   ModalBody,
   ModalFooter,
+  HStack,
 } from "@chakra-ui/react";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
 import MultipleImages from "../components/multipleImages";
@@ -23,6 +24,8 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { getPatients } from "../endpoints/api";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
+
 import {
   multipleImagesCLassification,
   refresh,
@@ -42,7 +45,8 @@ const MultipleImagesList = () => {
   const [patients, setPatients] = useState([]);
   const nav = useNavigate();
   const [classificationResult, setClassificationResult] = useState(null);
-
+  const [ids, setIds] = useState(1);
+  const [loading,setLoading] = useState(false);
   const fetchPatients = async () => {
     try {
       const patients = await getPatients();
@@ -72,8 +76,9 @@ const MultipleImagesList = () => {
   const addChildComponent = () => {
     setChildData((prevData) => [
       ...prevData,
-      { id: prevData.length, formData: {}, files: [], errors: {} },
+      { id: ids, formData: {}, files: [], errors: {} },
     ]);
+    setIds(ids + 1);
   };
 
   const validate = async () => {
@@ -242,12 +247,14 @@ const MultipleImagesList = () => {
   };
 
   const handleClassify = async () => {
+    setLoading(true)
     const requestData = await extractData();
 
     try {
       const response = await multipleImagesCLassification(requestData);
       console.log(response);
       setClassificationResult(response.data);
+      setLoading(false);
     } catch (error) {
       if (error.response && error.response.status === 401) {
         try {
@@ -255,20 +262,24 @@ const MultipleImagesList = () => {
           const response = await multipleImagesCLassification(requestData);
           console.log(response);
           setClassificationResult(response.data);
+          setLoading(false);
         } catch (refreshError) {
           if (refreshError.response && refreshError.response.status === 401) {
             console.error("Nie udało się odświeżyć tokena", refreshError);
             alert("Twoja sesja wygasła. Zaloguj się ponownie.");
+            setLoading(false);
             nav("/login");
           } else {
             // alert(refreshError.response?.data?.reason || "Wystąpił błąd.");
             if (containsBraces(refreshError.response?.data?.reason)) {
+              setLoading(false);
               toast.error(
                 formatErrorsToString(
                   parseErrorsFromString(refreshError.response?.data?.reason)
                 ) || "Unexpoected error"
               );
             } else {
+              setLoading(false);
               toast.error(
                 refreshError.response?.data?.reason || "Unexpoected error"
               );
@@ -279,12 +290,14 @@ const MultipleImagesList = () => {
         // alert(error.response?.data?.reason || "Wystąpił błąd.");
         console.log(error);
         if (containsBraces(error.response?.data?.reason)) {
+          setLoading(false);
           toast.error(
             formatErrorsToString(
               parseErrorsFromString(error.response?.data?.reason)
             ) || "Unexpoected error"
           );
         } else {
+          setLoading(false);
           toast.error(error.response?.data?.reason || "Unexpoected error");
         }
       }
@@ -311,45 +324,55 @@ const MultipleImagesList = () => {
         py={5}
         // border="4px solid black"
       >
-        <Stack align={"center"} >
+        <Stack align={"center"}>
           <Heading fontSize={"4xl"} color="#04080F">
             Multiple images
           </Heading>
         </Stack>
-        <Stack  width={"100%"}>
-          {childData.map((child) => (
-            <Box
-              key={child.id}
-              rounded={"lg"}
-              bg={"white"}
-              boxShadow={"lg"}
-              px={6}
-              py={4}
-              minH={"500"}
-              width={"100%"}
-              spacing={5}
-              // border="4px solid black"
-              position="relative"
-            >
-              <IconButton
-                aria-label="Remove component"
-                icon={<TrashIcon />}
-                size="sm"
-                colorScheme="red"
-                position="absolute"
-                top="4px"
-                right="4px"
-                onClick={() => removeChildData(child.id)}
-              />
-              <MultipleImages
-                patients={patients}
-                errors={child.errors}
-                id={child.id}
-                onChange={updateChildData}
-                clearError={clearFieldError}
-              />
-            </Box>
-          ))}
+        <Stack width={"100%"}>
+          <AnimatePresence initial={false}>
+            {childData.map((child) => (
+              <motion.div
+                key={child.id}
+                initial={{ opacity: 0, scale: 0.9, y: -20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Box
+                  key={child.id}
+                  rounded={"lg"}
+                  bg={"white"}
+                  boxShadow={"lg"}
+                  px={6}
+                  py={4}
+                  minH={"500"}
+                  width={"100%"}
+                  spacing={5}
+                  // border="4px solid black"
+                  position="relative"
+                >
+                  <IconButton
+                    aria-label="Remove component"
+                    icon={<TrashIcon />}
+                    size="sm"
+                    colorScheme="red"
+                    position="absolute"
+                    top="4px"
+                    right="4px"
+                    onClick={() => removeChildData(child.id)}
+                  />
+                  <MultipleImages
+                    patients={patients}
+                    errors={child.errors}
+                    id={child.id}
+                    onChange={updateChildData}
+                    clearError={clearFieldError}
+                  />
+                </Box>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </Stack>
         <VStack width={"95%"}>
           <Button
@@ -361,7 +384,11 @@ const MultipleImagesList = () => {
             }}
             alignSelf="center"
             width={"100%"}
-            leftIcon={<PlusIcon style={{ color: "white", width: "20px", height: "20px" }}/>}
+            leftIcon={
+              <PlusIcon
+                style={{ color: "white", width: "20px", height: "20px" }}
+              />
+            }
           >
             Add Patient
           </Button>
@@ -371,64 +398,79 @@ const MultipleImagesList = () => {
             width={"100%"}
             bg="#507DBC"
             color="white"
-            _hover={{ bg: "blue.700" }} 
-            display={childData.length === 0 ? 'none' : 'inline-block'}
+            _hover={{ bg: "blue.700" }}
+            display={childData.length === 0 ? "none" : "inline-block"}
           >
             Submit
           </Button>
         </VStack>
-        <Modal isOpen={isOpen} onClose={handleCloseModal} size="xl">
+        <Modal isOpen={isOpen} onClose={handleCloseModal} isCentered>
           <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Patient Data</ModalHeader>
+          <ModalContent bg="#DAE3E5" rounded="lg" boxShadow="xl">
+            <ModalHeader textAlign="center" color="#04080F">
+              {classificationResult ? "Report created" : "Patient Data"}
+            </ModalHeader>
             <ModalCloseButton />
-            <ModalBody>
+            <ModalBody p={6} width={"100%"}>
               {classificationResult ? (
-                <VStack>
-                  <a
-                    href={`http://127.0.0.1:8000${classificationResult.report}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button colorScheme="blue" size="sm">
-                      View Report
+                <VStack spacing={4} w={"100%"}>
+                  <VStack spacing={4} w="100%">
+                    <a
+                      href={`http://127.0.0.1:8000${classificationResult.report}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ width: "100%" }}
+                    >
+                      <Button
+                        bg="#507DBC"
+                        color="white"
+                        _hover={{ bg: "blue.700" }}
+                        size="sm"
+                        w="100%"
+                      >
+                        View Report
+                      </Button>
+                    </a>
+                    <Button
+                      bg="#00A676"
+                      color="white"
+                      _hover={{ bg: "#007A55" }}
+                      size="sm"
+                      w="100%"
+                      onClick={handleDownloadFile}
+                    >
+                      Download Report
                     </Button>
-                  </a>
-                  <Button
-                    colorScheme="green"
-                    size="sm"
-                    onClick={handleDownloadFile}
-                  >
-                    Download Report
-                  </Button>
+                  </VStack>
                 </VStack>
               ) : (
-                <VStack spacing={4} align="stretch">
+                <VStack spacing={6} align="stretch">
                   {generateModalContent().map((patient, index) => (
                     <Box
                       key={index}
+                      bg="white"
                       p={4}
+                      rounded="md"
+                      shadow="md"
                       borderWidth="1px"
-                      borderRadius="md"
-                      bg="gray.50"
                     >
-                      <Heading size="sm" mb={2}>
+                      <Heading size="sm" mb={2} color="#507DBC">
                         Patient {index + 1}
                       </Heading>
-                      <Box>
+                      <Box color="#04080F">
                         <strong>First Name:</strong>{" "}
                         {patient.first_name || "N/A"}
                       </Box>
-                      <Box>
+                      <Box color="#04080F">
                         <strong>Last Name:</strong> {patient.last_name || "N/A"}
                       </Box>
-                      <Box>
+                      <Box color="#04080F">
                         <strong>Email:</strong> {patient.email || "N/A"}
                       </Box>
-                      <Box>
+                      <Box color="#04080F">
                         <strong>PESEL:</strong> {patient.PESEL || "N/A"}
                       </Box>
-                      <Box>
+                      <Box color="#04080F">
                         <strong>Photos:</strong>{" "}
                         {patient.photos.length > 0
                           ? patient.photos.join(", ")
@@ -439,8 +481,41 @@ const MultipleImagesList = () => {
                 </VStack>
               )}
             </ModalBody>
-            <ModalFooter>
-              <Button onClick={handleClassify}>Classify</Button>
+            <ModalFooter justifyContent="center">
+              <HStack width="100%" justifyContent="center">
+                <Button
+                  bg="#507DBC"
+                  color="white"
+                  _hover={{ bg: "blue.700" }}
+                  onClick={handleClassify}
+                  width={"50%"}
+                  isLoading={loading}
+                  display={classificationResult ? "none" : "inline-block"}
+                >
+                  Classify
+                </Button>
+                <Button
+                  bg="#DB504A"
+                  color={"white"}
+                  _hover={{
+                    bg: "red.700",
+                  }}
+                  onClick={onClose}
+                  width={"50%"}
+                  display={classificationResult ? "none" : "inline-block"}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  bg="#507DBC"
+                  color="white"
+                  _hover={{ bg: "blue.700" }}
+                  onClick={handleCloseModal}
+                  display={classificationResult ? "inline-block" : "none"}
+                >
+                  Close
+                </Button>
+              </HStack>
             </ModalFooter>
           </ModalContent>
         </Modal>

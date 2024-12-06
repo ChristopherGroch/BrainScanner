@@ -7,6 +7,7 @@ import { getReports } from "../endpoints/api";
 import {
   VStack,
   Stack,
+  Spinner,
   Text,
   FormControl,
   FormLabel,
@@ -21,6 +22,7 @@ const ReportHistory = () => {
   const BASE_URL = "http://127.0.0.1:8000";
   const [reports, setReports] = useState([]);
   const nav = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [searchBar, setSearchBar] = useState("");
 
   const [page, setPage] = useState(1);
@@ -35,11 +37,13 @@ const ReportHistory = () => {
 
   useEffect(() => {
     const fetchReports = async () => {
+      setLoading(true);
       try {
         const reports = await getReports();
         console.log(reports);
         setReports(reports);
         setNumberOfPages(Math.ceil(reports.length / 5));
+        setLoading(false);
       } catch (error) {
         console.log("w");
         if (error.response && error.response.status === 401) {
@@ -49,6 +53,7 @@ const ReportHistory = () => {
             console.log(reports);
             setReports(reports);
             setNumberOfPages(Math.ceil(reports.length / 5));
+            setLoading(false);
           } catch (refreshError) {
             if (refreshError.response && refreshError.response.status === 401) {
               console.error("Nie udało się odświeżyć tokena", refreshError);
@@ -129,6 +134,12 @@ const ReportHistory = () => {
                 border="1px solid black"
               />
             </FormControl>
+            {loading && (
+              <VStack>
+                <Spinner sizer="4xl" />
+                <Text>Loading...</Text>
+              </VStack>
+            )}
             {(searchBar
               ? reports.filter((report) =>
                   report.patients.some((patient) =>

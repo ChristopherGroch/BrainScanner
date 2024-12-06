@@ -30,13 +30,13 @@ const HistoryMenu = () => {
   const [loading, setLoading] = useState(false);
   const nav = useNavigate();
   const [page, setPage] = useState(1);
-  const [numberOfPages,setNumberOfPages] = useState(1)
+  const [numberOfPages, setNumberOfPages] = useState(1);
 
   const handleChange = (event, value) => {
     setPage(value);
     window.scrollTo({
       top: 0,
-      behavior: 'auto', 
+      behavior: "auto",
     });
   };
 
@@ -47,7 +47,7 @@ const HistoryMenu = () => {
         const classifications = await getUsages();
         console.log(classifications);
         setClassifications(classifications);
-        setNumberOfPages(Math.ceil(classifications.length / 10))
+        setNumberOfPages(Math.ceil(classifications.length / 10));
         setLoading(false);
       } catch (error) {
         if (error.response && error.response.status === 401) {
@@ -56,7 +56,7 @@ const HistoryMenu = () => {
             const classifications = await getUsages();
             console.log(classifications);
             setClassifications(classifications);
-            setNumberOfPages(Math.ceil(classifications.length / 10))
+            setNumberOfPages(Math.ceil(classifications.length / 10));
             setLoading(false);
           } catch (refresherror) {
             alert("Twoja sesja wygasła. Zaloguj się ponownie.");
@@ -72,22 +72,23 @@ const HistoryMenu = () => {
   }, []);
 
   useEffect(() => {
-    const number = Math.ceil(classifications
-      .filter((menuItem) => {
+    const number = Math.ceil(
+      classifications.filter((menuItem) => {
         return searchBar.toLocaleLowerCase() === ""
           ? menuItem
           : menuItem.patient
               .toLocaleLowerCase()
               .includes(searchBar.toLocaleLowerCase()) ||
-              (TUMOR_TYPES[menuItem.tumor_type] || "Unknown").toLocaleLowerCase().includes(searchBar.toLocaleLowerCase());
-      }).length / 10)
-    setNumberOfPages(number)
-    if (number < page){
-      setPage(1)
+              (TUMOR_TYPES[menuItem.tumor_type] || "Unknown")
+                .toLocaleLowerCase()
+                .includes(searchBar.toLocaleLowerCase());
+      }).length / 10
+    );
+    setNumberOfPages(number);
+    if (number < page) {
+      setPage(1);
     }
   }, [searchBar]);
-
-
 
   const updateTumorType = (image_id, tumor_type) => {
     const updatedClassifications = classifications.map((item) => {
@@ -141,10 +142,12 @@ const HistoryMenu = () => {
               <FormControl>
                 <FormLabel>Search</FormLabel>
                 <Input
+                  placeholder="Enter a term to search..." 
                   onChange={(e) => setSearchBar(e.target.value)}
                   value={searchBar}
                   type="text"
                   border="1px solid black"
+                  boxShadow="md"
                 />
               </FormControl>
               <VStack width={"100%"} spacing={5}>
@@ -162,9 +165,11 @@ const HistoryMenu = () => {
                       : menuItem.patient
                           .toLocaleLowerCase()
                           .includes(searchBar.toLocaleLowerCase()) ||
-                          (TUMOR_TYPES[menuItem.tumor_type] || "Unknown").toLocaleLowerCase().includes(searchBar.toLocaleLowerCase());
+                          (TUMOR_TYPES[menuItem.tumor_type] || "Unknown")
+                            .toLocaleLowerCase()
+                            .includes(searchBar.toLocaleLowerCase());
                   })
-                  .slice((page * 10) - 10, page * 10)
+                  .slice(page * 10 - 10, page * 10)
                   .map((menuItem, key) => {
                     return (
                       <HistoryItem
@@ -187,7 +192,17 @@ const HistoryMenu = () => {
                     count={numberOfPages}
                     page={page}
                     onChange={handleChange}
-                    size="large"
+                    size="lg"
+                    sx={{
+                      ".Mui-selected": {
+                        backgroundColor: "#A1C6EA",
+                        color: "black",
+                        fontWeight: "bold",
+                      },
+                      "button:hover": {
+                        backgroundColor: "#A1C6EA",
+                      },
+                    }}
                   />
                   <Text fontSize="md" textAlign="center">
                     Current page: {page}

@@ -552,10 +552,15 @@ const ChangeImagesData = () => {
                 bg="#507DBC"
                 color="white"
                 _hover={{ bg: "blue.700" }}
+                width={'100%'}
               >
                 Confirm
               </Button>
-              <Button variant="outline" color="#507DBC" onClick={onClose}>
+              <Button variant="outline" bg="#DB504A"
+                color={"white"}
+                _hover={{
+                  bg: "red.700",
+                }} onClick={onClose} width={'100%'}>
                 Cancel
               </Button>
             </Stack>

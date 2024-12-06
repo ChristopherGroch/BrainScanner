@@ -89,7 +89,7 @@ const HistoryItem = ({
     try {
       await downloadFile(image_id, `${patient}-image.jpg`);
     } catch (error) {
-      console.log('w')
+      console.log("w");
       if (error.response && error.response.status === 401) {
         try {
           await refresh();
@@ -119,11 +119,12 @@ const HistoryItem = ({
 
   return (
     <>
-      <Flex
+      <Box
         borderRadius="lg"
         overflow="hidden"
         align={"center"}
         // bg="#BBD1EA"
+        boxShadow="lg"
         justify={"center"}
         px={0}
         width="100%"
@@ -137,9 +138,18 @@ const HistoryItem = ({
             display="flex"
             justifyContent="center"
             alignItems="center"
+            boxShadow="md"
             // border="4px solid red"
           >
-            <Tooltip label={image.split("/").pop()} aria-label="Image name">
+            <Tooltip
+              label={image.split("/").pop()}
+              aria-label="Image name"
+              bg="gray.700"
+              color="white"
+              borderRadius="md"
+              boxShadow="md"
+              p={3}
+            >
               <Image
                 src={image}
                 alt={patient}
@@ -186,6 +196,7 @@ const HistoryItem = ({
                     value={selectedOption}
                     onChange={(e) => setSelectedOption(e.target.value)}
                     placeholder="Unknown"
+                    boxShadow="md"
                     // height={'30px'}
                   >
                     <option value="1">Glioma</option>
@@ -286,8 +297,13 @@ const HistoryItem = ({
             )}
           </Stack>
         </HStack>
-      </Flex>
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      </Box>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+        motionPreset="slideInBottom"
+      >
         <ModalOverlay />
         <ModalContent maxW="900px">
           <ModalCloseButton />
@@ -309,7 +325,12 @@ const HistoryItem = ({
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={isOpenModal2} onClose={onCloseModal2} isCentered>
+      <Modal
+        isOpen={isOpenModal2}
+        onClose={onCloseModal2}
+        isCentered
+        motionPreset="slideInBottom"
+      >
         <ModalOverlay />
         <ModalContent bg="#DAE3E5" rounded="lg" boxShadow="xl">
           <ModalCloseButton />
@@ -349,10 +370,20 @@ const HistoryItem = ({
                 bg="#507DBC"
                 color="white"
                 _hover={{ bg: "blue.700" }}
+                width={"50%"}
               >
                 Classify
               </Button>
-              <Button variant="outline" color="#507DBC" onClick={onCloseModal2}>
+              <Button
+                variant="outline"
+                bg="#DB504A"
+                color={"white"}
+                _hover={{
+                  bg: "red.700",
+                }}
+                onClick={onCloseModal2}
+                width={"50%"}
+              >
                 Cancel
               </Button>
             </Stack>

@@ -95,10 +95,11 @@ const SingleImage = () => {
     fetchPatients();
   }, []);
 
-  const patientOptions = patients.map((p) => ({
-    value: p.id,
-    label: `${p.first_name} ${p.last_name} - PESEL: ${p.PESEL}`,
-  })) || [];
+  const patientOptions =
+    patients.map((p) => ({
+      value: p.id,
+      label: `${p.first_name} ${p.last_name} - PESEL: ${p.PESEL}`,
+    })) || [];
 
   const validate = () => {
     const newErrors = {};
@@ -494,13 +495,19 @@ const SingleImage = () => {
                         color="white"
                         _hover={{ bg: "blue.700" }}
                         onClick={handleClassify}
+                        width={'100%'}
                       >
                         Confirm and Classify
                       </Button>
                       <Button
                         variant="outline"
-                        color="#507DBC"
+                        bg="#DB504A"
+                        color={"white"}
+                        _hover={{
+                          bg: "red.700",
+                        }}
                         onClick={handleCloseModal}
+                        width={'100%'}
                       >
                         Cancel
                       </Button>

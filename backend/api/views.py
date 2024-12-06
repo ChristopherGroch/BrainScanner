@@ -158,6 +158,8 @@ def classifiy(request, pk):
         image.save()
     except ValidationError as e:
         return Response({'reason':str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({'reason':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return Response(ImageSerializer(image).data)
 
 
@@ -185,7 +187,7 @@ def change_password(request, pk):
     return response
 
 @api_view(["PUT"])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminUser])
 def reset_password(request, pk):
     user = get_object_or_404(User, pk=pk)
     print(request.data)
@@ -209,7 +211,7 @@ def get_userName(request):
     return Response({'user':f'{user.first_name} {user.last_name}'}, status=status.HTTP_200_OK)
     
 @api_view(["PATCH"])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminUser])
 def change_user(request, pk):
     user = get_object_or_404(User, pk=pk)
     data = request.data
@@ -218,9 +220,12 @@ def change_user(request, pk):
             setattr(user, field, data[field])
     password = 'password'
     if 'email' in data:
-        setattr(user, 'email', data['email'])
-        password = generate_password()
-        user.set_password(password)
+        if 'PESEL' in data:
+            setattr(user, 'email', data['email'])
+            password = generate_password()
+            user.set_password(password)
+        else:
+            return Response({'reason':"No PESEL key"}, status=status.HTTP_400_BAD_REQUEST)
     try:
         user.save()
         if 'email' in data:
@@ -240,7 +245,7 @@ def change_user(request, pk):
 
 
 @api_view(["PATCH"])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminUser])
 def change_patient(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
     data = request.data
@@ -256,7 +261,7 @@ def change_patient(request, pk):
         return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
 @api_view(["PATCH"])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminUser])
 def change_image(request, pk):
     image = get_object_or_404(Image, pk=pk)
     data = request.data

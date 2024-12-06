@@ -92,7 +92,7 @@ const ChangeUserData = () => {
           nav("/login");
         }
       } else {
-        setUsers([])
+        setUsers([]);
       }
     }
   };
@@ -160,9 +160,9 @@ const ChangeUserData = () => {
   };
 
   const handleSubmit = async () => {
-    if (equal){
-      toast.warning("Every field is the same as before")
-    } else if (validate()){
+    if (equal) {
+      toast.warning("Every field is the same as before");
+    } else if (validate()) {
       onOpen();
     }
   };
@@ -353,7 +353,7 @@ const ChangeUserData = () => {
                 <FormErrorMessage>{errors.PESEL}</FormErrorMessage>
               </FormControl>
             )}
-            <HStack justify="space-evenly" >
+            <HStack justify="space-evenly">
               <Button
                 mt={3}
                 bg="#507DBC"
@@ -433,10 +433,20 @@ const ChangeUserData = () => {
                   color="white"
                   _hover={{ bg: "blue.700" }}
                   isLoading={loading}
+                  width={'100%'}
                 >
                   Edit
                 </Button>
-                <Button variant="outline" color="#507DBC" onClick={onClose}>
+                <Button
+                  variant="outline"
+                  bg="#DB504A"
+                  color={"white"}
+                  _hover={{
+                    bg: "red.700",
+                  }}
+                  onClick={onClose}
+                  width={'100%'}
+                >
                   Cancel
                 </Button>
               </Stack>
@@ -475,13 +485,19 @@ const ChangeUserData = () => {
                   color="white"
                   _hover={{ bg: "blue.700" }}
                   isLoading={loading}
+                  width={'100%'}
                 >
                   Reset Password
                 </Button>
                 <Button
                   variant="outline"
-                  color="#507DBC"
+                  bg="#DB504A"
+                  color={"white"}
+                  _hover={{
+                    bg: "red.700",
+                  }}
                   onClick={onResetClose}
+                  width={'100%'}
                 >
                   Cancel
                 </Button>
