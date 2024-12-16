@@ -4,6 +4,10 @@ from django.core.validators import MinLengthValidator, RegexValidator
 import os
 from django.dispatch import receiver
 
+
+class OptimisticLockError(Exception):
+    pass
+
 class Patient(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -71,8 +75,7 @@ class Image(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
-        
-    
+
 
 
 class MlModel(models.Model):

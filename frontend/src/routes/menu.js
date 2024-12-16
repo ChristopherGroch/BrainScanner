@@ -9,6 +9,7 @@ import {
   useColorModeValue,
   createIcon,
   Flex,
+  VStack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth";
@@ -73,7 +74,7 @@ const Menu = () => {
         borderWidth="1px"
         borderRadius="lg"
         overflow="hidden"
-        bg='gray.50'
+        bg="gray.50"
         p={5}
       >
         <Stack align={"start"} spacing={2}>
@@ -127,19 +128,26 @@ const Menu = () => {
             <Stack
               as={Box}
               textAlign={"center"}
-              spacing={{ base: 8, md: 14 }}
-              py={{ base: 0, md: 20 }}
+              spacing={{ base: 8, md: 8 }}
+              py={{ base: 0, md: 8 }}
             >
               <Heading
                 fontWeight={600}
                 fontSize={{ base: "2xl", sm: "4xl", md: "6xl" }}
                 lineHeight={"110%"}
               >
-                Better diagnoses, <br />
+                Better diagnoses <br />
                 <Text as={"span"}>stronger AI</Text>
               </Heading>
               <Text color={"gray.800"}>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis obcaecati ut cupiditate pariatur, dignissimos, placeat amet officiis.
+                {/* The BrainScanner application is a cutting-edge system designed
+                to support the classification of brain tumors. It simplifies the
+                use of a pre-trained network for this task and enables the
+                annotation of confirmed cases, which can contribute to improving
+                the classification algorithm in the future. */}
+                BrainScanner is an advanced tool for brain tumor classification,
+                streamlining the use of pre-trained networks and enabling case
+                annotation to enhance the algorithm over time.
               </Text>
               <Stack
                 direction={"column"}
@@ -158,7 +166,7 @@ const Menu = () => {
                 >
                   Evaluate an image
                 </Button>
-                <Button variant={"link"} colorScheme={"blue"} size={"sm"}>
+                <Button variant={"link"} colorScheme={"blue"} size={"md"}>
                   Learn more
                 </Button>
               </Stack>
@@ -172,69 +180,74 @@ const Menu = () => {
           boxShadow={"lg"}
           width={"50%"}
         >
-          <Stack spacing={4} as={Container} maxW={"3xl"} textAlign={"center"}>
-            <Heading fontSize={{ base: "2xl", sm: "4xl" }} fontWeight={"bold"}>
-              Available features
-            </Heading>
-            <Text color={"gray.800"} fontSize={{ base: "sm", sm: "lg" }}>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Reiciendis obcaecati ut cupiditate pariatur, dignissimos, placeat
-              amet officiis.
-            </Text>
-          </Stack>
+          <VStack>
+            <Stack spacing={4} maxW={"3xl"} textAlign={"center"}>
+              <Heading
+                fontSize={{ base: "2xl", sm: "4xl" }}
+                fontWeight={"bold"}
+              >
+                Available features
+              </Heading>
+              <Text
+                color={"gray.800"}
+                fontSize={{ base: "md", sm: "md" }}
+                ml={10}
+                mr={10}
+              >
+                BrainScanner is optimized for clinical use, offering features
+                for managing user accounts and patient data.
+              </Text>
+            </Stack>
 
-          <Container maxW={"5xl"} mt={12}>
-            <Flex flexWrap="wrap" gridGap={6} justify="center">
-              <Card
-                heading={"Single image evaluation"}
-                icon={<Icon as={FcAddImage} w={10} h={10} color="#507DBC"/>}
-                description={
-                  "Upload the patient's MRI image along with their data and check the diagnosis made by the neural network."
-                }
-                href={moveToSingleImage}
-              />
-              <Card
-                heading={"Multiple image evaluation"}
-                icon={<Icon as={FcAddImage} w={10} h={10} />}
-                description={
-                  "Upload multiple MRI images and patient data, and receive the diagnosis from the neural network in the form of a report."
-                }
-                href={moveToMultipleImages}
-              />
-              <Card
-                heading={"Checking history of usages"}
-                icon={<Icon as={FcDatabase} w={10} h={10} />}
-                description={
-                  "Check your algorithm usage history."
-                }
-                href={moveToHistory}
-              />
-              <Card
-                heading={"Checking history of reports"}
-                icon={<Icon as={FcDatabase} w={10} h={10} />}
-                description={
-                  "Check the history of your generated reports."
-                }
-                href={moveToReportHistory}
-              />
-              <Card
-                heading={"Classifying an image"}
-                icon={<Icon as={FcApproval} w={10} h={10} />}
-                description={
-                  "Classify the previously uploaded image and add it to the dataset that will be used to train a new algorithm in the future."
-                }
-                href={moveToHistory}
-              />
-              <Card
-                heading={"Change your password"}
-                icon={<Icon as={FcAbout} w={10} h={10} />}
-                description={
-                  "Change your password to ensure account security and protect your personal data."
-                }
-                href={moveToChangepassword}
-              />
-            </Flex>
-          </Container>
+            <Container maxW={"5xl"} mt={12}>
+              <Flex flexWrap="wrap" gridGap={6} justify="center">
+                <Card
+                  heading={"Single image evaluation"}
+                  icon={<Icon as={FcAddImage} w={10} h={10} color="#507DBC" />}
+                  description={
+                    "Upload the patient's MRI image along with their data and check the diagnosis made by the neural network."
+                  }
+                  href={moveToSingleImage}
+                />
+                <Card
+                  heading={"Multiple image evaluation"}
+                  icon={<Icon as={FcAddImage} w={10} h={10} />}
+                  description={
+                    "Upload multiple MRI images and patient data, and receive the diagnosis from the neural network in the form of a report."
+                  }
+                  href={moveToMultipleImages}
+                />
+                <Card
+                  heading={"Checking history of usages"}
+                  icon={<Icon as={FcDatabase} w={10} h={10} />}
+                  description={"Check your algorithm usage history."}
+                  href={moveToHistory}
+                />
+                <Card
+                  heading={"Checking history of reports"}
+                  icon={<Icon as={FcDatabase} w={10} h={10} />}
+                  description={"Check the history of your generated reports."}
+                  href={moveToReportHistory}
+                />
+                <Card
+                  heading={"Classifying an image"}
+                  icon={<Icon as={FcApproval} w={10} h={10} />}
+                  description={
+                    "Classify the previously uploaded image and add it to the dataset that will be used to train a new algorithm in the future."
+                  }
+                  href={moveToHistory}
+                />
+                <Card
+                  heading={"Change your password"}
+                  icon={<Icon as={FcAbout} w={10} h={10} />}
+                  description={
+                    "Change your password to ensure account security and protect your personal data."
+                  }
+                  href={moveToChangepassword}
+                />
+              </Flex>
+            </Container>
+          </VStack>
         </Box>
       </Stack>
     </Flex>

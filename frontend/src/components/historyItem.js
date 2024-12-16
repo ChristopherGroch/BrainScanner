@@ -48,6 +48,7 @@ const HistoryItem = ({
 
   const [showForm, setShowForm] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
+  const [loading, setLoading] = useState(false);
   const nav = useNavigate();
   const handleClassifyClick = () => {
     setShowForm(!showForm);
@@ -55,11 +56,13 @@ const HistoryItem = ({
 
   const handleFormSubmit = async () => {
     console.log("Selected option:", selectedOption);
+    setLoading(true)
     try {
       console.log("EW");
       await classify(parseInt(selectedOption), image_id);
       setShowForm(false);
       classifyFunction(image_id, parseInt(selectedOption));
+      setLoading(false)
       onCloseModal2();
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -68,6 +71,7 @@ const HistoryItem = ({
           await classify(parseInt(selectedOption), image_id);
           setShowForm(false);
           classifyFunction(image_id, parseInt(selectedOption));
+          setLoading(false)
           onCloseModal2();
         } catch (refreshError) {
           if (refreshError.response && refreshError.response.status === 401) {
@@ -83,6 +87,7 @@ const HistoryItem = ({
         toast.error(error.response?.data?.reason || "Unexpected error.");
       }
     }
+    setLoading(false)
   };
 
   const handleDownloadFile = async () => {
@@ -191,13 +196,13 @@ const HistoryItem = ({
                   {`${parseFloat(meningioma_prob).toFixed(2)}%`}
                 </Text>
                 <FormControl mt={3}>
-                  <FormLabel fontSize='13px'>Select tumor type</FormLabel>
+                  <FormLabel fontSize="13px">Select tumor type</FormLabel>
                   <Select
                     value={selectedOption}
                     onChange={(e) => setSelectedOption(e.target.value)}
                     placeholder="Unknown"
                     boxShadow="md"
-                    size='sm'
+                    size="sm"
                     // height={'30px'}
                   >
                     <option value="1">Glioma</option>
@@ -216,7 +221,7 @@ const HistoryItem = ({
                     size="md"
                     width={"50%"}
                     onClick={onOpenModal2}
-                    size='sm'
+                    size="sm"
                     boxShadow="md"
                     isDisabled={!selectedOption}
                   >
@@ -227,7 +232,7 @@ const HistoryItem = ({
                     bg="#DB504A"
                     color={"white"}
                     boxShadow="md"
-                    size='sm'
+                    size="sm"
                     _hover={{
                       bg: "red.700",
                     }}
@@ -343,11 +348,13 @@ const HistoryItem = ({
           <ModalCloseButton />
           <ModalBody
             p={6}
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            gap={6}
+            // display="flex"
+            // flexDirection="column"
+            // alignItems="center"
+            // gap={6}
+            // spacing={6}
             textAlign="center"
+            width={'100%'}
           >
             <Image
               src={image}
@@ -357,15 +364,16 @@ const HistoryItem = ({
               maxH="400px"
               borderRadius="md"
               shadow="md"
+              mb={6}
             />
 
-            <Box>
+            <Box bg="white" p={4} rounded="md" shadow="md" borderWidth="1px" mb={4}>
               <Heading size="md" color="#04080F" mb={4}>
                 Confirm Action
               </Heading>
-              <Text color="#507DBC" fontWeight="semibold" mb={6}>
+              <Text color="#04080F" fontWeight="bold" mb={6}>
                 Are you sure you want to classify the tumor as{" "}
-                <Text as="span" fontWeight="bold" color="#04080F">
+                <Text as="span" fontWeight="bold" color="#507DBC">
                   {TUMOR_TYPES[selectedOption]}?
                 </Text>
               </Text>
@@ -378,12 +386,12 @@ const HistoryItem = ({
                 color="white"
                 _hover={{ bg: "blue.700" }}
                 boxShadow="md"
-                width={"50%"}
+                width={"100%"}
               >
                 Classify
               </Button>
               <Button
-                variant="outline"
+                // variant="outline"
                 bg="#DB504A"
                 color={"white"}
                 _hover={{
@@ -391,7 +399,7 @@ const HistoryItem = ({
                 }}
                 boxShadow="md"
                 onClick={onCloseModal2}
-                width={"50%"}
+                width={"100%"}
               >
                 Cancel
               </Button>

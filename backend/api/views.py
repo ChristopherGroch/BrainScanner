@@ -36,7 +36,8 @@ from .utils import (
     generatePasswordFile,
     generateZipFile,
     loadNetwork,
-    frontedHappyReformatHistory
+    frontedHappyReformatHistory,
+    addImageToDataset
 )
 from decimal import Decimal, ROUND_HALF_UP
 from django.db import transaction, connection
@@ -152,13 +153,16 @@ def classifiy(request, pk):
         return Response('Tumor already classified',status=status.HTTP_400_BAD_REQUEST)
     if not 'tumor_type' in request.data:
         return Response('No tumor type key',status=status.HTTP_400_BAD_REQUEST)
+    old_tt = image.tumor_type
     image.tumor_type = request.data["tumor_type"]
     image.classified_by = request.user
     try:
         image.save()
+        addImageToDataset(image.photo.name,old_tt,image.tumor_type)
     except ValidationError as e:
         return Response({'reason':str(e)}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
+        print(e)
         return Response({'reason':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return Response(ImageSerializer(image).data)
 
@@ -265,6 +269,7 @@ def change_patient(request, pk):
 def change_image(request, pk):
     image = get_object_or_404(Image, pk=pk)
     data = request.data
+    old_tt = image.tumor_type
     if 'patient' in data:
         patient = get_object_or_404(Patient, pk=data['patient'])
         setattr(image, 'patient', patient)
@@ -276,6 +281,8 @@ def change_image(request, pk):
         setattr(image, 'classified_by',request.user)
     try:
         image.save()
+        if 'tumor_type' in data:
+            addImageToDataset(image.photo.name,old_tt,image.tumor_type)
         return Response({"message": "Image updated successfully!"}, status=status.HTTP_200_OK)
     except ValidationError as e:
         return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -486,7 +493,7 @@ def createUser(request):
     )
     password_file = generatePasswordFile(password=password)
     zip_file = generateZipFile(password_file=password_file, PESEL=request.data["PESEL"])
-    sendEmail(user.email, zip_file)
+    sendEmail(user.email, zip_file, user.username)
     if os.path.exists(password_file):
         os.remove(password_file)
     if os.path.exists(zip_file):

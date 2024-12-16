@@ -46,7 +46,7 @@ const MultipleImagesList = () => {
   const nav = useNavigate();
   const [classificationResult, setClassificationResult] = useState(null);
   const [ids, setIds] = useState(1);
-  const [loading,setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const fetchPatients = async () => {
     try {
       const patients = await getPatients();
@@ -247,7 +247,7 @@ const MultipleImagesList = () => {
   };
 
   const handleClassify = async () => {
-    setLoading(true)
+    setLoading(true);
     const requestData = await extractData();
 
     try {
@@ -409,83 +409,136 @@ const MultipleImagesList = () => {
         <Modal isOpen={isOpen} onClose={handleCloseModal} isCentered>
           <ModalOverlay />
           <ModalContent bg="#DAE3E5" rounded="lg" boxShadow="xl">
-            <ModalHeader textAlign="center" color="#04080F">
+            {/* <ModalHeader textAlign="center" color="#04080F">
               {classificationResult ? "Report created" : "Patient Data"}
-            </ModalHeader>
+            </ModalHeader> */}
             <ModalCloseButton />
             <ModalBody p={6} width={"100%"}>
               {classificationResult ? (
-                <VStack spacing={4} w={"100%"}>
-                  <VStack spacing={4} w="100%">
-                    <a
-                      href={`http://127.0.0.1:8000${classificationResult.report}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ width: "100%" }}
-                    >
-                      <Button
-                        bg="#507DBC"
-                        color="white"
-                        _hover={{ bg: "blue.700" }}
-                        size="sm"
-                        boxShadow="md"
-                        w="100%"
+                <>
+                  <Heading size="md" color="#04080F" mb={6} textAlign="center" fontWeight="bold">
+                    Report created
+                  </Heading>
+                  <VStack spacing={4} w={"100%"}>
+                    <VStack spacing={2} w="100%">
+                      <a
+                        href={`http://127.0.0.1:8000${classificationResult.report}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ width: "100%" }}
                       >
-                        View Report
+                        <Button
+                          bg="#507DBC"
+                          color="white"
+                          _hover={{ bg: "blue.700" }}
+                          size="md"
+                          boxShadow="md"
+                          w="100%"
+                        >
+                          View Report
+                        </Button>
+                      </a>
+                      <Button
+                        bg="#00A676"
+                        color="white"
+                        _hover={{ bg: "#007A55" }}
+                        boxShadow="md"
+                        size="md"
+                        w="100%"
+                        onClick={handleDownloadFile}
+                      >
+                        Download Report
                       </Button>
-                    </a>
-                    <Button
-                      bg="#00A676"
-                      color="white"
-                      _hover={{ bg: "#007A55" }}
-                      boxShadow="md"
-                      size="sm"
-                      w="100%"
-                      onClick={handleDownloadFile}
-                    >
-                      Download Report
-                    </Button>
+                    </VStack>
                   </VStack>
-                </VStack>
+                </>
               ) : (
-                <VStack spacing={6} align="stretch">
-                  {generateModalContent().map((patient, index) => (
-                    <Box
-                      key={index}
-                      bg="white"
-                      p={4}
-                      rounded="md"
-                      shadow="md"
-                      borderWidth="1px"
+                <>
+                  <>
+                    <Heading
+                      size="md"
+                      color="#04080F"
+                      mb={4}
+                      textAlign="center"
                     >
-                      <Heading size="sm" mb={2} color="#507DBC">
-                        Patient {index + 1}
-                      </Heading>
-                      <Box color="#04080F">
-                        <strong>First Name:</strong>{" "}
-                        {patient.first_name || "N/A"}
+                      Confirm Patients Data
+                    </Heading>
+                    <Text
+                      fontSize="lg"
+                      color="#04080F"
+                      mb={2}
+                      textAlign="center"
+                    >
+                      Are you sure the following details are correct?
+                    </Text>
+                  </>
+                  <VStack spacing={6} align="stretch">
+                    {generateModalContent().map((patient, index) => (
+                      <Box
+                        key={index}
+                        bg="white"
+                        p={4}
+                        rounded="md"
+                        shadow="md"
+                        borderWidth="1px"
+                      >
+                        <Heading size="sm" mb={2} color="#507DBC">
+                          Patient {index + 1}
+                        </Heading>
+                        <Box color="#04080F">
+                          <strong>First Name:</strong>{" "}
+                          {patient.first_name || "N/A"}
+                        </Box>
+                        <Box color="#04080F">
+                          <strong>Last Name:</strong>{" "}
+                          {patient.last_name || "N/A"}
+                        </Box>
+                        <Box color="#04080F">
+                          <strong>Email:</strong> {patient.email || "N/A"}
+                        </Box>
+                        <Box color="#04080F">
+                          <strong>PESEL:</strong> {patient.PESEL || "N/A"}
+                        </Box>
+                        <Box color="#04080F">
+                          <strong>Photos:</strong>{" "}
+                          {patient.photos.length > 0
+                            ? patient.photos.join(", ")
+                            : "No photos uploaded"}
+                        </Box>
                       </Box>
-                      <Box color="#04080F">
-                        <strong>Last Name:</strong> {patient.last_name || "N/A"}
-                      </Box>
-                      <Box color="#04080F">
-                        <strong>Email:</strong> {patient.email || "N/A"}
-                      </Box>
-                      <Box color="#04080F">
-                        <strong>PESEL:</strong> {patient.PESEL || "N/A"}
-                      </Box>
-                      <Box color="#04080F">
-                        <strong>Photos:</strong>{" "}
-                        {patient.photos.length > 0
-                          ? patient.photos.join(", ")
-                          : "No photos uploaded"}
-                      </Box>
-                    </Box>
-                  ))}
-                </VStack>
+                    ))}
+                  </VStack>
+                  <Stack direction="row" justify="center" spacing={4} mt={'4'}>
+                    <Button
+                      bg="#507DBC"
+                      color="white"
+                      _hover={{ bg: "blue.700" }}
+                      onClick={handleClassify}
+                      width={"50%"}
+                      isLoading={loading}
+                      display={classificationResult ? "none" : "inline-block"}
+                      boxShadow="md"
+                    >
+                      Classify
+                    </Button>
+                    <Button
+                      bg="#DB504A"
+                      color={"white"}
+                      _hover={{
+                        bg: "red.700",
+                      }}
+                      onClick={onClose}
+                      width={"50%"}
+                      display={classificationResult ? "none" : "inline-block"}
+                      boxShadow="md"
+                    >
+                      Cancel
+                    </Button>
+                  </Stack>
+                </>
               )}
             </ModalBody>
-            <ModalFooter justifyContent="center">
+            {/* <ModalFooter justifyContent="center">
               <HStack width="100%" justifyContent="center">
                 <Button
                   bg="#507DBC"
@@ -523,7 +576,7 @@ const MultipleImagesList = () => {
                   Close
                 </Button>
               </HStack>
-            </ModalFooter>
+            </ModalFooter> */}
           </ModalContent>
         </Modal>
       </Stack>

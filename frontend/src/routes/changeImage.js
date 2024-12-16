@@ -248,11 +248,11 @@ const ChangeImagesData = () => {
         maxW={"100%"}
         py={5}
       >
-        <Stack align={"center"}>
+        {/* <Stack align={"center"}>
           <Heading fontSize={"4xl"} color="#04080F">
             Change image data
           </Heading>
-        </Stack>
+        </Stack> */}
         <Box
           rounded={"lg"}
           bg={"white"}
@@ -463,7 +463,7 @@ const ChangeImagesData = () => {
               size="md"
               // isDisabled={equal}
               boxShadow={"md"}
-              leftIcon={<EditIcon />}
+              // leftIcon={<EditIcon />}
               onClick={() => {
                 if (selectedPatient) {
                   if (!equal) {
@@ -486,14 +486,14 @@ const ChangeImagesData = () => {
         <ModalOverlay />
         <ModalContent bg="#DAE3E5" rounded="lg" boxShadow="xl">
           <ModalCloseButton />
-          <ModalBody p={6} textAlign="center">
-            <Heading size="md" color="#04080F" mb={4}>
+          <ModalBody p={6}>
+            <Heading size="md" color="#04080F" textAlign="center" mb={4}>
               Confirm Changes
             </Heading>
             <Box bg="white" p={4} rounded="md" shadow="md" mb={4}>
               {patientChange && tumorChange ? (
                 <>
-                  <Text color="#507DBC" fontWeight="semibold" mb={2}>
+                  <Text color="#04080F" fontWeight="semibold" mb={2}>
                     Current Patient:{" "}
                     <Text as="span" color="#04080F" fontWeight="normal">
                       {selectedImage.patient.first_name}{" "}
@@ -501,25 +501,25 @@ const ChangeImagesData = () => {
                       {selectedImage.patient.PESEL})
                     </Text>
                   </Text>
-                  <Text color="#507DBC" fontWeight="semibold" mb={2}>
+                  <Text color="#04080F" fontWeight="semibold" mb={2}>
                     New Patient:{" "}
                     <Text as="span" color="#04080F" fontWeight="normal">
                       {selectedPatient.first_name} {selectedPatient.last_name} (
                       {selectedPatient.PESEL})
                     </Text>
                   </Text>
-                  <Text color="#507DBC" fontWeight="semibold" mb={2}>
+                  <Text color="#04080F" fontWeight="semibold" mb={2}>
                     Tumor Type Change:{" "}
                     <Text as="span" color="#04080F" fontWeight="normal">
-                      From {TUMOR_TYPES[selectedImage.tumor_type] || "Unknown"}{" "}
-                      to {TUMOR_TYPES[selectedTumor] || "Unknown"}
+                      From {TUMOR_TYPES[selectedImage.tumor_type] || "unknown"}{" "}
+                      to {TUMOR_TYPES[selectedTumor] || "unknown"}
                     </Text>
                   </Text>
                 </>
               ) : patientChange ? (
                 <>
                   {" "}
-                  <Text color="#507DBC" fontWeight="semibold" mb={2}>
+                  <Text color="#04080F" fontWeight="semibold" mb={2}>
                     Current Patient:{" "}
                     <Text as="span" color="#04080F" fontWeight="normal">
                       {selectedImage.patient.first_name}{" "}
@@ -527,7 +527,7 @@ const ChangeImagesData = () => {
                       {selectedImage.patient.PESEL})
                     </Text>
                   </Text>
-                  <Text color="#507DBC" fontWeight="semibold" mb={2}>
+                  <Text color="#04080F" fontWeight="semibold" mb={2}>
                     New Patient:{" "}
                     <Text as="span" color="#04080F" fontWeight="normal">
                       {selectedPatient.first_name} {selectedPatient.last_name} (
@@ -535,21 +535,17 @@ const ChangeImagesData = () => {
                     </Text>
                   </Text>
                 </>
-              ) : tumorChange ? (
+              ) : (
                 <>
                   {" "}
-                  <Text color="#507DBC" fontWeight="semibold" mb={2}>
+                  <Text color="#04080F" fontWeight="semibold" mb={2}>
                     Tumor Type Change:{" "}
                     <Text as="span" color="#04080F" fontWeight="normal">
-                      From {TUMOR_TYPES[selectedImage.tumor_type] || "Unknown"}{" "}
-                      to {TUMOR_TYPES[selectedTumor] || "Unknown"}
+                      From {TUMOR_TYPES[selectedImage?.tumor_type] || "unknown"}{" "}
+                      to {TUMOR_TYPES[selectedTumor] || "unknown"}
                     </Text>
                   </Text>
                 </>
-              ) : (
-                <Text color="#04080F" fontWeight="semibold">
-                  No Changes Detected
-                </Text>
               )}
             </Box>
             <Stack direction="row" justify="center" spacing={4}>
@@ -564,7 +560,7 @@ const ChangeImagesData = () => {
                 Confirm
               </Button>
               <Button
-                variant="outline"
+                // variant="outline"
                 bg="#DB504A"
                 color={"white"}
                 _hover={{

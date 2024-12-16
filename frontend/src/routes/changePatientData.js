@@ -287,32 +287,35 @@ const ChangePatientData = () => {
         </Box>
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
           <ModalOverlay />
-          <ModalContent bg="#DAE3E5" rounded="lg" boxShadow="xl">
+          <ModalContent bg="#DAE3E5" rounded="lg" boxShadow="xl" >
             <ModalCloseButton />
-            <ModalBody p={6} textAlign="center">
-              <Heading size="md" color="#04080F" mb={4}>
+            <ModalBody p={6} >
+              <Heading size="md" color="#04080F" mb={4} textAlign="center">
                 Patient Details
               </Heading>
+              <Text fontSize="lg" color="#04080F" mb={2} textAlign="center">
+                Are you sure to change patient data as follows?
+              </Text>
               <Box bg="white" p={4} rounded="md" shadow="md" mb={4}>
-                <Text color="#507DBC" fontWeight="semibold">
+                <Text color="#04080F" fontWeight="semibold" ml={3}>
                   First Name:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.first_name}
                   </Text>
                 </Text>
-                <Text color="#507DBC" fontWeight="semibold">
+                <Text color="#04080F" fontWeight="semibold" ml={3}>
                   Last Name:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.last_name}
                   </Text>
                 </Text>
-                <Text color="#507DBC" fontWeight="semibold">
+                <Text color="#04080F" fontWeight="semibold" ml={3}>
                   Email:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.email}
                   </Text>
                 </Text>
-                <Text color="#507DBC" fontWeight="semibold">
+                <Text color="#04080F" fontWeight="semibold" ml={3}>
                   PESEL:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.PESEL}
@@ -331,7 +334,7 @@ const ChangePatientData = () => {
                   Edit
                 </Button>
                 <Button
-                  variant="outline"
+                  // variant="outline"
                   bg="#DB504A"
                   color={"white"}
                   _hover={{

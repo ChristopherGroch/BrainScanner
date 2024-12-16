@@ -88,16 +88,17 @@ const ChangePasasword = () => {
         spacing={8}
         mx={"auto"}
         maxW={"100%"}
+        justify={"center"}
         width={"34%"}
         height={"70%"}
-        py={12}
+        py={6}
         px={6}
       >
-        <Stack align={"center"}>
+        {/* <Stack align={"center"}>
           <Heading fontSize={"4xl"} color="#04080F">
             Change password
           </Heading>
-        </Stack>
+        </Stack> */}
         <Box
           rounded={"lg"}
           bg={useColorModeValue("white", "gray.700")}

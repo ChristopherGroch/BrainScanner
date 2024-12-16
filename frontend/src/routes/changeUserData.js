@@ -273,8 +273,7 @@ const ChangeUserData = () => {
   const customStyles = {
     control: (provided) => ({
       ...provided,
-      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06)", 
-    
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06)",
     }),
   };
   return (
@@ -297,18 +296,18 @@ const ChangeUserData = () => {
         py={5}
         // border="4px solid black"
       >
-        <Stack align={"center"}>
+        {/* <Stack align={"center"}>
           <Heading fontSize={"4xl"} color="#04080F">
             Change user data
           </Heading>
-        </Stack>
+        </Stack> */}
         <Box
           rounded={"lg"}
           bg={"white"}
           boxShadow={"lg"}
           px={6}
           py={4}
-          minH="65%"
+          minH="68%"
           width={"100%"}
         >
           <Stack
@@ -343,7 +342,7 @@ const ChangeUserData = () => {
                     field.replace("_", " ").slice(1)}
                 </FormLabel>
                 <Input
-                boxShadow="md"
+                  boxShadow="md"
                   value={formData[field]}
                   onChange={(e) => handleChange(field, e.target.value)}
                 />
@@ -399,37 +398,40 @@ const ChangeUserData = () => {
           <ModalOverlay />
           <ModalContent bg="#DAE3E5" rounded="lg" boxShadow="xl">
             <ModalCloseButton />
-            <ModalBody p={6} textAlign="center">
-              <Heading size="md" color="#04080F" mb={4}>
+            <ModalBody p={6}>
+              <Heading size="md" textAlign="center" color="#04080F" mb={4}>
                 User Details
               </Heading>
-              <Box bg="white" p={4} rounded="md" shadow="md" mb={4}>
-                <Text color="#507DBC" fontWeight="semibold">
+              <Text fontSize="lg" color="#04080F" mb={2} textAlign="center">
+                Are you sure to change user data as follows?
+              </Text>
+              <Box bg="white" p={4} rounded="md" shadow="md" mb={3}>
+                <Text color="#04080F" fontWeight="semibold" ml={3}>
                   First Name:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.first_name}
                   </Text>
                 </Text>
-                <Text color="#507DBC" fontWeight="semibold">
+                <Text color="#04080F" fontWeight="semibold" ml={3}>
                   Last Name:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.last_name}
                   </Text>
                 </Text>
-                <Text color="#507DBC" fontWeight="semibold">
+                <Text color="#04080F" fontWeight="semibold" ml={3}>
                   Email:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.email}
                   </Text>
                 </Text>
-                <Text color="#507DBC" fontWeight="semibold">
+                <Text color="#04080F" fontWeight="semibold" ml={3}>
                   Username:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.username}
                   </Text>
                 </Text>
                 {formData.PESEL && (
-                  <Text color="#507DBC" fontWeight="semibold">
+                  <Text color="#04080F" fontWeight="semibold" ml={3}>
                     PESEL:{" "}
                     <Text as="span" color="#04080F" fontWeight="normal">
                       {formData.PESEL}
@@ -445,12 +447,12 @@ const ChangeUserData = () => {
                   _hover={{ bg: "blue.700" }}
                   isLoading={loading}
                   boxShadow="md"
-                  width={'100%'}
+                  width={"100%"}
                 >
                   Edit
                 </Button>
                 <Button
-                  variant="outline"
+                  // variant="outline"
                   bg="#DB504A"
                   color={"white"}
                   boxShadow="md"
@@ -458,7 +460,7 @@ const ChangeUserData = () => {
                     bg: "red.700",
                   }}
                   onClick={onClose}
-                  width={'100%'}
+                  width={"100%"}
                 >
                   Cancel
                 </Button>
@@ -469,17 +471,20 @@ const ChangeUserData = () => {
         <Modal isOpen={isResetOpen} onClose={onResetClose} isCentered>
           <ModalOverlay />
           <ModalContent bg="#DAE3E5" rounded="lg" boxShadow="xl">
-            <ModalHeader textAlign="center" color="#04080F">
+            {/* <ModalHeader textAlign="center" color="#04080F">
               Reset Password
-            </ModalHeader>
+            </ModalHeader> */}
             <ModalCloseButton />
             <ModalBody p={6} textAlign="center">
+              <Heading size="md" color="#04080F" mb={4} textAlign="center">
+                Reset password
+              </Heading>
               <Text mb={4} fontSize="lg" color="#04080F">
                 Email with new password will be send to {selectedUser?.email},
                 please provide the user's PESEL:
               </Text>
-              <FormControl isInvalid={!!resetError}>
-                <FormLabel color="#507DBC">PESEL</FormLabel>
+              <FormControl isInvalid={!!resetError} mb={3}>
+                <FormLabel color="#04080F" fontWeight={'bold'}>PESEL</FormLabel>
                 <Input
                   value={resetPesel}
                   onChange={(e) => handleResetPeselChange(e.target.value)}
@@ -487,7 +492,7 @@ const ChangeUserData = () => {
                   color="#04080F"
                   shadow="md"
                   rounded="md"
-                  mb={4}
+                  mb={0}
                 />
                 <FormErrorMessage>{resetError}</FormErrorMessage>
               </FormControl>
@@ -499,12 +504,12 @@ const ChangeUserData = () => {
                   _hover={{ bg: "blue.700" }}
                   isLoading={loading}
                   boxShadow="md"
-                  width={'100%'}
+                  width={"100%"}
                 >
                   Reset Password
                 </Button>
                 <Button
-                  variant="outline"
+                  // variant="outline"
                   bg="#DB504A"
                   color={"white"}
                   boxShadow="md"
@@ -512,7 +517,7 @@ const ChangeUserData = () => {
                     bg: "red.700",
                   }}
                   onClick={onResetClose}
-                  width={'100%'}
+                  width={"100%"}
                 >
                   Cancel
                 </Button>

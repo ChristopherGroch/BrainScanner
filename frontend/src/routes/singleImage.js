@@ -431,37 +431,37 @@ const SingleImage = () => {
             <ModalOverlay />
             <ModalContent bg="#DAE3E5" rounded="lg" boxShadow="xl">
               <ModalCloseButton />
-              <ModalBody p={6} textAlign="center">
+              <ModalBody p={6} width={'100%'} >
                 {!classificationResult ? (
                   <>
-                    <Heading size="md" color="#04080F" mb={4}>
+                    <Heading size="md" color="#04080F" mb={4} textAlign="center">
                       Confirm Patient Data
                     </Heading>
-                    <Text fontSize="lg" color="#04080F" mb={2}>
+                    <Text fontSize="lg" color="#04080F" mb={2} textAlign="center">
                       Are you sure the following details are correct?
                     </Text>
-                    <Box bg="white" p={4} rounded="md" shadow="md" mb={4}>
+                    <Box bg="white" p={4} rounded="md" shadow="md" mb={4} alling="stretch">
                       {isDropdown && selectedPatient ? (
                         <>
-                          <Text color="#507DBC" fontWeight="semibold">
+                          <Box color="#04080F" fontWeight="bold">
                             First Name:{" "}
                             <Text as="span" color="#04080F" fontWeight="normal">
                               {selectedPatient.first_name}
                             </Text>
-                          </Text>
-                          <Text color="#507DBC" fontWeight="semibold">
+                          </Box>
+                          <Text color="#04080F" fontWeight="bold">
                             Last Name:{" "}
                             <Text as="span" color="#04080F" fontWeight="normal">
                               {selectedPatient.last_name}
                             </Text>
                           </Text>
-                          <Text color="#507DBC" fontWeight="semibold">
+                          <Text color="#04080F" fontWeight="bold">
                             Email:{" "}
                             <Text as="span" color="#04080F" fontWeight="normal">
                               {selectedPatient.email}
                             </Text>
                           </Text>
-                          <Text color="#507DBC" fontWeight="semibold">
+                          <Text color="#04080F" fontWeight="bold">
                             PESEL:{" "}
                             <Text as="span" color="#04080F" fontWeight="normal">
                               {selectedPatient.PESEL}
@@ -470,25 +470,25 @@ const SingleImage = () => {
                         </>
                       ) : (
                         <>
-                          <Text color="#507DBC" fontWeight="semibold">
+                          <Text color="#04080F" fontWeight="bold">
                             First Name:{" "}
                             <Text as="span" color="#04080F" fontWeight="normal">
                               {formData.first_name}
                             </Text>
                           </Text>
-                          <Text color="#507DBC" fontWeight="semibold">
+                          <Text color="#04080F" fontWeight="bold">
                             Last Name:{" "}
                             <Text as="span" color="#04080F" fontWeight="normal">
                               {formData.last_name}
                             </Text>
                           </Text>
-                          <Text color="#507DBC" fontWeight="semibold">
+                          <Text color="#04080F" fontWeight="bold">
                             Email:{" "}
                             <Text as="span" color="#04080F" fontWeight="normal">
                               {formData.email}
                             </Text>
                           </Text>
-                          <Text color="#507DBC" fontWeight="semibold">
+                          <Text color="#04080F" fontWeight="bold">
                             PESEL:{" "}
                             <Text as="span" color="#04080F" fontWeight="normal">
                               {formData.PESEL}
@@ -509,7 +509,7 @@ const SingleImage = () => {
                         Confirm and Classify
                       </Button>
                       <Button
-                        variant="outline"
+                        // variant="outline"
                         bg="#DB504A"
                         color={"white"}
                         _hover={{
@@ -525,7 +525,7 @@ const SingleImage = () => {
                   </>
                 ) : (
                   <>
-                    <Heading size="md" color="#04080F" mb={4}>
+                    <Heading size="md" color="#04080F" mb={4} textAlign="center">
                       Classification Results
                     </Heading>
                     {classificationResult.image && (
@@ -572,8 +572,8 @@ const SingleImage = () => {
                         .sort(([, a], [, b]) => b - a)
                         .map(([label, value]) => (
                           <Text
-                            color="#507DBC"
-                            fontWeight="semibold"
+                            color="#04080F"
+                            fontWeight="bold"
                             key={label}
                           >
                             {label}:{" "}
@@ -583,7 +583,7 @@ const SingleImage = () => {
                           </Text>
                         ))}
                     </Box>
-                    <Button
+                    {/* <Button
                       bg="#507DBC"
                       color="white"
                       _hover={{ bg: "blue.700" }}
@@ -591,7 +591,7 @@ const SingleImage = () => {
                       boxShadow="md"
                     >
                       Close
-                    </Button>
+                    </Button> */}
                   </>
                 )}
               </ModalBody>

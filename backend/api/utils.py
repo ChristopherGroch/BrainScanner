@@ -18,7 +18,7 @@ import pyminizip
 from django.core.mail import EmailMessage
 from backend.settings import EMAIL_HOST_USER
 import datetime
-
+import shutil
 
 def loadNetwork():
     try:
@@ -48,6 +48,25 @@ def array_hash(pt):
 
     return sha256.hexdigest()
 
+def array_hash2(pt):
+    arr = cv2.imread(pt,0)
+    arr_bytes = arr.tobytes()
+
+    sha256 = hashlib.sha256()
+
+    sha256.update(arr_bytes)
+
+    return sha256.hexdigest()
+
+
+def array_hash_in_memory2(im):
+    arr_bytes = im.tobytes()
+    
+    sha256 = hashlib.sha256()
+
+    sha256.update(arr_bytes)
+
+    return sha256.hexdigest()
 
 def checkIfImageHasDuplicateInFileSystem(path):
     im_hash = array_hash(path)
@@ -61,6 +80,19 @@ def checkIfImageHasDuplicateInFileSystem(path):
                     raise ValidationError("Exact image already exists: " + file_name)
     return True
 
+
+def checkIfImageHasDuplicateInDataset(im):
+    im_hash = array_hash_in_memory2(im)
+    image1 = im
+    mediaPath = os.path.join(os.path.dirname(os.path.abspath(__file__)).split('backend')[0], 'Dataset')
+    for folder in os.listdir(mediaPath):
+        for file_name in os.listdir(mediaPath + '/' + folder):
+            if im_hash == array_hash2(os.path.join(mediaPath,folder,file_name)):
+                image2 = cv2.imread(os.path.join(mediaPath,folder,file_name),0)
+                if image1.shape == image2.shape:
+                    if np.count_nonzero(cv2.subtract(image1, image2)) == 0:
+                        return True
+    return False
 
 def saveBlankPILimage(im_path):
     im = pilImage.open(im_path)
@@ -133,7 +165,6 @@ def resize_preserve_aspect(img, target_size, inter):
 
 def crop_image(image_path):
     image = cv2.imread(image_path, 0)
-
     blurred = cv2.GaussianBlur(image, (5, 5), 0)
 
     _, thresholded = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
@@ -153,7 +184,7 @@ def crop_image(image_path):
 data_transform = transforms.Compose(
     [
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        transforms.Normalize(mean=[0.1966, 0.1966, 0.1966], std=[0.2023, 0.2023, 0.2023]),
     ]
 )
 
@@ -185,11 +216,11 @@ def generateZipFile(password_file,PESEL):
     pyminizip.compress(password_file, None, "password_in_zip.zip", PESEL, 5)
     return "password_in_zip.zip"
 
-def sendEmail(email,file):
+def sendEmail(email,file,username):
     email_message = EmailMessage(
-        subject="Twoje konto zostało utworzone",
+        subject="Your account has been created.",
         body=(
-            "Password was encrypted by your PESEL number"
+            f"Password was encrypted by your PESEL number. Your username is '{username}'"
         ),
         from_email=EMAIL_HOST_USER,
         to=[email],
@@ -221,3 +252,26 @@ def frontedHappyReformatHistory(data):
                 
             })
     return result
+
+def addImageToDataset(src, old_tt, new_tt):
+    tts = {0:'None',
+           1:'glioma',
+           2:'meningioma',
+           3:'pituitary',
+           4:'notumor'}
+    path = default_storage.path(src)
+    dataset = os.path.join(os.path.dirname(os.path.abspath(__file__)).split('backend')[0], 'Dataset')
+    if old_tt is None or int(old_tt) == 0:
+        im = crop_image(path)
+        im = resize_preserve_aspect(im, 224, cv2.INTER_LINEAR)
+        if checkIfImageHasDuplicateInDataset(im):
+            return False
+        cv2.imwrite(os.path.join(dataset,tts[int(new_tt)],src.split('/')[-1]),im)
+    else:
+        if new_tt is None or int(new_tt) == 0:
+            if os.path.exists(os.path.join(dataset,tts[int(old_tt)],src.split('/')[-1])):
+                os.remove(os.path.join(dataset,tts[int(old_tt)],src.split('/')[-1]))
+        else:
+            if os.path.exists(os.path.join(dataset,tts[int(old_tt)],src.split('/')[-1])):
+                shutil.move(os.path.join(dataset,tts[int(old_tt)],src.split('/')[-1]),
+                        os.path.join(dataset,tts[int(new_tt)],src.split('/')[-1]))

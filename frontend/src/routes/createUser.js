@@ -145,18 +145,18 @@ const CreateUser = () => {
         py={5}
         //  border="4px solid black"
       >
-        <Stack align={"center"}>
+        {/* <Stack align={"center"}>
           <Heading fontSize={"4xl"} color="#04080F">
             Create user
           </Heading>
-        </Stack>
+        </Stack> */}
         <Box
           rounded={"lg"}
           bg={"white"}
           boxShadow={"lg"}
           px={6}
           py={4}
-          // minH="77%"
+          minH="65%"
           width={"100%"}
         >
           <Stack spacing={4}>
@@ -179,6 +179,7 @@ const CreateUser = () => {
             )}
             <Button
               bg="#507DBC"
+              // mt={3}
               color={"white"}
               _hover={{
                 bg: "blue.700",
@@ -194,40 +195,40 @@ const CreateUser = () => {
           <ModalOverlay />
           <ModalContent bg="#DAE3E5" rounded="lg" boxShadow="xl">
             <ModalCloseButton />
-            <ModalBody p={6} textAlign="center">
-              <Heading size="md" color="#04080F" mb={4}>
+            <ModalBody p={6}>
+              <Heading size="md" color="#04080F" mb={4} textAlign="center">
                 Confirm User Creation
               </Heading>
-              <Text fontSize="lg" color="#04080F" mb={2}>
+              <Text fontSize="lg" color="#04080F" mb={2} textAlign="center">
                 Are you sure you want to create a user with the following
                 details?
               </Text>
               <Box bg="white" p={4} rounded="md" shadow="md" mb={4}>
-                <Text color="#507DBC" fontWeight="semibold">
+                <Text color="#04080F" fontWeight="semibold" ml={3}>
                   Username:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.username}
                   </Text>
                 </Text>
-                <Text color="#507DBC" fontWeight="semibold">
+                <Text color="#04080F" fontWeight="semibold" ml={3}>
                   First Name:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.first_name}
                   </Text>
                 </Text>
-                <Text color="#507DBC" fontWeight="semibold">
+                <Text color="#04080F" fontWeight="semibold" ml={3}>
                   Last Name:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.last_name}
                   </Text>
                 </Text>
-                <Text color="#507DBC" fontWeight="semibold">
+                <Text color="#04080F" fontWeight="semibold" ml={3}>
                   Email:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.email}
                   </Text>
                 </Text>
-                <Text color="#507DBC" fontWeight="semibold">
+                <Text color="#04080F" fontWeight="semibold" ml={3}>
                   PESEL:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.PESEL}
@@ -247,7 +248,7 @@ const CreateUser = () => {
                   Confirm
                 </Button>
                 <Button
-                  variant="outline"
+                  // variant="outline"
                   bg="#DB504A"
                   color={"white"}
                   _hover={{
