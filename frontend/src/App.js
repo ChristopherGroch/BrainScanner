@@ -20,6 +20,7 @@ import { Toaster } from "sonner";
 import MultipleImagesList from "./routes/listMultipleImages";
 import ChangePatientData from "./routes/changePatientData";
 import ChangeImagesData from "./routes/changeImage";
+import Info from "./routes/info";
 import ChangeUserData from "./routes/changeUserData";
 import Navbar from "./components/navbar";
 import { Outlet } from "react-router-dom";
@@ -130,6 +131,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <HistoryMenu />
+                  </ProtectedRoute>
+                }
+              ></Route>
+              <Route
+                path="/info"
+                element={
+                  <ProtectedRoute>
+                    <Info />
                   </ProtectedRoute>
                 }
               ></Route>

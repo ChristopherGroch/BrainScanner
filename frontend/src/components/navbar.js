@@ -48,6 +48,7 @@ const Navbar = () => {
           fontWeight="bold"
           textDecoration="none"
           color="white"
+          ml={5}
         >
           BrainScanner
         </ChakraLink>
@@ -137,6 +138,7 @@ const Navbar = () => {
                 fontSize="1.2rem"
                 borderRadius="md"
                 _hover={{ bg: "blue.700" }}
+                mr={5}
               >
                 {userName}
                 <ChevronDownIcon />
@@ -194,6 +196,15 @@ const Navbar = () => {
                   display={admin ? "block" : "none"}
                 >
                   Change Pateints
+                </MenuItem>
+                <MenuItem
+                  as={RouterLink}
+                  to="/info"
+                  fontSize="1.2rem"
+                  bg="#507DBC"
+                  _hover={{ bg: "blue.700" }}
+                >
+                  More Informations
                 </MenuItem>
                 <MenuItem
                   onClick={handleLogout}

@@ -84,7 +84,7 @@ const ReportItem = ({ file, date, file_id, patients }) => {
             _hover={{
               bg: "green.700",
             }}
-            size="md"
+            size="sm"
             onClick={handleDownloadFile}
             width="30%"
             boxShadow="md"
@@ -103,7 +103,7 @@ const ReportItem = ({ file, date, file_id, patients }) => {
               _hover={{ bg: "blue.700" }}
               width="100%"
               boxShadow="md"
-              size="md"
+              size="sm"
             >
               View Report
             </Button>

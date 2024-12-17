@@ -25,14 +25,8 @@ import { MdImage } from "react-icons/md";
 
 const Menu = () => {
   const nav = useNavigate();
-  const { logoutUser, admin } = useAuth();
-
   const moveToHistory = () => {
     nav("/history");
-  };
-
-  const moveToCreateUser = () => {
-    nav("/createUser");
   };
 
   const moveToChangepassword = () => {
@@ -49,21 +43,6 @@ const Menu = () => {
 
   const moveToMultipleImages = () => {
     nav("/multipleImages");
-  };
-
-  const moveToChangeData = () => {
-    nav("/changePatient");
-  };
-  const moveToChangeImage = () => {
-    nav("/changeImages");
-  };
-
-  const moveToChangeUser = () => {
-    nav("/changeUsers");
-  };
-
-  const handleLogout = async () => {
-    await logoutUser();
   };
 
   const Card = ({ heading, description, icon, href }) => {
@@ -122,7 +101,7 @@ const Menu = () => {
           rounded={"lg"}
           bg={useColorModeValue("white", "gray.700")}
           boxShadow={"lg"}
-          width={"50%"}
+          width={"55%"}
         >
           <Container maxW={"3xl"}>
             <Stack
@@ -166,7 +145,7 @@ const Menu = () => {
                 >
                   Evaluate an image
                 </Button>
-                <Button variant={"link"} colorScheme={"blue"} size={"md"}>
+                <Button variant={"link"} colorScheme={"blue"} size={"md"} onClick={ () => {nav('/info')}}>
                   Learn more
                 </Button>
               </Stack>
@@ -178,7 +157,7 @@ const Menu = () => {
           rounded={"lg"}
           bg={useColorModeValue("white", "gray.700")}
           boxShadow={"lg"}
-          width={"50%"}
+          width={"55%"}
         >
           <VStack>
             <Stack spacing={4} maxW={"3xl"} textAlign={"center"}>

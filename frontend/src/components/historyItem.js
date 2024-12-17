@@ -171,6 +171,7 @@ const HistoryItem = ({
             aspectRatio={1}
             // display="flex"
             justifyContent="center"
+            // textAlign={'left'}
             ml="auto"
             mr="auto"
             // border="4px solid red"
@@ -244,7 +245,7 @@ const HistoryItem = ({
               </>
             ) : (
               <>
-                <Heading as="h1" size="md" mb={1}>
+                <Heading as="h1" size="md" mb={1} >
                   {patient}
                 </Heading>
                 <Text fontSize="sm" color="#04080F">
