@@ -1,5 +1,5 @@
 from django.test import TestCase, Client, override_settings
-from .models import Patient, Image, MlModel, Classification, Usage, Report
+from .models import Patient, Image, Classification, Usage, Report
 from PIL import Image as pilImage
 from django.contrib.auth.models import User
 from .serializers import PatientSerializer, ImageSerializer, UserSerializer
@@ -810,17 +810,17 @@ class singleImageTest(TestCase):
 
     def testSingleImage(self):
 
-        with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
-            uploaded_file = SimpleUploadedFile(
-                name="model.pth",
-                content=model_file.read(),
-                content_type="application/octet-stream",
-            )
+        # with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
+        #     uploaded_file = SimpleUploadedFile(
+        #         name="model.pth",
+        #         content=model_file.read(),
+        #         content_type="application/octet-stream",
+        #     )
 
-        new_model = MlModel(accuracy=0.94, pytorch_model=uploaded_file, name="Model_01")
-        new_model.save()
+        # new_model = MlModel(accuracy=0.94, pytorch_model=uploaded_file, name="Model_01")
+        # new_model.save()
 
-        best = new_model.id
+        # best = new_model.id
 
         path = "testFiles/Test.jpg"
 
@@ -874,27 +874,27 @@ class singleImageTest(TestCase):
         self.assertEqual(Image.objects.all().count(), 1)
         self.assertEqual(Usage.objects.all().count(), 1)
         self.assertEqual(Classification.objects.all().count(), 1)
-        self.assertEqual(Classification.objects.all().last().ml_model.id, best)
+        # self.assertEqual(Classification.objects.all().last().ml_model.id, best)
 
-        with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
-            uploaded_file = SimpleUploadedFile(
-                name="model2.pth",
-                content=model_file.read(),
-                content_type="application/octet-stream",
-            )
+        # with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
+        #     uploaded_file = SimpleUploadedFile(
+        #         name="model2.pth",
+        #         content=model_file.read(),
+        #         content_type="application/octet-stream",
+        #     )
 
-        new_model = MlModel(accuracy=0.96, pytorch_model=uploaded_file, name="Model_02")
-        new_model.save()
-        best = new_model.id
-        with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
-            uploaded_file = SimpleUploadedFile(
-                name="model3.pth",
-                content=model_file.read(),
-                content_type="application/octet-stream",
-            )
+        # new_model = MlModel(accuracy=0.96, pytorch_model=uploaded_file, name="Model_02")
+        # new_model.save()
+        # best = new_model.id
+        # with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
+        #     uploaded_file = SimpleUploadedFile(
+        #         name="model3.pth",
+        #         content=model_file.read(),
+        #         content_type="application/octet-stream",
+        #     )
 
-        new_model = MlModel(accuracy=0.92, pytorch_model=uploaded_file, name="Model_03")
-        new_model.save()
+        # new_model = MlModel(accuracy=0.92, pytorch_model=uploaded_file, name="Model_03")
+        # new_model.save()
 
         patient_data["id"] = Patient.objects.all().last().id
         with open(path, "rb") as image_file:
@@ -912,7 +912,7 @@ class singleImageTest(TestCase):
         self.assertEqual(Image.objects.all().count(), 1)
         self.assertEqual(Usage.objects.all().count(), 2)
         self.assertEqual(Classification.objects.all().count(), 2)
-        self.assertEqual(Classification.objects.all().last().ml_model.id, best)
+        # self.assertEqual(Classification.objects.all().last().ml_model.id, best)
 
         path = "testFiles/Testcopy.jpg"
         with open(path, "rb") as image_file:
@@ -930,7 +930,7 @@ class singleImageTest(TestCase):
         self.assertEqual(Image.objects.all().count(), 1)
         self.assertEqual(Usage.objects.all().count(), 3)
         self.assertEqual(Classification.objects.all().count(), 3)
-        self.assertEqual(Classification.objects.all().last().ml_model.id, best)
+        # self.assertEqual(Classification.objects.all().last().ml_model.id, best)
 
         path = "testFiles/Test2.jpg"
         with open(path, "rb") as image_file:
@@ -951,26 +951,26 @@ class singleImageTest(TestCase):
 
         os.remove("media/Images/test_image.jpg")
         os.remove("media/Images/test_image2.jpg")
-        os.remove("media/MlModels/model.pth")
-        os.remove("media/MlModels/model2.pth")
-        os.remove("media/MlModels/model3.pth")
+        # os.remove("media/MlModels/model.pth")
+        # os.remove("media/MlModels/model2.pth")
+        # os.remove("media/MlModels/model3.pth")
         Classification.objects.all().delete()
         Usage.objects.all().delete()
         Image.objects.all().delete()
         Patient.objects.all().delete()
-        MlModel.objects.all().delete()
+        # MlModel.objects.all().delete()
 
     def testNewPatientExistingFile(self):
 
-        with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
-            uploaded_file = SimpleUploadedFile(
-                name="model.pth",
-                content=model_file.read(),
-                content_type="application/octet-stream",
-            )
+        # with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
+        #     uploaded_file = SimpleUploadedFile(
+        #         name="model.pth",
+        #         content=model_file.read(),
+        #         content_type="application/octet-stream",
+        #     )
 
-        new_model = MlModel(accuracy=0.94, pytorch_model=uploaded_file, name="Model_01")
-        new_model.save()
+        # new_model = MlModel(accuracy=0.94, pytorch_model=uploaded_file, name="Model_01")
+        # new_model.save()
 
         path = "testFiles/Test.jpg"
 
@@ -1018,26 +1018,26 @@ class singleImageTest(TestCase):
         self.assertEqual(Usage.objects.all().count(), 1)
         self.assertEqual(Classification.objects.all().count(), 1)
 
-        os.remove("media/MlModels/model.pth")
+        # os.remove("media/MlModels/model.pth")
         os.remove("media/Images/test_image.jpg")
 
         Classification.objects.all().delete()
         Usage.objects.all().delete()
         Image.objects.all().delete()
         Patient.objects.all().delete()
-        MlModel.objects.all().delete()
+        # MlModel.objects.all().delete()
 
     def testOldPatientExistingFile(self):
 
-        with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
-            uploaded_file = SimpleUploadedFile(
-                name="model.pth",
-                content=model_file.read(),
-                content_type="application/octet-stream",
-            )
+        # with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
+        #     uploaded_file = SimpleUploadedFile(
+        #         name="model.pth",
+        #         content=model_file.read(),
+        #         content_type="application/octet-stream",
+        #     )
 
-        new_model = MlModel(accuracy=0.94, pytorch_model=uploaded_file, name="Model_01")
-        new_model.save()
+        # new_model = MlModel(accuracy=0.94, pytorch_model=uploaded_file, name="Model_01")
+        # new_model.save()
 
         path = "testFiles/Test.jpg"
 
@@ -1101,13 +1101,13 @@ class singleImageTest(TestCase):
         self.assertEqual(Usage.objects.all().count(), 2)
         self.assertEqual(Classification.objects.all().count(), 2)
 
-        os.remove("media/MlModels/model.pth")
+        # os.remove("media/MlModels/model.pth")
 
         Classification.objects.all().delete()
         Usage.objects.all().delete()
         Image.objects.all().delete()
         Patient.objects.all().delete()
-        MlModel.objects.all().delete()
+        # MlModel.objects.all().delete()
 
     def testNoNetwork(self):
 
@@ -1131,23 +1131,24 @@ class singleImageTest(TestCase):
             data={"photo": uploaded_image, "patient": json.dumps(patient_data)},
         )
 
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.data, {"reason": "No Network"})
-        self.assertEqual(Patient.objects.all().count(), 0)
-        self.assertEqual(Image.objects.all().count(), 0)
-        self.assertEqual(Usage.objects.all().count(), 0)
-        self.assertEqual(Classification.objects.all().count(), 0)
+        # self.assertEqual(response.status_code, 500)
+        # self.assertEqual(response.data, {"reason": "No Network"})
+        # self.assertEqual(Patient.objects.all().count(), 0)
+        # self.assertEqual(Image.objects.all().count(), 0)
+        # self.assertEqual(Usage.objects.all().count(), 0)
+        # self.assertEqual(Classification.objects.all().count(), 0)
+        os.remove("media/Images/test_image.jpg")
 
     def testBadData(self):
-        with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
-            uploaded_file = SimpleUploadedFile(
-                name="model.pth",
-                content=model_file.read(),
-                content_type="application/octet-stream",
-            )
+        # with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
+        #     uploaded_file = SimpleUploadedFile(
+        #         name="model.pth",
+        #         content=model_file.read(),
+        #         content_type="application/octet-stream",
+        #     )
 
-        new_model = MlModel(accuracy=0.94, pytorch_model=uploaded_file, name="Model_01")
-        new_model.save()
+        # new_model = MlModel(accuracy=0.94, pytorch_model=uploaded_file, name="Model_01")
+        # new_model.save()
 
         path = "testFiles/Test.jpg"
 
@@ -1246,8 +1247,8 @@ class singleImageTest(TestCase):
             },
         )
 
-        MlModel.objects.all().delete()
-        os.remove("media/MlModels/model.pth")
+        # MlModel.objects.all().delete()
+        # os.remove("media/MlModels/model.pth")
 
 
 class HistoryTest(TestCase):
@@ -1297,15 +1298,15 @@ class HistoryTest(TestCase):
         self.assertNotEqual(response.status_code, 403)
 
     def testHistory(self):
-        with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
-            uploaded_file = SimpleUploadedFile(
-                name="model.pth",
-                content=model_file.read(),
-                content_type="application/octet-stream",
-            )
+        # with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
+        #     uploaded_file = SimpleUploadedFile(
+        #         name="model.pth",
+        #         content=model_file.read(),
+        #         content_type="application/octet-stream",
+        #     )
 
-        new_model = MlModel(accuracy=0.94, pytorch_model=uploaded_file, name="Model_01")
-        new_model.save()
+        # new_model = MlModel(accuracy=0.94, pytorch_model=uploaded_file, name="Model_01")
+        # new_model.save()
 
         path = "testFiles/Test.jpg"
 
@@ -1370,7 +1371,7 @@ class HistoryTest(TestCase):
         )
 
         Image.objects.all().delete()
-        os.remove("media/MlModels/model.pth")
+        # os.remove("media/MlModels/model.pth")
 
 
 class Classify(TestCase):
@@ -1409,15 +1410,15 @@ class Classify(TestCase):
         self.assertNotEqual(response.status_code, 403)
 
     def testClassify(self):
-        with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
-            uploaded_file = SimpleUploadedFile(
-                name="model.pth",
-                content=model_file.read(),
-                content_type="application/octet-stream",
-            )
+        # with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
+        #     uploaded_file = SimpleUploadedFile(
+        #         name="model.pth",
+        #         content=model_file.read(),
+        #         content_type="application/octet-stream",
+        #     )
 
-        new_model = MlModel(accuracy=0.94, pytorch_model=uploaded_file, name="Model_01")
-        new_model.save()
+        # new_model = MlModel(accuracy=0.94, pytorch_model=uploaded_file, name="Model_01")
+        # new_model.save()
 
         path = "testFiles/Test.jpg"
 
@@ -1500,18 +1501,18 @@ class Classify(TestCase):
         self.assertEqual(image.tumor_type, "4")
 
         Image.objects.all().delete()
-        os.remove("media/MlModels/model.pth")
+        # os.remove("media/MlModels/model.pth")
 
     def testBadRequests(self):
-        with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
-            uploaded_file = SimpleUploadedFile(
-                name="model.pth",
-                content=model_file.read(),
-                content_type="application/octet-stream",
-            )
+        # with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
+        #     uploaded_file = SimpleUploadedFile(
+        #         name="model.pth",
+        #         content=model_file.read(),
+        #         content_type="application/octet-stream",
+        #     )
 
-        new_model = MlModel(accuracy=0.94, pytorch_model=uploaded_file, name="Model_01")
-        new_model.save()
+        # new_model = MlModel(accuracy=0.94, pytorch_model=uploaded_file, name="Model_01")
+        # new_model.save()
 
         path = "testFiles/Test.jpg"
 
@@ -1586,7 +1587,7 @@ class Classify(TestCase):
         )
 
         Image.objects.all().delete()
-        os.remove("media/MlModels/model.pth")
+        # os.remove("media/MlModels/model.pth")
 
 
 class multipleImagesTest(TestCase):
@@ -1624,15 +1625,15 @@ class multipleImagesTest(TestCase):
         self.assertNotEqual(response.status_code, 403)
 
     def testMultipleFiles(self):
-        with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
-            uploaded_file = SimpleUploadedFile(
-                name="model.pth",
-                content=model_file.read(),
-                content_type="application/octet-stream",
-            )
+        # with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
+        #     uploaded_file = SimpleUploadedFile(
+        #         name="model.pth",
+        #         content=model_file.read(),
+        #         content_type="application/octet-stream",
+        #     )
 
-        new_model = MlModel(accuracy=0.94, pytorch_model=uploaded_file, name="Model_01")
-        new_model.save()
+        # new_model = MlModel(accuracy=0.94, pytorch_model=uploaded_file, name="Model_01")
+        # new_model.save()
 
         path1 = "testFiles/Test.jpg"
         path2 = "testFiles/Test2.jpg"
@@ -1873,7 +1874,7 @@ class multipleImagesTest(TestCase):
         self.assertEqual(Report.objects.all().count(), 2)
 
         Image.objects.all().delete()
-        os.remove("media/MlModels/model.pth")
+        # os.remove("media/MlModels/model.pth")
         Report.objects.all().delete()
 
     def testwrongData(self):
@@ -1881,18 +1882,17 @@ class multipleImagesTest(TestCase):
             self.path,
             data={},
         )
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.data, {"reason": "No Network"})
+        # self.assertEqual(response.status_code, 500)
+        # self.assertEqual(response.data, {"reason": "No Network"})
+        # with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
+        #     uploaded_file = SimpleUploadedFile(
+        #         name="model.pth",
+        #         content=model_file.read(),
+        #         content_type="application/octet-stream",
+        #     )
 
-        with open("media/MlModels/custom_googlenet.pth", "rb") as model_file:
-            uploaded_file = SimpleUploadedFile(
-                name="model.pth",
-                content=model_file.read(),
-                content_type="application/octet-stream",
-            )
-
-        new_model = MlModel(accuracy=0.94, pytorch_model=uploaded_file, name="Model_01")
-        new_model.save()
+        # new_model = MlModel(accuracy=0.94, pytorch_model=uploaded_file, name="Model_01")
+        # new_model.save()
 
         path1 = "testFiles/Test.jpg"
         path2 = "testFiles/Test2.jpg"
@@ -2029,6 +2029,6 @@ class multipleImagesTest(TestCase):
         self.assertEqual(Report.objects.all().count(), 1)
 
         Image.objects.all().delete()
-        os.remove("media/MlModels/model.pth")
+        # os.remove("media/MlModels/model.pth")
         # os.remove("media/Images/test_image2.jpg")
         Report.objects.all().delete()

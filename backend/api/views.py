@@ -12,6 +12,7 @@ from .serializers import (
     UserSerializer,
     PatientSerializer,
     ImageSerializer,
+    UserGetAllSerializer,
     ClassificationSerializer,
     ReportSerializer,
     UsageSerializer,
@@ -27,7 +28,7 @@ from django.db import IntegrityError
 from rest_framework import status
 import json
 from rest_framework.parsers import MultiPartParser, JSONParser
-from .models import Patient, Usage, Classification, MlModel, Image, Report
+from .models import Patient, Usage, Classification, Image, Report, UserProfile
 from .utils import (
     checkIfImageExists,
     getSingleImagePrediction,
@@ -157,8 +158,9 @@ def classifiy(request, pk):
     image.tumor_type = request.data["tumor_type"]
     image.classified_by = request.user
     try:
-        image.save()
-        addImageToDataset(image.photo.name,old_tt,image.tumor_type)
+        with transaction.atomic():
+            image.save()
+            addImageToDataset(image.photo.name,old_tt,image.tumor_type)
     except ValidationError as e:
         return Response({'reason':str(e)}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
@@ -184,7 +186,12 @@ def change_password(request, pk):
             status=status.HTTP_400_BAD_REQUEST,
         )
     user.set_password(request.data["new_password"])
-    user.save()
+    try:
+        user.save()
+    except ValidationError as e:
+        return Response({'reason':str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({'reason':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     response = Response(UserSerializer(user).data)
     response.delete_cookie("access", path="/", samesite="None")
     response.delete_cookie("refresh", path="/", samesite="None")
@@ -194,12 +201,11 @@ def change_password(request, pk):
 @permission_classes([IsAdminUser])
 def reset_password(request, pk):
     user = get_object_or_404(User, pk=pk)
-    print(request.data)
     password = generate_password()
     user.set_password(password)
     password_file = generatePasswordFile(password=password)
-    zip_file = generateZipFile(password_file=password_file, PESEL=request.data["PESEL"])
-    sendEmail(user.email, zip_file)
+    zip_file = generateZipFile(password_file=password_file, PESEL=user.userprofile.PESEL)
+    sendEmail(user.email, zip_file,user.username)
     if os.path.exists(password_file):
         os.remove(password_file)
     if os.path.exists(zip_file):
@@ -218,28 +224,18 @@ def get_userName(request):
 @permission_classes([IsAdminUser])
 def change_user(request, pk):
     user = get_object_or_404(User, pk=pk)
+    userProfile = get_object_or_404(UserProfile,user=user)
     data = request.data
-    for field in ['first_name', 'last_name', 'username']:
+    for field in ['first_name', 'last_name', 'username','email']:
         if field in data:
             setattr(user, field, data[field])
-    password = 'password'
-    if 'email' in data:
-        if 'PESEL' in data:
-            setattr(user, 'email', data['email'])
-            password = generate_password()
-            user.set_password(password)
-        else:
-            return Response({'reason':"No PESEL key"}, status=status.HTTP_400_BAD_REQUEST)
+            
+    if 'PESEL' in data:
+        setattr(userProfile,'PESEL',data['PESEL'])
     try:
-        user.save()
-        if 'email' in data:
-            password_file = generatePasswordFile(password=password)
-            zip_file = generateZipFile(password_file=password_file, PESEL=request.data["PESEL"])
-            sendEmail(user.email, zip_file)
-            if os.path.exists(password_file):
-                os.remove(password_file)
-            if os.path.exists(zip_file):
-                os.remove(zip_file)
+        with transaction.atomic():
+            user.save()
+            userProfile.save()
         return Response({"message": "User updated successfully!"}, status=status.HTTP_200_OK)
     except ValidationError as e:
         return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -280,9 +276,10 @@ def change_image(request, pk):
             setattr(image, 'tumor_type', data['tumor_type'])
         setattr(image, 'classified_by',request.user)
     try:
-        image.save()
-        if 'tumor_type' in data:
-            addImageToDataset(image.photo.name,old_tt,image.tumor_type)
+        with transaction.atomic():
+            image.save()
+            if 'tumor_type' in data:
+                addImageToDataset(image.photo.name,old_tt,image.tumor_type)
         return Response({"message": "Image updated successfully!"}, status=status.HTTP_200_OK)
     except ValidationError as e:
         return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -296,7 +293,9 @@ def change_image(request, pk):
 def single_image_classification(request):
     serializer = UserSerializer(request.user, many=False)
     try:
-        network,best_model = loadNetwork()
+        network = loadNetwork()
+    except IntegrityError as e:
+        return Response({'reason':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     except Exception as e:
         return Response({'reason':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     if not 'patient' in request.data:
@@ -367,7 +366,7 @@ def single_image_classification(request):
     classification = Classification(
         usage=usage,
         image=image,
-        ml_model=best_model,
+        # ml_model=MlModel.objects.get(pk=5),
         no_tumor_prob=Decimal(round(float(no_t), 7)).quantize(
             Decimal("0.0000001"), rounding=ROUND_HALF_UP
         ),
@@ -403,7 +402,7 @@ def getAllPatients(request):
 @permission_classes([IsAuthenticated])
 def getAllUsers(request):
     users = User.objects.filter(is_superuser=False)
-    return Response(UserChangeSerializer(users, many=True).data)
+    return Response(UserGetAllSerializer(users, many=True).data)
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -484,13 +483,19 @@ def createUser(request):
     userserializer = UserCreateSerializer(data=request.data)
     if not userserializer.is_valid():
         return Response({'reason':str(userserializer.errors)},status=status.HTTP_400_BAD_REQUEST)
-    user = User.objects.create_user(
-        username=request.data["username"],
-        first_name=request.data["first_name"],
-        last_name=request.data["last_name"],
-        email=request.data["email"],
-        password=password,
-    )
+    user = None
+    try:
+        with transaction.atomic():
+            user = User.objects.create_user(
+                username=request.data["username"],
+                first_name=request.data["first_name"],
+                last_name=request.data["last_name"],
+                email=request.data["email"],
+                password=password,
+            )
+            UserProfile.objects.create(user=user,PESEL=request.data['PESEL'])
+    except Exception as e:
+        return Response({'reason':str(e)},status=status.HTTP_400_BAD_REQUEST)
     password_file = generatePasswordFile(password=password)
     zip_file = generateZipFile(password_file=password_file, PESEL=request.data["PESEL"])
     sendEmail(user.email, zip_file, user.username)
@@ -506,7 +511,7 @@ def createUser(request):
 @parser_classes([MultiPartParser])
 def multipleImageCheck(request):
     try:
-        network,best_model = loadNetwork()
+        network = loadNetwork()
     except Exception as e:
         return Response({'reason':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
@@ -603,7 +608,7 @@ def multipleImageCheck(request):
         classification = Classification(
             usage=usage,
             image=image,
-            ml_model=best_model,
+            # ml_model=MlModel.objects.get(pk=5),
             no_tumor_prob=Decimal(no_t).quantize(
                 Decimal("0.0000001"), rounding=ROUND_HALF_UP
             ),

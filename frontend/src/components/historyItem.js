@@ -181,21 +181,33 @@ const HistoryItem = ({
                 {/* <Heading as="h1" size="lg" mb={2}>
                   {patient}
                 </Heading> */}
-                <Text fontSize="sm" color="#04080F" mt={3} fontWeight={"bold"}>
-                  No tumor probability:{" "}
-                  {`${parseFloat(no_tumor_prob).toFixed(2)}%`}
-                </Text>
-                <Text fontSize="sm" color="#04080F" fontWeight={"bold"}>
-                  Pituitary probability:{" "}
-                  {`${parseFloat(pituitary_prob).toFixed(2)}%`}
-                </Text>
-                <Text fontSize="sm" color="#04080F" fontWeight={"bold"}>
-                  Glioma probability: {`${parseFloat(glioma_prob).toFixed(2)}%`}
-                </Text>
-                <Text fontSize="sm" color="#04080F" mb={0} fontWeight={"bold"}>
-                  Meningioma probability:{" "}
-                  {`${parseFloat(meningioma_prob).toFixed(2)}%`}
-                </Text>
+                {Object.entries({
+                        "No Tumor Probability": parseFloat(
+                          no_tumor_prob
+                        ),
+                        "Pituitary Tumor Probability": parseFloat(
+                          pituitary_prob
+                        ),
+                        "Meningioma Probability": parseFloat(
+                          meningioma_prob
+                        ),
+                        "Glioma Probability": parseFloat(
+                          glioma_prob
+                        ),
+                      })
+                        .sort(([, a], [, b]) => b - a)
+                        .map(([label, value]) => (
+                          <Text
+                            color="#04080F"
+                            key={label}
+                            fontWeight={'bold'}
+                          >
+                            {label}:{" "}
+                            <Text as="span" color="#04080F" fontWeight="bold" fontSize="sm">
+                              {value.toFixed(2)}%
+                            </Text>
+                          </Text>
+                        ))}
                 <FormControl mt={3}>
                   <FormLabel fontSize="13px">Select tumor type</FormLabel>
                   <Select
@@ -254,21 +266,33 @@ const HistoryItem = ({
                 <Text fontSize="sm" color="#04080F">
                   Class: {tumorName}
                 </Text>
-                <Text fontSize="sm" color="#04080F">
-                  No tumor probability:{" "}
-                  {`${parseFloat(no_tumor_prob).toFixed(2)}%`}
-                </Text>
-                <Text fontSize="sm" color="#04080F">
-                  Pituitary probability:{" "}
-                  {`${parseFloat(pituitary_prob).toFixed(2)}%`}
-                </Text>
-                <Text fontSize="sm" color="#04080F">
-                  Glioma probability: {`${parseFloat(glioma_prob).toFixed(2)}%`}
-                </Text>
-                <Text fontSize="sm" color="#04080F">
-                  Meningioma probability:{" "}
-                  {`${parseFloat(meningioma_prob).toFixed(2)}%`}
-                </Text>
+                {Object.entries({
+                        "No Tumor Probability": parseFloat(
+                          no_tumor_prob
+                        ),
+                        "Pituitary Tumor Probability": parseFloat(
+                          pituitary_prob
+                        ),
+                        "Meningioma Probability": parseFloat(
+                          meningioma_prob
+                        ),
+                        "Glioma Probability": parseFloat(
+                          glioma_prob
+                        ),
+                      })
+                        .sort(([, a], [, b]) => b - a)
+                        .map(([label, value]) => (
+                          <Text
+                            color="#04080F"
+                            key={label}
+                            fontSize="sm"
+                          >
+                            {label}:{" "}
+                            <Text as="span" color="#04080F" fontWeight="normal" fontSize="sm">
+                              {value.toFixed(2)}%
+                            </Text>
+                          </Text>
+                        ))}
                 <HStack justify="space-evenly">
                   <Button
                     bg="#507DBC"
@@ -372,9 +396,9 @@ const HistoryItem = ({
               <Heading size="md" color="#04080F" mb={4}>
                 Confirm Action
               </Heading>
-              <Text color="#04080F" fontWeight="bold" mb={6}>
+              <Text color="#04080F" mb={6}>
                 Are you sure you want to classify the tumor as{" "}
-                <Text as="span" fontWeight="bold" color="#507DBC">
+                <Text as="span" fontWeight="bold" color="#04080F">
                   {TUMOR_TYPES[selectedOption]}?
                 </Text>
               </Text>

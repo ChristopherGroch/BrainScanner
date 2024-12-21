@@ -43,11 +43,9 @@ const ChangeUserData = () => {
     email: "",
     PESEL: "",
   });
-  const [showPesel, setShowPesel] = useState(false);
   const [errors, setErrors] = useState({});
   const [userOptions, setUserOptions] = useState({});
   const [loading, setLoading] = useState(false);
-  const [resetPesel, setResetPesel] = useState("");
   const [resetError, setResetError] = useState("");
 
   const resetStates = async () => {
@@ -61,13 +59,13 @@ const ChangeUserData = () => {
     setErrors({});
     setSelectedUser(null);
     setEqual(true);
-    setShowPesel(false);
     await fetchUsers();
   };
 
   const fetchUsers = async () => {
     try {
       const users = await getUsers();
+      console.log(users);
       setUsers(users);
       setUserOptions(
         users.map((u) => ({
@@ -109,9 +107,8 @@ const ChangeUserData = () => {
       first_name: user.first_name,
       last_name: user.last_name,
       email: user.email,
-      PESEL: "",
+      PESEL: user.userprofile.PESEL,
     });
-    setShowPesel(false);
     setErrors({});
   };
   const checkEqual = () => {
@@ -119,6 +116,7 @@ const ChangeUserData = () => {
     if (selectedUser?.last_name !== formData.last_name) return false;
     if (selectedUser?.email !== formData.email) return false;
     if (selectedUser?.username !== formData.username) return false;
+    if (selectedUser?.userprofile.PESEL !== formData.PESEL) return false;
     return true;
   };
 
@@ -128,15 +126,15 @@ const ChangeUserData = () => {
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    if (field === "email" && value !== selectedUser?.email) {
-      if (selectedUser) {
-        setShowPesel(true);
-      }
-    }
-    if (field === "email" && value === selectedUser?.email) {
-      setShowPesel(false);
-      setFormData((prev) => ({ ...prev, PESEL: "" }));
-    }
+    // if (field === "email" && value !== selectedUser?.email) {
+    //   if (selectedUser) {
+    //     setShowPesel(true);
+    //   }
+    // }
+    // if (field === "email" && value === selectedUser?.email) {
+    //   setShowPesel(false);
+    //   setFormData((prev) => ({ ...prev, PESEL: "" }));
+    // }
     setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
@@ -149,10 +147,7 @@ const ChangeUserData = () => {
       newErrors.last_name = "Last name is required";
     if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email))
       newErrors.email = "Valid email is required";
-    if (
-      showPesel &&
-      (!formData.PESEL.trim() || !/^\d{11}$/.test(formData.PESEL))
-    )
+    if (!formData.PESEL.trim() || !/^\d{11}$/.test(formData.PESEL))
       newErrors.PESEL = "PESEL must be 11 digits";
     if (!selectedUser) newErrors.user = "Please select a user";
     setErrors(newErrors);
@@ -175,8 +170,9 @@ const ChangeUserData = () => {
       request_form["last_name"] = formData.last_name;
     if (selectedUser?.email !== formData.email) {
       request_form["email"] = formData.email;
-      request_form["PESEL"] = formData.PESEL;
     }
+    if (selectedUser?.userprofile.PESEL !== formData.PESEL)
+      request_form["PESEL"] = formData.PESEL;
     if (selectedUser?.username !== formData.username)
       request_form["username"] = formData.username;
     try {
@@ -203,6 +199,12 @@ const ChangeUserData = () => {
               refreshError.response?.data?.reason.split(" ")[0] === "duplicate"
             ) {
               toast.error("User with that username already exists");
+            } else if (
+              refreshError.response?.data?.reason.includes(
+                "User profile with this PESEL already exists"
+              )
+            ) {
+              toast.error("User with that PESEL already exists");
             } else {
               toast.error(
                 refreshError.response?.data?.reason || "Unexpected error"
@@ -214,6 +216,12 @@ const ChangeUserData = () => {
         // alert(error.response?.data?.reason || "Wystąpił błąd.");
         if (error.response?.data?.reason.split(" ")[0] === "duplicate") {
           toast.error("User with that username already exists");
+        } else if (
+          error.response?.data?.reason.includes(
+            "User profile with this PESEL already exists"
+          )
+        ) {
+          toast.error("User with that PESEL already exists");
         } else {
           toast.error(error.response?.data?.reason || "Unexpected error");
         }
@@ -222,32 +230,17 @@ const ChangeUserData = () => {
     setLoading(false);
   };
 
-  const handleResetPeselChange = (value) => {
-    setResetPesel(value);
-    setResetError("");
-  };
-
-  const validatePesel = () => {
-    if (!resetPesel.trim() || !/^\d{11}$/.test(resetPesel)) {
-      setResetError("PESEL must be 11 digits");
-      return false;
-    }
-    return true;
-  };
-
   const handleResetPassword = async () => {
-    if (validatePesel()) {
-      const PESEL = resetPesel;
       setLoading(true);
       try {
-        const response = await resetPasword(PESEL, selectedUser.id);
+        const response = await resetPasword('01212121312', selectedUser.id);
         toast.success("Password reseted");
         onResetClose();
       } catch (error) {
         if (error.response && error.response.status === 401) {
           try {
             await refresh();
-            const response = await resetPasword(PESEL, selectedUser.id);
+            const response = await resetPasword('01212121312', selectedUser.id);
             toast.success("Password reseted");
             onResetClose();
           } catch (refreshError) {
@@ -267,7 +260,7 @@ const ChangeUserData = () => {
           toast.error(error.response?.data?.reason || "Wystąpił błąd.");
         }
       }
-    }
+    
     setLoading(false);
   };
   const customStyles = {
@@ -334,32 +327,22 @@ const ChangeUserData = () => {
               <FormErrorMessage>{errors.user}</FormErrorMessage>
             </FormControl>
 
-            {["username", "first_name", "last_name", "email"].map((field) => (
-              <FormControl key={field} isInvalid={!!errors[field]} mt={3}>
-                <FormLabel>
-                  {" "}
-                  {field.charAt(0).toUpperCase() +
-                    field.replace("_", " ").slice(1)}
-                </FormLabel>
-                <Input
-                  boxShadow="md"
-                  value={formData[field]}
-                  onChange={(e) => handleChange(field, e.target.value)}
-                />
-                <FormErrorMessage>{errors[field]}</FormErrorMessage>
-              </FormControl>
-            ))}
-
-            {showPesel && (
-              <FormControl isInvalid={!!errors.PESEL} mt={3}>
-                <FormLabel>PESEL</FormLabel>
-                <Input
-                  value={formData.PESEL}
-                  boxShadow="md"
-                  onChange={(e) => handleChange("PESEL", e.target.value)}
-                />
-                <FormErrorMessage>{errors.PESEL}</FormErrorMessage>
-              </FormControl>
+            {["username", "first_name", "last_name", "email", "PESEL"].map(
+              (field) => (
+                <FormControl key={field} isInvalid={!!errors[field]} mt={3}>
+                  <FormLabel>
+                    {" "}
+                    {field.charAt(0).toUpperCase() +
+                      field.replace("_", " ").slice(1)}
+                  </FormLabel>
+                  <Input
+                    boxShadow="md"
+                    value={formData[field]}
+                    onChange={(e) => handleChange(field, e.target.value)}
+                  />
+                  <FormErrorMessage>{errors[field]}</FormErrorMessage>
+                </FormControl>
+              )
             )}
             <HStack justify="space-evenly">
               <Button
@@ -430,14 +413,12 @@ const ChangeUserData = () => {
                     {formData.username}
                   </Text>
                 </Text>
-                {formData.PESEL && (
-                  <Text color="#04080F" fontWeight="semibold" ml={3}>
-                    PESEL:{" "}
-                    <Text as="span" color="#04080F" fontWeight="normal">
-                      {formData.PESEL}
-                    </Text>
+                <Text color="#04080F" fontWeight="semibold" ml={3}>
+                  PESEL:{" "}
+                  <Text as="span" color="#04080F" fontWeight="normal">
+                    {formData.PESEL}
                   </Text>
-                )}
+                </Text>
               </Box>
               <Stack direction="row" justify="center" spacing={4}>
                 <Button
@@ -480,22 +461,11 @@ const ChangeUserData = () => {
                 Reset password
               </Heading>
               <Text mb={4} fontSize="lg" color="#04080F">
-                Email with new password will be send to {selectedUser?.email},
-                please provide the user's PESEL:
+                Email with new password will be sent to{" "}
+                <Text as="b" color="#000">
+                  {selectedUser?.email}
+                </Text>
               </Text>
-              <FormControl isInvalid={!!resetError} mb={3}>
-                <FormLabel color="#04080F" fontWeight={'bold'}>PESEL</FormLabel>
-                <Input
-                  value={resetPesel}
-                  onChange={(e) => handleResetPeselChange(e.target.value)}
-                  bg="white"
-                  color="#04080F"
-                  shadow="md"
-                  rounded="md"
-                  mb={0}
-                />
-                <FormErrorMessage>{resetError}</FormErrorMessage>
-              </FormControl>
               <Stack direction="row" justify="center" spacing={4}>
                 <Button
                   onClick={handleResetPassword}

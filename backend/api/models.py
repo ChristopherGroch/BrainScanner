@@ -5,8 +5,20 @@ import os
 from django.dispatch import receiver
 
 
-class OptimisticLockError(Exception):
-    pass
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    PESEL = models.CharField(
+        validators=[
+            RegexValidator(
+                r"^\d{11}$", message="PESEL musi zawierać dokładnie 11 cyfr."
+            )
+        ],
+        unique=True,
+    )
+    
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 class Patient(models.Model):
     first_name = models.CharField(max_length=50)
@@ -78,19 +90,19 @@ class Image(models.Model):
 
 
 
-class MlModel(models.Model):
-    accuracy = models.DecimalField(max_digits=7, decimal_places=7)
-    pytorch_model = models.FileField(upload_to="MlModels")
-    name = models.CharField(max_length=30, unique=True)
+# class MlModel(models.Model):
+#     accuracy = models.DecimalField(max_digits=7, decimal_places=7)
+#     pytorch_model = models.FileField(upload_to="MlModels")
+#     name = models.CharField(max_length=30, unique=True)
 
-    def __str__(self) -> str:
-        return f"""MODEL
-    Name: {self.name} 
-    Accuracy: {self.accuracy}"""
+#     def __str__(self) -> str:
+#         return f"""MODEL
+#     Name: {self.name} 
+#     Accuracy: {self.accuracy}"""
 
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
+#     def save(self, *args, **kwargs):
+#         self.full_clean()
+#         super().save(*args, **kwargs)
 
 
 class Report(models.Model):
@@ -132,9 +144,9 @@ class Classification(models.Model):
     image = models.ForeignKey(
         Image, on_delete=models.SET_NULL, null=True, related_name="classifications"
     )
-    ml_model = models.ForeignKey(
-        MlModel, on_delete=models.SET_NULL, null=True, related_name="classifications"
-    )
+    # ml_model = models.ForeignKey(
+    #     MlModel, on_delete=models.SET_NULL, null=True, related_name="classifications"
+    # )
     no_tumor_prob = models.DecimalField(max_digits=10, decimal_places=7)
     pituitary_prob = models.DecimalField(max_digits=10, decimal_places=7)
     meningioma_prob = models.DecimalField(max_digits=10, decimal_places=7)

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import Patient, Image, MlModel, Report, Classification, Usage
+from .models import Patient, Image, Report, Classification, Usage, UserProfile
 from django.core.validators import MinLengthValidator, RegexValidator
 
 
@@ -39,6 +39,19 @@ class UserChangeSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id','username','first_name','last_name','email','PESEL']
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['PESEL'] 
+
+
+
+class UserGetAllSerializer(serializers.ModelSerializer):
+    userprofile = UserProfileSerializer(read_only=True)
+    class Meta:
+        model = User
+        fields = ['id','username','first_name','last_name','email','userprofile']
+
 
 class PatientSerializer(serializers.ModelSerializer):
     class Meta:
@@ -53,10 +66,10 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class MlModelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MlModel
-        fields = ["name"]
+# class MlModelSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = MlModel
+#         fields = ["name"]
 
 
 class ReportSerializer(serializers.ModelSerializer):

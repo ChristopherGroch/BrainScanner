@@ -2,7 +2,7 @@ import io
 import os
 from rest_framework.response import Response
 from django.core.files.base import ContentFile
-from .models import Image, MlModel
+from .models import Image
 from pathlib import Path
 from PIL import Image as pilImage
 import hashlib
@@ -19,12 +19,16 @@ from django.core.mail import EmailMessage
 from backend.settings import EMAIL_HOST_USER
 import datetime
 import shutil
+from django.db import IntegrityError
+
+
+NETWORK = 'MlModels/googleNetFinalV1.pth'
 
 def loadNetwork():
     try:
-        best_model = MlModel.objects.order_by("-accuracy").first()
+        best_model = default_storage.path(NETWORK)
         if best_model:
-            model_path = Path(best_model.pytorch_model.path)
+            model_path = Path(best_model)
             network = torch.load(
                 model_path, map_location=torch.device("cpu"), weights_only=False
             )
@@ -33,10 +37,10 @@ def loadNetwork():
             network = network.to("cpu")
             network.eval()
         else:
-            raise Exception('No Network')
+            raise IntegrityError('No Network')
     except Exception as e:
         raise e
-    return network,best_model
+    return network
 
 def array_hash(pt):
     arr = cv2.imread(pt)
@@ -191,8 +195,8 @@ data_transform = transforms.Compose(
 )
 
 
-def getSingleImagePrediction(Im,network):
-    im = crop_image(default_storage.path(Im.photo.name))
+def getSingleImagePrediction(immage,network):
+    im = crop_image(default_storage.path(immage.photo.name))
     im = resize_preserve_aspect(im, 224, cv2.INTER_LINEAR)
     im = cv2.cvtColor(im, cv2.COLOR_GRAY2RGB)
     im = pilImage.fromarray(im)
@@ -201,8 +205,7 @@ def getSingleImagePrediction(Im,network):
         outputs = network(input_tensor)
         probabilities = softmax(outputs, dim=1)
         predicted_probs = probabilities.squeeze().cpu().numpy()
-        # predicted_probs = outputs.squeeze().cpu().numpy()
-    return predicted_probs *100
+    return predicted_probs * 100
 
 
 def generate_password():
@@ -262,9 +265,7 @@ def addImageToDataset(src, old_tt, new_tt):
            3:'pituitary',
            4:'notumor'}
     path = default_storage.path(src)
-    print(path)
     dataset = os.path.join(os.path.dirname(os.path.abspath(__file__)).split('backend')[0], 'Dataset')
-    print(dataset)
     if old_tt is None or int(old_tt) == 0:
         im = crop_image(path)
         im = resize_preserve_aspect(im, 224, cv2.INTER_LINEAR)
