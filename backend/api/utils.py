@@ -2,12 +2,16 @@ import io
 import os
 from rest_framework.response import Response
 from django.core.files.base import ContentFile
-from .models import Image
+from .models import Image, NetowrkException
 from pathlib import Path
 from PIL import Image as pilImage
+from .serializers import UsageFilesSerializer
+from decimal import Decimal, ROUND_HALF_UP
+from collections import defaultdict
 import hashlib
 import cv2
 import numpy as np
+import pandas as pd
 from django.core.exceptions import ValidationError
 import torch
 from torchvision import transforms
@@ -25,21 +29,18 @@ from django.db import IntegrityError
 NETWORK = 'MlModels/googleNetFinalV1.pth'
 
 def loadNetwork():
-    try:
-        best_model = default_storage.path(NETWORK)
-        if best_model:
-            model_path = Path(best_model)
-            network = torch.load(
-                model_path, map_location=torch.device("cpu"), weights_only=False
-            )
-            if isinstance(network, torch.nn.DataParallel):
-                network = network.module
-            network = network.to("cpu")
-            network.eval()
-        else:
-            raise IntegrityError('No Network')
-    except Exception as e:
-        raise e
+    best_model = default_storage.path(NETWORK)
+    if best_model:
+        model_path = Path(best_model)
+        network = torch.load(
+            model_path, map_location=torch.device("cpu"), weights_only=False
+        )
+        if isinstance(network, torch.nn.DataParallel):
+            network = network.module
+        network = network.to("cpu")
+        network.eval()
+    else:
+        raise NetowrkException('No Network')
     return network
 
 def array_hash(pt):
@@ -211,6 +212,10 @@ def getSingleImagePrediction(immage,network):
 def generate_password():
     return secrets.token_urlsafe(8)
 
+def delete_file(file):
+    if os.path.exists(file):
+        os.remove(file)
+
 
 def generatePasswordFile(password):
     with open("password.txt", "w") as f:
@@ -280,3 +285,34 @@ def addImageToDataset(src, old_tt, new_tt):
             if os.path.exists(os.path.join(dataset,tts[int(old_tt)],src.split('/')[-1])):
                 shutil.move(os.path.join(dataset,tts[int(old_tt)],src.split('/')[-1]),
                         os.path.join(dataset,tts[int(new_tt)],src.split('/')[-1]))
+                
+
+def prepareAllUsages(data):
+    response_data = []
+
+    for usage in data:
+        report_data = {"report": UsageFilesSerializer(usage).data, "patients": []}
+
+        patient_classification_counts = defaultdict(int)
+
+        for classification in usage.classifications.all():
+            if classification.image and classification.image.patient:
+                patient = classification.image.patient
+                full_name = f"{patient.first_name} {patient.last_name}"
+                patient_classification_counts[full_name] += 1
+
+        report_data["patients"] = [
+            {"patient": name, "classification_count": count}
+            for name, count in patient_classification_counts.items()
+        ]
+
+        response_data.append(report_data)
+        
+    return response_data
+
+def round_decimal(decimal):
+    return Decimal(round(float(decimal), 7)).quantize(Decimal("0.0000001"), rounding=ROUND_HALF_UP)
+
+def cleanup_saved_photos(saved_photos):
+    for file_path in saved_photos:
+        delete_file(file_path)

@@ -65,7 +65,10 @@ class ImageSerializer(serializers.ModelSerializer):
         model = Image
         fields = "__all__"
 
-
+class ImageCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Image
+        fields = "__all__"
 # class MlModelSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = MlModel

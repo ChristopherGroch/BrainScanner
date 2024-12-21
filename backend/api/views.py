@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from django.http import FileResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.shortcuts import get_object_or_404
+from django.http import Http404
 from collections import defaultdict
 from django.core.files.base import ContentFile
 from .serializers import (
@@ -18,17 +19,28 @@ from .serializers import (
     UsageSerializer,
     UsageFilesSerializer,
     UserCreateSerializer,
-    UserChangeSerializer
+    UserChangeSerializer,
 )
 from django.core.exceptions import ValidationError
 from rest_framework.decorators import parser_classes
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
+from .utils import cleanup_saved_photos
 from django.db import IntegrityError
 from rest_framework import status
 import json
 from rest_framework.parsers import MultiPartParser, JSONParser
-from .models import Patient, Usage, Classification, Image, Report, UserProfile
+from .models import (
+    Patient,
+    Usage,
+    Classification,
+    NetowrkException,
+    Image,
+    Report,
+    SamePasswordExcpetion,
+    UserProfile,
+    TumorClassified,
+)
 from .utils import (
     checkIfImageExists,
     getSingleImagePrediction,
@@ -38,13 +50,23 @@ from .utils import (
     generateZipFile,
     loadNetwork,
     frontedHappyReformatHistory,
-    addImageToDataset
+    prepareAllUsages,
+    addImageToDataset,
 )
 from decimal import Decimal, ROUND_HALF_UP
 from django.db import transaction, connection
 import os
 import pandas as pd
 from io import StringIO
+from .services.image_service import classify_image, change_image_data
+from .services.user_service import (
+    change_user_password,
+    reset_user_password,
+    create_user,
+    change_user_data,
+)
+from .services.patient_service import change_patient_data
+from .services.usage_service import single_image_check, multiple_image_check
 
 
 class CookieTokenRefreshView(TokenRefreshView):
@@ -79,13 +101,6 @@ class CookieTokenRefreshView(TokenRefreshView):
 
 class CookieTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
-        
-        # x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        # if x_forwarded_for:
-        #     ip = x_forwarded_for.split(',')[0]
-        # else:
-        #     ip = request.META.get('REMOTE_ADDR')
-        # print(ip)
 
         try:
             response = super().post(request, *args, **kwargs)
@@ -127,7 +142,9 @@ def logout(request):
         res.delete_cookie("refresh", path="/", samesite="None")
         return res
     except Exception as e:
-        return Response({"succes": False}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"succes": False, "reason": str(e)}, status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 @api_view(["GET"])
@@ -140,149 +157,136 @@ def is_logged_in(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def is_admin(request):
-    return Response({'is_admin':request.user.is_superuser})
+    return Response({"is_admin": request.user.is_superuser})
 
 
 @api_view(["PUT"])
 @permission_classes([IsAuthenticated])
 def classifiy(request, pk):
+    if not "tumor_type" in request.data:
+        return Response("No tumor type key", status=status.HTTP_400_BAD_REQUEST)
     try:
-        image = Image.objects.get(id=pk)
-    except Image.DoesNotExist:
-        return Response('No such file',status=status.HTTP_404_NOT_FOUND)
-    if image.tumor_type is not None:
-        return Response('Tumor already classified',status=status.HTTP_400_BAD_REQUEST)
-    if not 'tumor_type' in request.data:
-        return Response('No tumor type key',status=status.HTTP_400_BAD_REQUEST)
-    old_tt = image.tumor_type
-    image.tumor_type = request.data["tumor_type"]
-    image.classified_by = request.user
-    try:
-        with transaction.atomic():
-            image.save()
-            addImageToDataset(image.photo.name,old_tt,image.tumor_type)
+        return_image = classify_image(pk, request.data["tumor_type"], request.user)
     except ValidationError as e:
-        return Response({'reason':str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Http404 as e:
+        return Response("No such file", status=status.HTTP_404_NOT_FOUND)
+    except TumorClassified:
+        return Response("Tumor already classified", status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
-        print(e)
-        return Response({'reason':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    return Response(ImageSerializer(image).data)
+        return Response(
+            {"reason": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    return Response(ImageSerializer(return_image).data)
 
 
 @api_view(["PUT"])
 @permission_classes([IsAuthenticated])
 def change_password(request, pk):
-    user = request.user
-    # if user.id != pk:
-    #     return Response({"error": "Bad user ID"})
     if not "new_password" in request.data:
         return Response(
             {"success": False, "reason": "No new password field"},
             status=status.HTTP_400_BAD_REQUEST,
         )
-    if user.check_password(request.data["new_password"]):
+    user = request.user
+    try:
+        return_user = change_user_password(user, request.data["new_password"])
+    except ValidationError as e:
+        return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except SamePasswordExcpetion:
         return Response(
             {"success": False, "reason": "Password is the same"},
             status=status.HTTP_400_BAD_REQUEST,
         )
-    user.set_password(request.data["new_password"])
-    try:
-        user.save()
-    except ValidationError as e:
-        return Response({'reason':str(e)}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
-        return Response({'reason':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    response = Response(UserSerializer(user).data)
+        return Response(
+            {"reason": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    response = Response(UserSerializer(return_user).data)
     response.delete_cookie("access", path="/", samesite="None")
     response.delete_cookie("refresh", path="/", samesite="None")
     return response
 
+
 @api_view(["PUT"])
 @permission_classes([IsAdminUser])
 def reset_password(request, pk):
-    user = get_object_or_404(User, pk=pk)
-    password = generate_password()
-    user.set_password(password)
-    password_file = generatePasswordFile(password=password)
-    zip_file = generateZipFile(password_file=password_file, PESEL=user.userprofile.PESEL)
-    sendEmail(user.email, zip_file,user.username)
-    if os.path.exists(password_file):
-        os.remove(password_file)
-    if os.path.exists(zip_file):
-        os.remove(zip_file)
-    
-    user.save()
-    return Response({"message": "User updated successfully!"}, status=status.HTTP_200_OK)
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_userName(request):
-    user = request.user
-    return Response({'user':f'{user.first_name} {user.last_name}'}, status=status.HTTP_200_OK)
-    
-@api_view(["PATCH"])
-@permission_classes([IsAdminUser])
-def change_user(request, pk):
-    user = get_object_or_404(User, pk=pk)
-    userProfile = get_object_or_404(UserProfile,user=user)
-    data = request.data
-    for field in ['first_name', 'last_name', 'username','email']:
-        if field in data:
-            setattr(user, field, data[field])
-            
-    if 'PESEL' in data:
-        setattr(userProfile,'PESEL',data['PESEL'])
     try:
-        with transaction.atomic():
-            user.save()
-            userProfile.save()
-        return Response({"message": "User updated successfully!"}, status=status.HTTP_200_OK)
+        reset_user_password(pk)
+    except Http404:
+        return Response({"reason": "No such file"}, status=status.HTTP_404_NOT_FOUND)
     except ValidationError as e:
         return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
+        return Response(
+            {"reason": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+    return Response(
+        {"message": "User updated successfully!"}, status=status.HTTP_200_OK
+    )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_userName(request):
+    user = request.user
+    return Response(
+        {"user": f"{user.first_name} {user.last_name}"}, status=status.HTTP_200_OK
+    )
+
+
+@api_view(["PATCH"])
+@permission_classes([IsAdminUser])
+def change_user(request, pk):
+    try:
+        change_user_data(pk, request.data)
+        return Response(
+            {"message": "User updated successfully!"}, status=status.HTTP_200_OK
+        )
+    except ValidationError as e:
         return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    
+    except Http404:
+        return Response({"reason": "No such user"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["PATCH"])
 @permission_classes([IsAdminUser])
 def change_patient(request, pk):
-    patient = get_object_or_404(Patient, pk=pk)
-    data = request.data
-    for field in ['first_name', 'last_name', 'email', 'PESEL']:
-        if field in data:
-            setattr(patient, field, data[field])
     try:
-        patient.save()
-        return Response({"message": "Patient updated successfully!"}, status=status.HTTP_200_OK)
+        change_patient_data(pk, request.data)
+        return Response(
+            {"message": "Patient updated successfully!"}, status=status.HTTP_200_OK
+        )
     except ValidationError as e:
         return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Http404:
+        return Response({"reason": "No such patient"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 @api_view(["PATCH"])
 @permission_classes([IsAdminUser])
 def change_image(request, pk):
-    image = get_object_or_404(Image, pk=pk)
-    data = request.data
-    old_tt = image.tumor_type
-    if 'patient' in data:
-        patient = get_object_or_404(Patient, pk=data['patient'])
-        setattr(image, 'patient', patient)
-    if 'tumor_type' in data:
-        if data['tumor_type'] == '0':
-            setattr(image, 'tumor_type', None)
-        else:
-            setattr(image, 'tumor_type', data['tumor_type'])
-        setattr(image, 'classified_by',request.user)
+    patient = None
+    tumor_type = None
+    if "patient" in request.data:
+        patient = request.data["patient"]
+    if "tumor_type" in request.data:
+        tumor_type = request.data["tumor_type"]
     try:
-        with transaction.atomic():
-            image.save()
-            if 'tumor_type' in data:
-                addImageToDataset(image.photo.name,old_tt,image.tumor_type)
-        return Response({"message": "Image updated successfully!"}, status=status.HTTP_200_OK)
+        change_image_data(pk, request.user, tumor_type, patient)
+        return Response(
+            {"message": "Image updated successfully!"}, status=status.HTTP_200_OK
+        )
     except ValidationError as e:
         return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Http404:
+        return Response({"reason": "No such image"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -291,98 +295,32 @@ def change_image(request, pk):
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser, JSONParser])
 def single_image_classification(request):
-    serializer = UserSerializer(request.user, many=False)
-    try:
-        network = loadNetwork()
-    except IntegrityError as e:
-        return Response({'reason':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    except Exception as e:
-        return Response({'reason':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    if not 'patient' in request.data:
-        return Response({'reason':'No patient key'},status=status.HTTP_400_BAD_REQUEST)
-    if not 'photo' in request.FILES:
-        return Response({'reason':'No photo key'},status=status.HTTP_400_BAD_REQUEST)
-    
-    data = json.loads(request.data.get("patient"))
-    data = {"patient": data}
-    data["photo"] = request.FILES["photo"]
+    if not "patient" in request.data:
+        return Response(
+            {"reason": "No patient key"}, status=status.HTTP_400_BAD_REQUEST
+        )
+    if not "photo" in request.FILES:
+        return Response({"reason": "No photo key"}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        with transaction.atomic():
-            if "id" in data["patient"]:
-                patient = Patient.objects.get(id=data["patient"]["id"])
-            else:
-                patient = PatientSerializer(data=data["patient"])
-                if patient.is_valid():
-                    patient = patient.create(patient.validated_data)
-                else:
-                    raise IntegrityError(f"{patient.errors}")
-                    # return Response(
-                    #     {"error": str(patient.errors)}, status=status.HTTP_400_BAD_REQUEST
-                    # )
-
-            im_bytes = data["photo"].read()
-            ob, im_hash = checkIfImageExists(im_bytes)
-            if ob:
-                if ob.patient.PESEL != patient.PESEL:
-                    raise IntegrityError(
-                        f"Exact imaage exists and its different patient"
-                    )
-                    # return Response(
-                    #     {"error": "Exact imaage exists and its different patient"},
-                    #     status=status.HTTP_400_BAD_REQUEST,
-                    # )
-                else:
-                    image = ob
-            else:
-                data["photo"].seek(0)
-                data["hash"] = im_hash
-                image = ImageSerializer(data=data)
-                if image.is_valid():
-                    image = image.create(image.validated_data)
-                else:
-                    raise IntegrityError(f"{image.errors}")
-                    # return Response(
-                    #     {"error": str(image.errors)}, status=status.HTTP_400_BAD_REQUEST
-                    # )
-                image.patient = patient
-                image.save()
-
+        classification = single_image_check(request.data, request.FILES, request.user)
+        seria = ClassificationSerializer(classification)
+        return Response(seria.data, status=status.HTTP_200_OK)
+    except NetowrkException as e:
+        return Response(
+            {"reason": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
     except IntegrityError as e:
         return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except ValueError as e:
+        return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Http404 as e:
+        return Response({"reason": str(e)}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response(
             {"error": f"Unexpected error: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-
-    user = User.objects.get(id=serializer.data["id"])
-    usage = Usage(doctor=user)
-    usage.save()
-    try:
-        glioma, menin, no_t, pituitary = (getSingleImagePrediction(image,network))
-    except Exception as e:
-        return Response({'reason':str(e)},status=status.HTTP_400_BAD_REQUEST)
-    classification = Classification(
-        usage=usage,
-        image=image,
-        # ml_model=MlModel.objects.get(pk=5),
-        no_tumor_prob=Decimal(round(float(no_t), 7)).quantize(
-            Decimal("0.0000001"), rounding=ROUND_HALF_UP
-        ),
-        pituitary_prob=Decimal(round(float(pituitary), 7)).quantize(
-            Decimal("0.0000001"), rounding=ROUND_HALF_UP
-        ),
-        meningioma_prob=Decimal(round(float(menin), 7)).quantize(
-            Decimal("0.0000001"), rounding=ROUND_HALF_UP
-        ),
-        glioma_prob=Decimal(round(float(glioma), 7)).quantize(
-            Decimal("0.0000001"), rounding=ROUND_HALF_UP
-        ),
-    )
-    classification.save()
-    seria = ClassificationSerializer(classification)
-    return Response(seria.data, status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])
@@ -398,17 +336,21 @@ def getAllPatients(request):
     usages = Patient.objects.filter().all()
     return Response(PatientSerializer(usages, many=True).data)
 
+
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def getAllUsers(request):
     users = User.objects.filter(is_superuser=False)
     return Response(UserGetAllSerializer(users, many=True).data)
 
+
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def getAllUsagesFrontFriendly(request):
-    usages = Usage.objects.filter(doctor=request.user).all().order_by('-date_of_creation')
-    response_data = frontedHappyReformatHistory(UsageSerializer(usages,many=True).data)
+    usages = (
+        Usage.objects.filter(doctor=request.user).all().order_by("-date_of_creation")
+    )
+    response_data = frontedHappyReformatHistory(UsageSerializer(usages, many=True).data)
     return Response(response_data)
 
 
@@ -418,91 +360,57 @@ def getAllUsagesFiles(request):
     usages = Usage.objects.filter(doctor=request.user).all()
     return Response(UsageFilesSerializer(usages, many=True).data)
 
+
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def getAllImages(request):
     images = Image.objects.all()
     return Response(ImageSerializer(images, many=True).data)
 
+
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def getAllUsagesFilesFrontFriendly(request):
-    usages = Usage.objects.filter(doctor=request.user).exclude(report__isnull=True).order_by('-date_of_creation')
+    usages = (
+        Usage.objects.filter(doctor=request.user)
+        .exclude(report__isnull=True)
+        .order_by("-date_of_creation")
+    )
 
-    response_data = []
+    return Response(prepareAllUsages(usages))
 
-    for usage in usages:
-        report_data = {
-            "report": UsageFilesSerializer(usage).data,
-            "patients": []
-        }
-
-        patient_classification_counts = defaultdict(int)
-
-        for classification in usage.classifications.all():
-            if classification.image and classification.image.patient:
-                patient = classification.image.patient
-                full_name = f"{patient.first_name} {patient.last_name}"
-                patient_classification_counts[full_name] += 1
-
-        report_data["patients"] = [
-            {"patient": name, "classification_count": count}
-            for name, count in patient_classification_counts.items()
-        ]
-
-        response_data.append(report_data)
-
-    return Response(response_data)
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def downloadFile(request):
-    image = Image.objects.get(id=request.data['id'])
+    image = Image.objects.get(id=request.data["id"])
     file_path = image.photo.path
-    response = FileResponse(open(file_path, 'rb'))
-    response['Content-Type'] = 'application/octet-stream'
-    response['Content-Disposition'] = f'attachment; filename="{image.photo.name}"'
+    response = FileResponse(open(file_path, "rb"))
+    response["Content-Type"] = "application/octet-stream"
+    response["Content-Disposition"] = f'attachment; filename="{image.photo.name}"'
     return response
 
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def downloadReport(request):
-    report = Report.objects.get(id=request.data['id'])
+    report = Report.objects.get(id=request.data["id"])
     file_path = report.file.path
-    response = FileResponse(open(file_path, 'rb'))
-    response['Content-Type'] = 'application/octet-stream'
-    response['Content-Disposition'] = f'attachment; filename="{report.file.name}"'
+    response = FileResponse(open(file_path, "rb"))
+    response["Content-Type"] = "application/octet-stream"
+    response["Content-Disposition"] = f'attachment; filename="{report.file.name}"'
     return response
 
 
 @api_view(["POST"])
 @permission_classes([IsAdminUser])
 def createUser(request):
-    password = generate_password()
-    userserializer = UserCreateSerializer(data=request.data)
-    if not userserializer.is_valid():
-        return Response({'reason':str(userserializer.errors)},status=status.HTTP_400_BAD_REQUEST)
-    user = None
     try:
-        with transaction.atomic():
-            user = User.objects.create_user(
-                username=request.data["username"],
-                first_name=request.data["first_name"],
-                last_name=request.data["last_name"],
-                email=request.data["email"],
-                password=password,
-            )
-            UserProfile.objects.create(user=user,PESEL=request.data['PESEL'])
+        user = create_user(request.data)
+    except ValidationError as e:
+        return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
-        return Response({'reason':str(e)},status=status.HTTP_400_BAD_REQUEST)
-    password_file = generatePasswordFile(password=password)
-    zip_file = generateZipFile(password_file=password_file, PESEL=request.data["PESEL"])
-    sendEmail(user.email, zip_file, user.username)
-    if os.path.exists(password_file):
-        os.remove(password_file)
-    if os.path.exists(zip_file):
-        os.remove(zip_file)
+        return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     return Response(user.id)
 
 
@@ -510,148 +418,36 @@ def createUser(request):
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser])
 def multipleImageCheck(request):
-    try:
-        network = loadNetwork()
-    except Exception as e:
-        return Response({'reason':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
-    if not 'patients' in request.data:
-        return Response({'reason':'No patients key'},status=status.HTTP_400_BAD_REQUEST)
-    if not 'photos' in request.FILES:
-        return Response({'reason':'No photos key'},status=status.HTTP_400_BAD_REQUEST)
-    
-    try:
-        df = pd.DataFrame(columns=["name", "patient_id",'first_name','last_name'])
-        data = json.loads(request.data["patients"])
-        photos = request.FILES.getlist("photos")
-        photos_dict = {photo.name: photo for photo in photos}
-        patients = []
-        images = []
-        saved_photos = []
-        with transaction.atomic():
-            for p in data:
-                if "id" in p:
-                    patient = Patient.objects.get(id=p["id"])
-                    patient.cur_images = p["images"]
-                    patients.append(patient)
-                else:
-                    patient = PatientSerializer(data=p)
-                    if patient.is_valid():
-                        patient = patient.create(patient.validated_data)
-                        patient.cur_images = p["images"]
-                        patients.append(patient)
-                    else:
-                        raise IntegrityError(f"{patient.errors} {p['first_name']} {p['last_name']}")
-
-            for patient in patients:
-                for name in patient.cur_images:
-                    df.loc[len(df)] = [name, patient.id,patient.first_name,patient.last_name]
-                    im_bytes = photos_dict[name].read()
-                    ob, im_hash = checkIfImageExists(im_bytes)
-                    if ob:
-                        if ob.patient.PESEL != patient.PESEL:
-                            raise IntegrityError(
-                                f"Exact imaage exists and its different patient. Image {name}, patient {patient.first_name} {patient.last_name}, exisitng patient {ob.patient.first_name} {ob.patient.last_name}"
-                            )
-                        else:
-                            images.append(ob)
-                    else:
-                        photos_dict[name].seek(0)
-                        data = {"photo": photos_dict[name], "hash": im_hash}
-                        image = ImageSerializer(data=data)
-                        if image.is_valid():
-                            image = image.create(image.validated_data)
-                            saved_photos.append(image.photo.path)
-                        else:
-                            raise IntegrityError(f"{image.errors}")
-                        image.patient = patient
-                        image.save()
-                        images.append(image)
-                    photos_dict[name].seek(0)
-    except IntegrityError as e:
-        for file_path in saved_photos:
-            if os.path.exists(file_path):
-                os.remove(file_path)
-        return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    except Exception as e:
-        for file_path in saved_photos:
-            if os.path.exists(file_path):
-                os.remove(file_path)
+    if not "patients" in request.data:
         return Response(
-            {"reason": f"Unexpected error: {str(e)}"},
+            {"reason": "No patients key"}, status=status.HTTP_400_BAD_REQUEST
+        )
+    if not "photos" in request.FILES:
+        return Response({"reason": "No photos key"}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        saved_photos = []
+        saved_photos, usage, report = multiple_image_check(request.data["patients"],request.FILES.getlist("photos"), request.user)
+        usage_data = UsageSerializer(usage).data
+        usage_data["report"] = report.file.url
+        usage_data["reportID"] = report.id
+        return Response(usage_data)
+    except NetowrkException as e:
+        cleanup_saved_photos(saved_photos)
+        return Response(
+            {"reason": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    except IntegrityError as e:
+        cleanup_saved_photos(saved_photos)
+        return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except ValueError as e:
+        cleanup_saved_photos(saved_photos)
+        return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Http404 as e:
+        cleanup_saved_photos(saved_photos)
+        return Response({"reason": str(e)}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        cleanup_saved_photos(saved_photos)
+        return Response(
+            {"error": f"Unexpected error: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-
-    user = request.user
-    usage = Usage(doctor=user)
-    usage.save()
-
-    df["no_tumor"] = 0.0
-    df["pituitary"] = 0.0
-    df["glioma"] = 0.0
-    df["meningioma"] = 0.0
-
-    i = 0
-
-    for image in images:
-        glioma, menin, no_t, pituitary = (getSingleImagePrediction(image,network))
-        no_t = round(float(no_t), 7)
-        glioma = round(float(glioma), 7)
-        menin = round(float(menin), 7)
-        pituitary = round(float(pituitary), 7)
-
-        df.loc[i, "no_tumor"] = no_t
-        df.loc[i, "pituitary"] = pituitary
-        df.loc[i, "glioma"] = glioma
-        df.loc[i, "meningioma"] = menin
-
-        classification = Classification(
-            usage=usage,
-            image=image,
-            # ml_model=MlModel.objects.get(pk=5),
-            no_tumor_prob=Decimal(no_t).quantize(
-                Decimal("0.0000001"), rounding=ROUND_HALF_UP
-            ),
-            pituitary_prob=Decimal(pituitary).quantize(
-                Decimal("0.0000001"), rounding=ROUND_HALF_UP
-            ),
-            meningioma_prob=Decimal(menin).quantize(
-                Decimal("0.0000001"), rounding=ROUND_HALF_UP
-            ),
-            glioma_prob=Decimal(glioma).quantize(
-                Decimal("0.0000001"), rounding=ROUND_HALF_UP
-            ),
-        )
-        classification.save()
-        i += 1
-    df["max_value"] = df[["no_tumor", "pituitary", "glioma", "meningioma"]].max(axis=1)
-    df["mean"] = df.groupby(by="patient_id")["max_value"].transform("mean")
-    df = df.sort_values(by=["mean", "max_value"], ascending=False)
-    buffer = StringIO()
-    buffer.write("Patient Classification Report\n\n")
-    buffer.write("This table presents the classification results for multiple patients based on medical imaging analysis. The report includes the following details for each patient:\n\n")
-    buffer.write("- Patient Data: Identifying information or relevant metadata.\n")
-    buffer.write("- Classified Image Name: The name or identifier of the analyzed image.\n")
-    buffer.write("- Tumor Probability: The likelihood of the image being associated with one of the following conditions:\n")
-    buffer.write("  - Pituitary tumor\n")
-    buffer.write("  - Meningioma\n")
-    buffer.write("  - Glioma\n")
-    buffer.write("  - No tumor\n\n")
-    buffer.write("All classifications were performed using a Convolutional Neural Network (CNN) model, specifically employing an architecture aligned with GoogleNet.\n\n")
-    buffer.write("To enhance clarity, the table is sorted to prioritize patients for whom the algorithm displayed the highest confidence in its diagnosis. This ensures the most reliable results are presented first.\n\n")
-    df.to_string(buffer, index=False)
-    buffer.seek(0)
-    usage.refresh_from_db()
-    report = Report.objects.create(
-        name=usage.date_of_creation.strftime("%Y-%m-%d %H:%M:%S"),
-        file=ContentFile(
-            buffer.getvalue(),
-            name=f"report{usage.date_of_creation.strftime('%Y-%m-%d %H:%M:%S')}.txt",
-        ),
-    )
-    usage_data = UsageSerializer(usage).data
-    usage_data["report"] = report.file.url
-    usage_data["reportID"] = report.id
-    usage.report = report
-    usage.save()
-    return Response(usage_data)

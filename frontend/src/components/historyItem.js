@@ -56,13 +56,13 @@ const HistoryItem = ({
 
   const handleFormSubmit = async () => {
     console.log("Selected option:", selectedOption);
-    setLoading(true)
+    setLoading(true);
     try {
       console.log("EW");
       await classify(parseInt(selectedOption), image_id);
       setShowForm(false);
       classifyFunction(image_id, parseInt(selectedOption));
-      setLoading(false)
+      setLoading(false);
       onCloseModal2();
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -71,7 +71,7 @@ const HistoryItem = ({
           await classify(parseInt(selectedOption), image_id);
           setShowForm(false);
           classifyFunction(image_id, parseInt(selectedOption));
-          setLoading(false)
+          setLoading(false);
           onCloseModal2();
         } catch (refreshError) {
           if (refreshError.response && refreshError.response.status === 401) {
@@ -87,7 +87,7 @@ const HistoryItem = ({
         toast.error(error.response?.data?.reason || "Unexpected error.");
       }
     }
-    setLoading(false)
+    setLoading(false);
   };
 
   const handleDownloadFile = async () => {
@@ -182,32 +182,25 @@ const HistoryItem = ({
                   {patient}
                 </Heading> */}
                 {Object.entries({
-                        "No Tumor Probability": parseFloat(
-                          no_tumor_prob
-                        ),
-                        "Pituitary Tumor Probability": parseFloat(
-                          pituitary_prob
-                        ),
-                        "Meningioma Probability": parseFloat(
-                          meningioma_prob
-                        ),
-                        "Glioma Probability": parseFloat(
-                          glioma_prob
-                        ),
-                      })
-                        .sort(([, a], [, b]) => b - a)
-                        .map(([label, value]) => (
-                          <Text
-                            color="#04080F"
-                            key={label}
-                            fontWeight={'bold'}
-                          >
-                            {label}:{" "}
-                            <Text as="span" color="#04080F" fontWeight="bold" fontSize="sm">
-                              {value.toFixed(2)}%
-                            </Text>
-                          </Text>
-                        ))}
+                  "No Tumor Probability": parseFloat(no_tumor_prob),
+                  "Pituitary Tumor Probability": parseFloat(pituitary_prob),
+                  "Meningioma Probability": parseFloat(meningioma_prob),
+                  "Glioma Probability": parseFloat(glioma_prob),
+                })
+                  .sort(([, a], [, b]) => b - a)
+                  .map(([label, value]) => (
+                    <Text color="#04080F" key={label} fontWeight={"bold"}>
+                      {label}:{" "}
+                      <Text
+                        as="span"
+                        color="#04080F"
+                        fontWeight="bold"
+                        fontSize="sm"
+                      >
+                        {value.toFixed(2)}%
+                      </Text>
+                    </Text>
+                  ))}
                 <FormControl mt={3}>
                   <FormLabel fontSize="13px">Select tumor type</FormLabel>
                   <Select
@@ -257,7 +250,7 @@ const HistoryItem = ({
               </>
             ) : (
               <>
-                <Heading as="h1" size="md" mb={1} >
+                <Heading as="h1" size="md" mb={1}>
                   {patient}
                 </Heading>
                 <Text fontSize="sm" color="#04080F">
@@ -267,32 +260,25 @@ const HistoryItem = ({
                   Class: {tumorName}
                 </Text>
                 {Object.entries({
-                        "No Tumor Probability": parseFloat(
-                          no_tumor_prob
-                        ),
-                        "Pituitary Tumor Probability": parseFloat(
-                          pituitary_prob
-                        ),
-                        "Meningioma Probability": parseFloat(
-                          meningioma_prob
-                        ),
-                        "Glioma Probability": parseFloat(
-                          glioma_prob
-                        ),
-                      })
-                        .sort(([, a], [, b]) => b - a)
-                        .map(([label, value]) => (
-                          <Text
-                            color="#04080F"
-                            key={label}
-                            fontSize="sm"
-                          >
-                            {label}:{" "}
-                            <Text as="span" color="#04080F" fontWeight="normal" fontSize="sm">
-                              {value.toFixed(2)}%
-                            </Text>
-                          </Text>
-                        ))}
+                  "No Tumor Probability": parseFloat(no_tumor_prob),
+                  "Pituitary Tumor Probability": parseFloat(pituitary_prob),
+                  "Meningioma Probability": parseFloat(meningioma_prob),
+                  "Glioma Probability": parseFloat(glioma_prob),
+                })
+                  .sort(([, a], [, b]) => b - a)
+                  .map(([label, value]) => (
+                    <Text color="#04080F" key={label} fontSize="sm">
+                      {label}:{" "}
+                      <Text
+                        as="span"
+                        color="#04080F"
+                        fontWeight="normal"
+                        fontSize="sm"
+                      >
+                        {value.toFixed(2)}%
+                      </Text>
+                    </Text>
+                  ))}
                 <HStack justify="space-evenly">
                   <Button
                     bg="#507DBC"
@@ -379,7 +365,7 @@ const HistoryItem = ({
             // gap={6}
             // spacing={6}
             textAlign="center"
-            width={'100%'}
+            width={"100%"}
           >
             <Image
               src={image}
@@ -392,7 +378,14 @@ const HistoryItem = ({
               mb={6}
             />
 
-            <Box bg="white" p={4} rounded="md" shadow="md" borderWidth="1px" mb={4}>
+            <Box
+              bg="white"
+              p={4}
+              rounded="md"
+              shadow="md"
+              borderWidth="1px"
+              mb={4}
+            >
               <Heading size="md" color="#04080F" mb={4}>
                 Confirm Action
               </Heading>

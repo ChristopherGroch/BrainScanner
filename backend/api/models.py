@@ -4,6 +4,14 @@ from django.core.validators import MinLengthValidator, RegexValidator
 import os
 from django.dispatch import receiver
 
+class TumorClassified(Exception):
+    pass
+
+class SamePasswordExcpetion(Exception):
+    pass
+
+class NetowrkException(Exception):
+    pass
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
