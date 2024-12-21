@@ -86,6 +86,8 @@ def checkIfImageHasDuplicateInDataset(im):
     image1 = im
     mediaPath = os.path.join(os.path.dirname(os.path.abspath(__file__)).split('backend')[0], 'Dataset')
     for folder in os.listdir(mediaPath):
+        if folder == '.DS_Store':
+            continue
         for file_name in os.listdir(mediaPath + '/' + folder):
             if im_hash == array_hash2(os.path.join(mediaPath,folder,file_name)):
                 image2 = cv2.imread(os.path.join(mediaPath,folder,file_name),0)
@@ -260,7 +262,9 @@ def addImageToDataset(src, old_tt, new_tt):
            3:'pituitary',
            4:'notumor'}
     path = default_storage.path(src)
+    print(path)
     dataset = os.path.join(os.path.dirname(os.path.abspath(__file__)).split('backend')[0], 'Dataset')
+    print(dataset)
     if old_tt is None or int(old_tt) == 0:
         im = crop_image(path)
         im = resize_preserve_aspect(im, 224, cv2.INTER_LINEAR)

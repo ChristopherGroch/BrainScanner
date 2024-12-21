@@ -9,6 +9,12 @@ import {
   Image,
 } from "@chakra-ui/react";
 import nn from "../assets/nn.jpg";
+import doctor from "../assets/who.jpg"
+import single from "../assets/single.jpg"
+import multiple from "../assets/multiple.jpg"
+import images from "../assets/images.jpeg"
+import reports from "../assets/reports.png"
+import errors from "../assets/errors.jpg"
 
 const data = [
   {
@@ -19,27 +25,67 @@ const data = [
       network for this task and enables the annotation of confirmed cases, which 
       can contribute to improving the classification algorithm in the future.
     `,
-    heading: `Papaute`,
+    heading: `About the Algorithm`,
   },
   {
-    image: nn,
+    image: doctor,
     text: `
       The BrainScanner application is a cutting-edge system designed to support 
       the classification of brain tumors. It simplifies the use of a pre-trained 
       network for this task and enables the annotation of confirmed cases, which 
       can contribute to improving the classification algorithm in the future.
     `,
-    heading: `Papaute`,
+    heading: `Access`,
   },
   {
-    image: nn,
+    image: single,
     text: `
       The BrainScanner application is a cutting-edge system designed to support 
       the classification of brain tumors. It simplifies the use of a pre-trained 
       network for this task and enables the annotation of confirmed cases, which 
       can contribute to improving the classification algorithm in the future.
     `,
-    heading: `Papaute`,
+    heading: `Single Image Test`,
+  },
+  {
+    image: multiple,
+    text: `
+      The BrainScanner application is a cutting-edge system designed to support 
+      the classification of brain tumors. It simplifies the use of a pre-trained 
+      network for this task and enables the annotation of confirmed cases, which 
+      can contribute to improving the classification algorithm in the future.
+    `,
+    heading: `Multiple Images Test`,
+  },
+  {
+    image: images,
+    text: `
+      The BrainScanner application is a cutting-edge system designed to support 
+      the classification of brain tumors. It simplifies the use of a pre-trained 
+      network for this task and enables the annotation of confirmed cases, which 
+      can contribute to improving the classification algorithm in the future.
+    `,
+    heading: `Usage History`,
+  },
+  {
+    image: reports,
+    text: `
+      The BrainScanner application is a cutting-edge system designed to support 
+      the classification of brain tumors. It simplifies the use of a pre-trained 
+      network for this task and enables the annotation of confirmed cases, which 
+      can contribute to improving the classification algorithm in the future.
+    `,
+    heading: `Report History`,
+  },
+  {
+    image: errors,
+    text: `
+      The BrainScanner application is a cutting-edge system designed to support 
+      the classification of brain tumors. It simplifies the use of a pre-trained 
+      network for this task and enables the annotation of confirmed cases, which 
+      can contribute to improving the classification algorithm in the future.
+    `,
+    heading: `Errors`,
   },
 ];
 
@@ -66,7 +112,7 @@ const ContentBlock = ({ image, text, reverse, heading }) => {
               height="100%"
               objectFit="cover"
               borderRadius="md"
-              border="1px"
+            //   border="1px"
             />
           </Box>
           <Box
