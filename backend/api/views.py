@@ -77,7 +77,11 @@ class CookieTokenRefreshView(TokenRefreshView):
 
 class CookieTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
-
+        ip_address = request.META.get('HTTP_X_FORWARDED_FOR')
+        if ip_address:
+            ip_address = ip_address.split(',')[0]
+        else:
+            ip_address = request.META.get('REMOTE_ADDR')
         try:
             response = super().post(request, *args, **kwargs)
             data = response.data

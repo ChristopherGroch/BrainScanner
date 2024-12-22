@@ -50,7 +50,9 @@ export const AuthProvider = ({ children }) => {
 
   const loginUser = async (username, password) => {
     try {
+      console.log('proba')
       const info = await login(username, password);
+      console.log('Udalo sie')
       setUser(info);
       const isAdmin = await getIsAdmin();
       setADmin(isAdmin);
