@@ -1,17 +1,13 @@
 from django.test import TestCase, Client, override_settings
 from .models import Patient, Image, Classification, Usage, Report
-from PIL import Image as pilImage
 from django.contrib.auth.models import User
-from .serializers import PatientSerializer, ImageSerializer, UserSerializer
+from .serializers import PatientSerializer
 from django.core.exceptions import ValidationError
-import io
 from django.core.files.uploadedfile import SimpleUploadedFile
 import os
-from django.core.files.base import ContentFile
 import json
 from django.core import mail
 from decimal import Decimal
-import datetime
 
 
 def createUploadImage(path, i):
@@ -712,9 +708,7 @@ class createUserTest(TestCase):
         }
         response = self.clientAdmin.post(self.path, data=data)
         self.assertEqual(response.status_code, 400)
-        expected_data = {
-            "reason": "{'email': ['Enter a valid email address.']}"
-        }
+        expected_data = {"reason": "{'email': ['Enter a valid email address.']}"}
         self.assertEqual(response.data, expected_data)
 
         data = {
@@ -726,9 +720,7 @@ class createUserTest(TestCase):
         }
         response = self.clientAdmin.post(self.path, data=data)
         self.assertEqual(response.status_code, 400)
-        expected_data = {
-            "reason": "{'email': ['Enter a valid email address.']}"
-        }
+        expected_data = {"reason": "{'email': ['Enter a valid email address.']}"}
         self.assertEqual(response.data, expected_data)
 
         data = {
@@ -1171,7 +1163,7 @@ class singleImageTest(TestCase):
             data={"pho6to": uploaded_image, "patient": json.dumps(patient_data)},
         )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data,{'reason': "No photo key"})
+        self.assertEqual(response.data, {"reason": "No photo key"})
 
         response = self.client.post(
             self.path,
@@ -1180,7 +1172,7 @@ class singleImageTest(TestCase):
             },
         )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data,{'reason': "No patient key"})
+        self.assertEqual(response.data, {"reason": "No patient key"})
 
         response = self.client.post(
             self.path,
@@ -1925,7 +1917,7 @@ class multipleImagesTest(TestCase):
             },
         )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data, {'reason':"No photos key"})
+        self.assertEqual(response.data, {"reason": "No photos key"})
 
         response = self.client.post(
             self.path,
@@ -1935,7 +1927,7 @@ class multipleImagesTest(TestCase):
             },
         )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data,{"reason": "No patients key"})
+        self.assertEqual(response.data, {"reason": "No patients key"})
 
         response = self.client.post(
             self.path,

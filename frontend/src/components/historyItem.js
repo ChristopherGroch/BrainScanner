@@ -1,8 +1,6 @@
 import {
-  Flex,
   Box,
   Image,
-  VStack,
   Heading,
   Text,
   Modal,
@@ -38,13 +36,13 @@ const HistoryItem = ({
   classifyFunction,
 }) => {
   const TUMOR_TYPES = {
-    0: "Unknown",
+    0: "unknown",
     1: "glioma",
     2: "meningioma",
     3: "pituitary",
-    4: "no_tumor",
+    4: "no tumor",
   };
-  const tumorName = TUMOR_TYPES[tumor_type] || "Unknown";
+  const tumorName = TUMOR_TYPES[tumor_type] || "unknown";
 
   const [showForm, setShowForm] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
@@ -182,10 +180,10 @@ const HistoryItem = ({
                   {patient}
                 </Heading> */}
                 {Object.entries({
-                  "No Tumor Probability": parseFloat(no_tumor_prob),
-                  "Pituitary Tumor Probability": parseFloat(pituitary_prob),
-                  "Meningioma Probability": parseFloat(meningioma_prob),
-                  "Glioma Probability": parseFloat(glioma_prob),
+                  "No tumor probability": parseFloat(no_tumor_prob),
+                  "Pituitary tumor probability": parseFloat(pituitary_prob),
+                  "Meningioma probability": parseFloat(meningioma_prob),
+                  "Glioma probability": parseFloat(glioma_prob),
                 })
                   .sort(([, a], [, b]) => b - a)
                   .map(([label, value]) => (
@@ -211,10 +209,10 @@ const HistoryItem = ({
                     size="sm"
                     // height={'30px'}
                   >
-                    <option value="1">Glioma</option>
-                    <option value="2">Meningioma</option>
-                    <option value="3">Pituitary</option>
-                    <option value="4">No Tumor</option>
+                    <option value="1">g1lioma</option>
+                    <option value="2">meningioma</option>
+                    <option value="3">pituitary</option>
+                    <option value="4">no Tumor</option>
                   </Select>
                 </FormControl>
                 <HStack>
@@ -260,10 +258,10 @@ const HistoryItem = ({
                   Class: {tumorName}
                 </Text>
                 {Object.entries({
-                  "No Tumor Probability": parseFloat(no_tumor_prob),
-                  "Pituitary Tumor Probability": parseFloat(pituitary_prob),
-                  "Meningioma Probability": parseFloat(meningioma_prob),
-                  "Glioma Probability": parseFloat(glioma_prob),
+                  "No tumor probability": parseFloat(no_tumor_prob),
+                  "Pituitary tumor probability": parseFloat(pituitary_prob),
+                  "Meningioma probability": parseFloat(meningioma_prob),
+                  "Glioma probability": parseFloat(glioma_prob),
                 })
                   .sort(([, a], [, b]) => b - a)
                   .map(([label, value]) => (
@@ -387,7 +385,7 @@ const HistoryItem = ({
               mb={4}
             >
               <Heading size="md" color="#04080F" mb={4}>
-                Confirm Action
+                Confirm action
               </Heading>
               <Text color="#04080F" mb={6}>
                 Are you sure you want to classify the tumor as{" "}

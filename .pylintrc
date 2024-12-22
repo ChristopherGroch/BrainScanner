@@ -1,0 +1,3 @@
+[MESSAGES CONTROL]
+; disable=c-extension-no-member
+disable=imported-auth-user

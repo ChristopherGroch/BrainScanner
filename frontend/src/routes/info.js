@@ -25,7 +25,7 @@ const data = [
       network for this task and enables the annotation of confirmed cases, which 
       can contribute to improving the classification algorithm in the future.
     `,
-    heading: `About the Algorithm`,
+    heading: `About the algorithm`,
   },
   {
     image: doctor,
@@ -45,7 +45,7 @@ const data = [
       network for this task and enables the annotation of confirmed cases, which 
       can contribute to improving the classification algorithm in the future.
     `,
-    heading: `Single Image Test`,
+    heading: `Single image test`,
   },
   {
     image: multiple,
@@ -55,7 +55,7 @@ const data = [
       network for this task and enables the annotation of confirmed cases, which 
       can contribute to improving the classification algorithm in the future.
     `,
-    heading: `Multiple Images Test`,
+    heading: `Multiple images test`,
   },
   {
     image: images,
@@ -65,7 +65,7 @@ const data = [
       network for this task and enables the annotation of confirmed cases, which 
       can contribute to improving the classification algorithm in the future.
     `,
-    heading: `Usage History`,
+    heading: `Usage history`,
   },
   {
     image: reports,
@@ -75,7 +75,7 @@ const data = [
       network for this task and enables the annotation of confirmed cases, which 
       can contribute to improving the classification algorithm in the future.
     `,
-    heading: `Report History`,
+    heading: `Report history`,
   },
   {
     image: errors,
@@ -162,7 +162,7 @@ const Info = () => {
                 fontSize={{ base: "2xl", sm: "4xl", md: "5xl" }}
                 lineHeight={"110%"}
               >
-                Purpose of the Application
+                Purpose of the application
               </Heading>
               <Text color={"gray.800"}>
                 {" "}

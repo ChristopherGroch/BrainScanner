@@ -324,7 +324,7 @@ const SingleImage = () => {
             {isDropdown ? (
               <Stack spacing={2}>
                 <FormControl isInvalid={!!errors.patient}>
-                  <FormLabel>Choose a Patient</FormLabel>
+                  <FormLabel>Choose a patient</FormLabel>
                   <ReactSelect
                     options={patientOptions}
                     onChange={handleSelectChange}
@@ -435,7 +435,7 @@ const SingleImage = () => {
                 {!classificationResult ? (
                   <>
                     <Heading size="md" color="#04080F" mb={4} textAlign="center">
-                      Confirm Patient Data
+                      Confirm patient data
                     </Heading>
                     <Text fontSize="lg" color="#04080F" mb={2} textAlign="center">
                       Are you sure the following details are correct?
@@ -444,13 +444,13 @@ const SingleImage = () => {
                       {isDropdown && selectedPatient ? (
                         <>
                           <Box color="#04080F" fontWeight="bold">
-                            First Name:{" "}
+                            First name:{" "}
                             <Text as="span" color="#04080F" fontWeight="normal">
                               {selectedPatient.first_name}
                             </Text>
                           </Box>
                           <Text color="#04080F" fontWeight="bold">
-                            Last Name:{" "}
+                            Last name:{" "}
                             <Text as="span" color="#04080F" fontWeight="normal">
                               {selectedPatient.last_name}
                             </Text>
@@ -471,13 +471,13 @@ const SingleImage = () => {
                       ) : (
                         <>
                           <Text color="#04080F" fontWeight="bold">
-                            First Name:{" "}
+                            First name:{" "}
                             <Text as="span" color="#04080F" fontWeight="normal">
                               {formData.first_name}
                             </Text>
                           </Text>
                           <Text color="#04080F" fontWeight="bold">
-                            Last Name:{" "}
+                            Last name:{" "}
                             <Text as="span" color="#04080F" fontWeight="normal">
                               {formData.last_name}
                             </Text>
@@ -506,7 +506,7 @@ const SingleImage = () => {
                         width={'100%'}
                         boxShadow="md"
                       >
-                        Confirm and Classify
+                        Confirm and classify
                       </Button>
                       <Button
                         // variant="outline"
@@ -526,7 +526,7 @@ const SingleImage = () => {
                 ) : (
                   <>
                     <Heading size="md" color="#04080F" mb={4} textAlign="center">
-                      Classification Results
+                      Classification results
                     </Heading>
                     {classificationResult.image && (
                       <Box
@@ -556,16 +556,16 @@ const SingleImage = () => {
                       boxShadow="md"
                     >
                       {Object.entries({
-                        "No Tumor Probability": parseFloat(
+                        "No tumor probability": parseFloat(
                           classificationResult.no_tumor_prob
                         ),
-                        "Pituitary Tumor Probability": parseFloat(
+                        "Pituitary tumor probability": parseFloat(
                           classificationResult.pituitary_prob
                         ),
-                        "Meningioma Probability": parseFloat(
+                        "Meningioma probability": parseFloat(
                           classificationResult.meningioma_prob
                         ),
-                        "Glioma Probability": parseFloat(
+                        "Glioma probability": parseFloat(
                           classificationResult.glioma_prob
                         ),
                       })

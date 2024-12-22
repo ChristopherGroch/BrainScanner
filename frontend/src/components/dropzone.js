@@ -2,11 +2,8 @@ import {
   Image,
   Text,
   Box,
-  HStack,
   IconButton,
-  Flex,
   Stack,
-  Button,
   VStack,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";

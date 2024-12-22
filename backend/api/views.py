@@ -1,63 +1,39 @@
-from django.shortcuts import render
-from rest_framework.decorators import api_view, permission_classes
+from django.http import FileResponse, Http404
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
+from django.contrib.auth.models import User
+from django.core.files.storage import default_storage
+
+from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
-from django.http import FileResponse
-from django.views.decorators.csrf import ensure_csrf_cookie
-from django.shortcuts import get_object_or_404
-from django.http import Http404
-from collections import defaultdict
-from django.core.files.base import ContentFile
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework import status
+from rest_framework.parsers import MultiPartParser, JSONParser
+
 from .serializers import (
     UserSerializer,
     PatientSerializer,
     ImageSerializer,
     UserGetAllSerializer,
     ClassificationSerializer,
-    ReportSerializer,
     UsageSerializer,
     UsageFilesSerializer,
-    UserCreateSerializer,
-    UserChangeSerializer,
 )
-from django.core.exceptions import ValidationError
-from rest_framework.decorators import parser_classes
-from rest_framework.views import APIView
-from django.contrib.auth.models import User
-from .utils import cleanup_saved_photos
-from django.db import IntegrityError
-from rest_framework import status
-import json
-from rest_framework.parsers import MultiPartParser, JSONParser
 from .models import (
     Patient,
     Usage,
-    Classification,
     NetowrkException,
     Image,
     Report,
     SamePasswordExcpetion,
-    UserProfile,
     TumorClassified,
 )
 from .utils import (
-    checkIfImageExists,
-    getSingleImagePrediction,
-    sendEmail,
-    generate_password,
-    generatePasswordFile,
-    generateZipFile,
-    loadNetwork,
-    frontedHappyReformatHistory,
-    prepareAllUsages,
-    addImageToDataset,
+    cleanup_saved_photos,
+    fronted_happy_reformat_history,
+    prepare_all_usages,
 )
-from decimal import Decimal, ROUND_HALF_UP
-from django.db import transaction, connection
-import os
-import pandas as pd
-from io import StringIO
 from .services.image_service import classify_image, change_image_data
 from .services.user_service import (
     change_user_password,
@@ -169,7 +145,7 @@ def classifiy(request, pk):
         return_image = classify_image(pk, request.data["tumor_type"], request.user)
     except ValidationError as e:
         return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    except Http404 as e:
+    except Http404:
         return Response("No such file", status=status.HTTP_404_NOT_FOUND)
     except TumorClassified:
         return Response("Tumor already classified", status=status.HTTP_400_BAD_REQUEST)
@@ -182,7 +158,7 @@ def classifiy(request, pk):
 
 @api_view(["PUT"])
 @permission_classes([IsAuthenticated])
-def change_password(request, pk):
+def change_password(request, pk): # pylint: disable=unused-argument
     if not "new_password" in request.data:
         return Response(
             {"success": False, "reason": "No new password field"},
@@ -350,7 +326,9 @@ def getAllUsagesFrontFriendly(request):
     usages = (
         Usage.objects.filter(doctor=request.user).all().order_by("-date_of_creation")
     )
-    response_data = frontedHappyReformatHistory(UsageSerializer(usages, many=True).data)
+    response_data = fronted_happy_reformat_history(
+        UsageSerializer(usages, many=True).data
+    )
     return Response(response_data)
 
 
@@ -377,7 +355,7 @@ def getAllUsagesFilesFrontFriendly(request):
         .order_by("-date_of_creation")
     )
 
-    return Response(prepareAllUsages(usages))
+    return Response(prepare_all_usages(usages))
 
 
 @api_view(["POST"])
@@ -426,7 +404,12 @@ def multipleImageCheck(request):
         return Response({"reason": "No photos key"}, status=status.HTTP_400_BAD_REQUEST)
     try:
         saved_photos = []
-        usage, report = multiple_image_check(request.data["patients"],request.FILES.getlist("photos"), request.user, saved_photos)
+        usage, report = multiple_image_check(
+            request.data["patients"],
+            request.FILES.getlist("photos"),
+            request.user,
+            saved_photos,
+        )
         usage_data = UsageSerializer(usage).data
         usage_data["report"] = report.file.url
         usage_data["reportID"] = report.id

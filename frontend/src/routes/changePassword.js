@@ -5,7 +5,6 @@ import {
   Button,
   FormErrorMessage,
   Stack,
-  Heading,
   IconButton,
   InputGroup,
   InputRightElement,
@@ -107,7 +106,7 @@ const ChangePasasword = () => {
         >
           <Stack spacing={4}>
             <FormControl id="email">
-              <FormLabel color="#04080F">New Password</FormLabel>
+              <FormLabel color="#04080F">New password</FormLabel>
               <Input
                 color="#04080F"
                 onChange={(e) => setNewPassword(e.target.value)}

@@ -3,8 +3,6 @@ import {
   FormControl,
   FormLabel,
   Input,
-  Button,
-  Switch,
   FormErrorMessage,
   Stack,
   HStack,
@@ -137,7 +135,7 @@ const MultipleImages = ({ patients, id, errors, onChange, clearError }) => {
         {isDropdown ? (
           <Stack spacing={2}>
             <FormControl isInvalid={!!errors.patient}>
-              <FormLabel>Choose a Patient</FormLabel>
+              <FormLabel>Choose a patient</FormLabel>
               <ReactSelect
                 options={patientOptions}
                 onChange={handleSelectChange}

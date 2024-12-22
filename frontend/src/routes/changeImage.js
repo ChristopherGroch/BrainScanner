@@ -22,7 +22,6 @@ import { getImages, getPatients, refresh, getUsers } from "../endpoints/api";
 import { useEffect, useState } from "react";
 import ReactSelect from "react-select";
 import { toast } from "sonner";
-import { EditIcon } from "@chakra-ui/icons";
 import { changeImage } from "../endpoints/api";
 import { useNavigate } from "react-router-dom";
 import emptyImage from "../assets/empty.png";
@@ -31,7 +30,7 @@ const ChangeImagesData = () => {
   const nav = useNavigate();
   const BASE_URL = "http://127.0.0.1:8000";
   const TUMOR_TYPES = {
-    0: "Unknown",
+    0: "unknown",
     1: "glioma",
     2: "meningioma",
     3: "pituitary",
@@ -269,7 +268,7 @@ const ChangeImagesData = () => {
             height="100%"
           >
             <FormControl isInvalid={!!selectError}>
-              <FormLabel>Choose an Image</FormLabel>
+              <FormLabel>Choose an image</FormLabel>
               <ReactSelect
                 options={imageOptions}
                 onChange={handleSelectImageChange}
@@ -328,7 +327,7 @@ const ChangeImagesData = () => {
                       {selectedImage.patient.last_name}
                       <br />
                       Tumor type:{" "}
-                      {TUMOR_TYPES[selectedImage.tumor_type] || "Unknown"}
+                      {TUMOR_TYPES[selectedImage.tumor_type] || "unknown"}
                     </Heading>
                     {/* <Text fontSize="sm" color="gray.600" textAlign="center">
                       Tumor type:{" "}
@@ -347,11 +346,11 @@ const ChangeImagesData = () => {
                         boxShadow={"md"}
                         onChange={(e) => setSelectedTumor(e.target.value)}
                       >
-                        <option value="0">Unknown</option>
-                        <option value="1">Glioma</option>
-                        <option value="2">Meningioma</option>
-                        <option value="3">Pituitary</option>
-                        <option value="4">No Tumor</option>
+                        <option value="0">unknown</option>
+                        <option value="1">glioma</option>
+                        <option value="2">meningioma</option>
+                        <option value="3">pituitary</option>
+                        <option value="4">no Tumor</option>
                       </Select>
                     </FormControl>
                     <FormControl width={"100%"}>
@@ -430,11 +429,11 @@ const ChangeImagesData = () => {
                         Select new tumor type
                       </FormLabel>
                       <Select value={"0"} boxShadow={"md"} onChange={()=>{}} >
-                        <option value="0">Unknown</option>
-                        <option value="1">Glioma</option>
-                        <option value="2">Meningioma</option>
-                        <option value="3">Pituitary</option>
-                        <option value="4">No Tumor</option>
+                        <option value="0">unknown</option>
+                        <option value="1">glioma</option>
+                        <option value="2">meningioma</option>
+                        <option value="3">pituitary</option>
+                        <option value="4">no Tumor</option>
                       </Select>
                     </FormControl>
                     <FormControl width={"100%"}>
@@ -488,13 +487,13 @@ const ChangeImagesData = () => {
           <ModalCloseButton />
           <ModalBody p={6}>
             <Heading size="md" color="#04080F" textAlign="center" mb={4}>
-              Confirm Changes
+              Confirm changes
             </Heading>
             <Box bg="white" p={4} rounded="md" shadow="md" mb={4}>
               {patientChange && tumorChange ? (
                 <>
                   <Text color="#04080F" fontWeight="semibold" mb={2}>
-                    Current Patient:{" "}
+                    Current patient:{" "}
                     <Text as="span" color="#04080F" fontWeight="normal">
                       {selectedImage.patient.first_name}{" "}
                       {selectedImage.patient.last_name} (
@@ -502,16 +501,16 @@ const ChangeImagesData = () => {
                     </Text>
                   </Text>
                   <Text color="#04080F" fontWeight="semibold" mb={2}>
-                    New Patient:{" "}
+                    New patient:{" "}
                     <Text as="span" color="#04080F" fontWeight="normal">
                       {selectedPatient.first_name} {selectedPatient.last_name} (
                       {selectedPatient.PESEL})
                     </Text>
                   </Text>
                   <Text color="#04080F" fontWeight="semibold" mb={2}>
-                    Tumor Type Change:{" "}
+                    Tumor type change:{" "}
                     <Text as="span" color="#04080F" fontWeight="normal">
-                      From {TUMOR_TYPES[selectedImage.tumor_type] || "unknown"}{" "}
+                      from {TUMOR_TYPES[selectedImage.tumor_type] || "unknown"}{" "}
                       to {TUMOR_TYPES[selectedTumor] || "unknown"}
                     </Text>
                   </Text>
@@ -520,7 +519,7 @@ const ChangeImagesData = () => {
                 <>
                   {" "}
                   <Text color="#04080F" fontWeight="semibold" mb={2}>
-                    Current Patient:{" "}
+                    Current patient:{" "}
                     <Text as="span" color="#04080F" fontWeight="normal">
                       {selectedImage.patient.first_name}{" "}
                       {selectedImage.patient.last_name} (
@@ -528,7 +527,7 @@ const ChangeImagesData = () => {
                     </Text>
                   </Text>
                   <Text color="#04080F" fontWeight="semibold" mb={2}>
-                    New Patient:{" "}
+                    New patient:{" "}
                     <Text as="span" color="#04080F" fontWeight="normal">
                       {selectedPatient.first_name} {selectedPatient.last_name} (
                       {selectedPatient.PESEL})
@@ -539,9 +538,9 @@ const ChangeImagesData = () => {
                 <>
                   {" "}
                   <Text color="#04080F" fontWeight="semibold" mb={2}>
-                    Tumor Type Change:{" "}
+                    Tumor type change:{" "}
                     <Text as="span" color="#04080F" fontWeight="normal">
-                      From {TUMOR_TYPES[selectedImage?.tumor_type] || "unknown"}{" "}
+                      from {TUMOR_TYPES[selectedImage?.tumor_type] || "unknown"}{" "}
                       to {TUMOR_TYPES[selectedTumor] || "unknown"}
                     </Text>
                   </Text>

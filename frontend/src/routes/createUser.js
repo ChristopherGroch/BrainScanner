@@ -1,5 +1,4 @@
 import {
-  VStack,
   FormControl,
   FormLabel,
   Input,
@@ -11,7 +10,6 @@ import {
   Stack,
   Modal,
   Heading,
-  useColorModeValue,
   Box,
   ModalOverlay,
   ModalBody,
@@ -187,7 +185,7 @@ const CreateUser = () => {
               onClick={handleSubmit}
               boxShadow="md"
             >
-              Create User
+              Create user
             </Button>
           </Stack>
         </Box>
@@ -197,7 +195,7 @@ const CreateUser = () => {
             <ModalCloseButton />
             <ModalBody p={6}>
               <Heading size="md" color="#04080F" mb={4} textAlign="center">
-                Confirm User Creation
+                Confirm user creation
               </Heading>
               <Text fontSize="lg" color="#04080F" mb={2} textAlign="center">
                 Are you sure you want to create a user with the following
@@ -211,13 +209,13 @@ const CreateUser = () => {
                   </Text>
                 </Text>
                 <Text color="#04080F" fontWeight="semibold" ml={3}>
-                  First Name:{" "}
+                  First name:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.first_name}
                   </Text>
                 </Text>
                 <Text color="#04080F" fontWeight="semibold" ml={3}>
-                  Last Name:{" "}
+                  Last name:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.last_name}
                   </Text>

@@ -2,7 +2,6 @@ import { Text, Stack } from "@chakra-ui/react";
 import {
   Box,
   Flex,
-  Heading,
   VStack,
   Spinner,
   FormControl,
@@ -18,11 +17,11 @@ import HistoryItem from "../components/historyItem";
 
 const HistoryMenu = () => {
   const TUMOR_TYPES = {
-    0: "Unknown",
+    0: "unknown",
     1: "glioma",
     2: "meningioma",
     3: "pituitary",
-    4: "no_tumor",
+    4: "no tumor",
   };
   const BASE_URL = "http://127.0.0.1:8000";
   const [classifications, setClassifications] = useState([]);

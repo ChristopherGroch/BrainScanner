@@ -239,7 +239,7 @@ const ChangePatientData = () => {
             height="100%"
           >
             <FormControl isInvalid={!!errors.patient}>
-              <FormLabel>Choose a Patient</FormLabel>
+              <FormLabel>Choose a patient</FormLabel>
               <ReactSelect
                 options={patientOptions}
                 onChange={handleSelectChange}
@@ -291,20 +291,20 @@ const ChangePatientData = () => {
             <ModalCloseButton />
             <ModalBody p={6} >
               <Heading size="md" color="#04080F" mb={4} textAlign="center">
-                Patient Details
+                Patient details
               </Heading>
               <Text fontSize="lg" color="#04080F" mb={2} textAlign="center">
                 Are you sure to change patient data as follows?
               </Text>
               <Box bg="white" p={4} rounded="md" shadow="md" mb={4}>
                 <Text color="#04080F" fontWeight="semibold" ml={3}>
-                  First Name:{" "}
+                  First name:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.first_name}
                   </Text>
                 </Text>
                 <Text color="#04080F" fontWeight="semibold" ml={3}>
-                  Last Name:{" "}
+                  Last name:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.last_name}
                   </Text>

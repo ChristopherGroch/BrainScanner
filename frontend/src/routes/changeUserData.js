@@ -12,7 +12,6 @@ import {
   Stack,
   Heading,
   ModalOverlay,
-  ModalHeader,
   ModalContent,
   ModalCloseButton,
   Flex,
@@ -51,7 +50,6 @@ const ChangeUserData = () => {
   const [errors, setErrors] = useState({});
   const [userOptions, setUserOptions] = useState({});
   const [loading, setLoading] = useState(false);
-  const [resetError, setResetError] = useState("");
 
   const resetStates = async () => {
     setFormData({
@@ -333,7 +331,7 @@ const ChangeUserData = () => {
             height="100%"
           >
             <FormControl isInvalid={!!errors.user}>
-              <FormLabel>Choose a User</FormLabel>
+              <FormLabel>Choose a user</FormLabel>
               <ReactSelect
                 options={userOptions}
                 onChange={handleSelectChange}
@@ -380,7 +378,7 @@ const ChangeUserData = () => {
                 boxShadow="md"
                 width={selectedUser ? "50%" : "100%"}
               >
-                Save Changes
+                Save changes
               </Button>
               {selectedUser && (
                 <Button
@@ -394,7 +392,7 @@ const ChangeUserData = () => {
                   boxShadow="md"
                   width="50%"
                 >
-                  Reset Password
+                  Reset password
                 </Button>
               )}
             </HStack>
@@ -406,20 +404,20 @@ const ChangeUserData = () => {
             <ModalCloseButton />
             <ModalBody p={6}>
               <Heading size="md" textAlign="center" color="#04080F" mb={4}>
-                User Details
+                User details
               </Heading>
               <Text fontSize="lg" color="#04080F" mb={2} textAlign="center">
                 Are you sure to change user data as follows?
               </Text>
               <Box bg="white" p={4} rounded="md" shadow="md" mb={3}>
                 <Text color="#04080F" fontWeight="semibold" ml={3}>
-                  First Name:{" "}
+                  First name:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.first_name}
                   </Text>
                 </Text>
                 <Text color="#04080F" fontWeight="semibold" ml={3}>
-                  Last Name:{" "}
+                  Last name:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.last_name}
                   </Text>
@@ -499,7 +497,7 @@ const ChangeUserData = () => {
                   boxShadow="md"
                   width={"100%"}
                 >
-                  Reset Password
+                  Reset password
                 </Button>
                 <Button
                   // variant="outline"

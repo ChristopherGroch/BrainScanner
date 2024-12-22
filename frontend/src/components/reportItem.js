@@ -4,7 +4,6 @@ import {
   HStack,
   Button,
   VStack,
-  Stack,
   Text,
   UnorderedList,
   ListItem,
@@ -38,6 +37,41 @@ const ReportItem = ({ file, date, file_id, patients }) => {
         // alert(error.response?.data?.reason || "Wystąpił błąd.");
         toast.error(error.response?.data?.reason || "Unexpected error.");
       }
+    }
+  };
+  const handleClick = async () => {
+    const fileUrl = file;
+
+    try {
+      const response = await fetch(fileUrl);
+      const text = await response.text();
+
+      const newWindow = window.open();
+      newWindow.document.write(`
+     <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            body {
+              background-color: black;
+              color: white;
+              font-family: Arial, sans-serif;
+              white-space: pre-wrap; /* Umożliwia zachowanie formatowania */
+              padding: 20px;
+            }
+            pre {
+              font-size: 16px;
+              line-height: 1.5;
+            }
+          </style>
+        </head>
+        <body>
+          <pre>${text}</pre>
+        </body>
+      </html>
+    `);
+    } catch (error) {
+      console.error("Błąd podczas pobierania pliku:", error);
     }
   };
 
@@ -89,25 +123,26 @@ const ReportItem = ({ file, date, file_id, patients }) => {
             width="30%"
             boxShadow="md"
           >
-            Download Report
+            Download report
           </Button>
-          <a
+          {/* <a
             href={file}
             target="_blank"
             style={{ width: "30%" }}
             rel="noopener noreferrer"
-          >
+          > */}
             <Button
               bg="#507DBC"
               color="white"
               _hover={{ bg: "blue.700" }}
-              width="100%"
+              width="30%"
+              onClick={handleClick}
               boxShadow="md"
               size="sm"
             >
-              View Report
+              View report
             </Button>
-          </a>
+          {/* </a> */}
         </HStack>
       </VStack>
     </Flex>

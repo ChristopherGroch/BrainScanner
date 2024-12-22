@@ -1,8 +1,10 @@
+import json
+
+from django.shortcuts import get_object_or_404
+
 from ..models import Patient
 from ..serializers import PatientSerializer
-from django.db.utils import IntegrityError
-from django.shortcuts import get_object_or_404
-import json
+
 
 
 def change_patient_data(pk, data):

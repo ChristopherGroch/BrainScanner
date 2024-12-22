@@ -5,7 +5,6 @@ import {
   HStack,
   IconButton,
   Stack,
-  Button,
   VStack,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";

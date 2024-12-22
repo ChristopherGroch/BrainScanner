@@ -7,21 +7,16 @@ import {
   Stack,
   Icon,
   useColorModeValue,
-  createIcon,
   Flex,
   VStack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/auth";
 import {
   FcAbout,
   FcDatabase,
   FcAddImage,
-  FcDonate,
   FcApproval,
-  FcManager,
 } from "react-icons/fc";
-import { MdImage } from "react-icons/md";
 
 const Menu = () => {
   const nav = useNavigate();
@@ -197,19 +192,19 @@ const Menu = () => {
                   href={moveToMultipleImages}
                 />
                 <Card
-                  heading={"Checking history of usages"}
+                  heading={"Usage history check"}
                   icon={<Icon as={FcDatabase} w={10} h={10} />}
                   description={"Check your algorithm usage history."}
                   href={moveToHistory}
                 />
                 <Card
-                  heading={"Checking history of reports"}
+                  heading={"Report hisotry check"}
                   icon={<Icon as={FcDatabase} w={10} h={10} />}
                   description={"Check the history of your generated reports."}
                   href={moveToReportHistory}
                 />
                 <Card
-                  heading={"Classifying an image"}
+                  heading={"Image classification"}
                   icon={<Icon as={FcApproval} w={10} h={10} />}
                   description={
                     "Classify the previously uploaded image and add it to the dataset that will be used to train a new algorithm in the future."
@@ -217,7 +212,7 @@ const Menu = () => {
                   href={moveToHistory}
                 />
                 <Card
-                  heading={"Change your password"}
+                  heading={"Password change"}
                   icon={<Icon as={FcAbout} w={10} h={10} />}
                   description={
                     "Change your password to ensure account security and protect your personal data."

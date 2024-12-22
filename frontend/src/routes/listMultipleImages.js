@@ -12,11 +12,8 @@ import {
   ModalContent,
   ModalOverlay,
   useDisclosure,
-  ModalHeader,
   ModalCloseButton,
   ModalBody,
-  ModalFooter,
-  HStack,
 } from "@chakra-ui/react";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
 import MultipleImages from "../components/multipleImages";
@@ -304,6 +301,42 @@ const MultipleImagesList = () => {
     }
   };
 
+  const handleClick = async () => {
+    const fileUrl = `http://127.0.0.1:8000${classificationResult.report}`;
+
+    try {
+      const response = await fetch(fileUrl);
+      const text = await response.text();
+
+      const newWindow = window.open();
+      newWindow.document.write(`
+     <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            body {
+              background-color: black;
+              color: white;
+              font-family: Arial, sans-serif;
+              white-space: pre-wrap; /* Umożliwia zachowanie formatowania */
+              padding: 20px;
+            }
+            pre {
+              font-size: 16px;
+              line-height: 1.5;
+            }
+          </style>
+        </head>
+        <body>
+          <pre>${text}</pre>
+        </body>
+      </html>
+    `);
+    } catch (error) {
+      console.error("Błąd podczas pobierania pliku:", error);
+    }
+  };
+
   return (
     <Flex
       minH={"100%"}
@@ -391,7 +424,7 @@ const MultipleImagesList = () => {
               />
             }
           >
-            Add Patient
+            Add patient
           </Button>
           <Button
             alignSelf="center"
@@ -416,28 +449,35 @@ const MultipleImagesList = () => {
             <ModalBody p={6} width={"100%"}>
               {classificationResult ? (
                 <>
-                  <Heading size="md" color="#04080F" mb={6} textAlign="center" fontWeight="bold">
+                  <Heading
+                    size="md"
+                    color="#04080F"
+                    mb={6}
+                    textAlign="center"
+                    fontWeight="bold"
+                  >
                     Report created
                   </Heading>
                   <VStack spacing={4} w={"100%"}>
                     <VStack spacing={2} w="100%">
-                      <a
-                        href={`http://127.0.0.1:8000${classificationResult.report}`}
+                      {/* <a
+                        href={encodeURI(`http://127.0.0.1:8000${classificationResult.report}`)}
                         target="_blank"
-                        rel="noopener noreferrer"
+                        // rel="noopener noreferrer"
                         style={{ width: "100%" }}
+                      > */}
+                      <Button
+                        bg="#507DBC"
+                        color="white"
+                        _hover={{ bg: "blue.700" }}
+                        size="md"
+                        boxShadow="md"
+                        w="100%"
+                        onClick={handleClick}
                       >
-                        <Button
-                          bg="#507DBC"
-                          color="white"
-                          _hover={{ bg: "blue.700" }}
-                          size="md"
-                          boxShadow="md"
-                          w="100%"
-                        >
-                          View Report
-                        </Button>
-                      </a>
+                        View report
+                      </Button>
+                      {/* </a> */}
                       <Button
                         bg="#00A676"
                         color="white"
@@ -447,7 +487,7 @@ const MultipleImagesList = () => {
                         w="100%"
                         onClick={handleDownloadFile}
                       >
-                        Download Report
+                        Download report
                       </Button>
                     </VStack>
                   </VStack>
@@ -461,7 +501,7 @@ const MultipleImagesList = () => {
                       mb={4}
                       textAlign="center"
                     >
-                      Confirm Patients Data
+                      Confirm patients data
                     </Heading>
                     <Text
                       fontSize="lg"
@@ -486,11 +526,11 @@ const MultipleImagesList = () => {
                           Patient {index + 1}
                         </Heading>
                         <Box color="#04080F">
-                          <strong>First Name:</strong>{" "}
+                          <strong>First name:</strong>{" "}
                           {patient.first_name || "N/A"}
                         </Box>
                         <Box color="#04080F">
-                          <strong>Last Name:</strong>{" "}
+                          <strong>Last name:</strong>{" "}
                           {patient.last_name || "N/A"}
                         </Box>
                         <Box color="#04080F">
@@ -508,7 +548,7 @@ const MultipleImagesList = () => {
                       </Box>
                     ))}
                   </VStack>
-                  <Stack direction="row" justify="center" spacing={4} mt={'4'}>
+                  <Stack direction="row" justify="center" spacing={4} mt={"4"}>
                     <Button
                       bg="#507DBC"
                       color="white"

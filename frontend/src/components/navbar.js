@@ -8,12 +8,9 @@ import {
   MenuList,
   MenuItem,
   useDisclosure,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { Link as RouterLink, NavLink } from "react-router-dom";
-import { getUserName } from "../endpoints/api";
-import { useEffect, useState } from "react";
 import { useAuth } from "../context/auth";
 
 const Navbar = () => {
@@ -82,7 +79,7 @@ const Navbar = () => {
               _hover={{ bg: "blue.700" }}
               _activeLink={{ bg: "blue.700"}}
             >
-              Usage History
+              Usage history
             </ChakraLink>
           </Box>
           <Box as="li">
@@ -96,7 +93,7 @@ const Navbar = () => {
               _hover={{ bg: "blue.700" }}
               _activeLink={{ bg: "blue.700" }}
             >
-              Report History
+              Report history
             </ChakraLink>
           </Box>
           <Box as="li">
@@ -110,7 +107,7 @@ const Navbar = () => {
               _hover={{ bg: "blue.700" }}
               _activeLink={{ bg: "blue.700" }}
             >
-              Single Image
+              Single image
             </ChakraLink>
           </Box>
           <Box as="li">
@@ -124,7 +121,7 @@ const Navbar = () => {
               _hover={{ bg: "blue.700" }}
               _activeLink={{ bg: "blue.700" }}
             >
-              Multiple Images
+              Multiple images
             </ChakraLink>
           </Box>
           <Box as="li">
@@ -155,7 +152,7 @@ const Navbar = () => {
                   bg="#507DBC"
                   _hover={{ bg: "blue.700" }}
                 >
-                  Change Password
+                  Password change
                 </MenuItem>
                 <MenuItem
                   as={RouterLink}
@@ -165,7 +162,7 @@ const Navbar = () => {
                   _hover={{ bg: "blue.700" }}
                   display={admin ? "block" : "none"}
                 >
-                  Create User
+                  User creation
                 </MenuItem>
                 <MenuItem
                   as={RouterLink}
@@ -175,7 +172,7 @@ const Navbar = () => {
                   _hover={{ bg: "blue.700" }}
                   display={admin ? "block" : "none"}
                 >
-                  Change User
+                  User edit
                 </MenuItem>
                 <MenuItem
                   as={RouterLink}
@@ -185,7 +182,7 @@ const Navbar = () => {
                   _hover={{ bg: "blue.700" }}
                   display={admin ? "block" : "none"}
                 >
-                  Change Images
+                  Image edit
                 </MenuItem>
                 <MenuItem
                   as={RouterLink}
@@ -195,7 +192,7 @@ const Navbar = () => {
                   _hover={{ bg: "blue.700" }}
                   display={admin ? "block" : "none"}
                 >
-                  Change Pateints
+                  Patient edit
                 </MenuItem>
                 <MenuItem
                   as={RouterLink}
@@ -204,7 +201,7 @@ const Navbar = () => {
                   bg="#507DBC"
                   _hover={{ bg: "blue.700" }}
                 >
-                  More Informations
+                  More information
                 </MenuItem>
                 <MenuItem
                   onClick={handleLogout}

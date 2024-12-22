@@ -1,25 +1,22 @@
+from io import StringIO
+
+import json
+import pandas as pd
+
+from django.core.files.base import ContentFile
+from django.db import transaction
+from ..models import Usage, Report, Classification
 from ..utils import (
-    loadNetwork,
-    checkIfImageExists,
-    getSingleImagePrediction,
+    load_network,
+    get_single_image_prediction,
     round_decimal,
 )
-import json
-from ..models import Patient, Image, Usage, Report, Classification
-from django.core.files.base import ContentFile
-from ..serializers import PatientSerializer, ImageSerializer
-from django.db import transaction
-from decimal import Decimal, ROUND_HALF_UP
-from django.db.utils import IntegrityError
-from django.shortcuts import get_object_or_404
 from .patient_service import get_patient, get_patients_with_images
 from .image_service import get_image, get_images
-import pandas as pd
-from io import StringIO
 
 
 def evaluate_image(image, usage, network):
-    glioma, menin, no_t, pituitary = getSingleImagePrediction(image, network)
+    glioma, menin, no_t, pituitary = get_single_image_prediction(image, network)
 
     classification = Classification(
         usage=usage,
@@ -36,7 +33,7 @@ def evaluate_image(image, usage, network):
 def evaluate_images(images, usage, network):
     classifications = []
     for image in images:
-        glioma, menin, no_t, pituitary = getSingleImagePrediction(image, network)
+        glioma, menin, no_t, pituitary = get_single_image_prediction(image, network)
 
         classification = Classification(
             usage=usage,
@@ -52,7 +49,7 @@ def evaluate_images(images, usage, network):
 
 
 def single_image_check(request_data, files, user):
-    network = loadNetwork()
+    network = load_network()
     with transaction.atomic():
         patient = get_patient(request_data)
         image = get_image(files["photo"], patient)
@@ -64,7 +61,7 @@ def single_image_check(request_data, files, user):
 
 
 def multiple_image_check(data, photos, user, saved_photos):
-    network = loadNetwork()
+    network = load_network()
     data = json.loads(data)
     patients = []
     images = []
@@ -74,7 +71,7 @@ def multiple_image_check(data, photos, user, saved_photos):
         usage = Usage(doctor=user)
         usage.save()
         classifications = evaluate_images(images, usage, network)
-        report = generate_report(classifications,usage)
+        report = generate_report(classifications, usage)
     return usage, report
 
 
@@ -105,18 +102,20 @@ def generate_report(classifications, usage):
         "prioritizing the most confident predictions for each patient. Columns included:\n\n"
         "- `patient_id`: Unique identifier for the patient.\n"
         "- `name`: The filename of the analyzed image.\n"
-        "- Probabilities (`no_tumor`, `pituitary`, `glioma`, `meningioma`): Confidence scores for each condition.\n\n"
+        """- Probabilities (`no_tumor`, `pituitary`, `glioma`, `meningioma`):
+        Confidence scores for each condition.\n\n"""
         "Images were classified using a Convolutional Neural Network (CNN) architecture.\n\n"
     )
-    buffer = StringIO()
-    buffer.write(intro)
-    buffer.write(df.to_string(index=False))
-    buffer.seek(0)
+    with StringIO() as buffer:
+        buffer.write(intro)
+        buffer.write("\n")
+        buffer.write(df.to_string(index=False))
+        content = buffer.getvalue()
 
     report = Report.objects.create(
         name=usage.date_of_creation.strftime("%Y-%m-%d %H:%M:%S"),
         file=ContentFile(
-            buffer.getvalue(),
+            content,
             name=f"report{usage.date_of_creation.strftime('%Y-%m-%d %H:%M:%S')}.txt",
         ),
     )

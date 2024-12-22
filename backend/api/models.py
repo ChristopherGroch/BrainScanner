@@ -1,7 +1,9 @@
+import os
+
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import MinLengthValidator, RegexValidator
-import os
+from django.core.validators import RegexValidator
+
 from django.dispatch import receiver
 
 class TumorClassified(Exception):
@@ -23,7 +25,7 @@ class UserProfile(models.Model):
         ],
         unique=True,
     )
-    
+
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
@@ -75,7 +77,7 @@ class Image(models.Model):
         related_name="classifications",
     )
     photo = models.ImageField(upload_to="Images",unique=True)
-    
+
     hash = models.CharField(
         validators=[
             RegexValidator(
@@ -105,7 +107,7 @@ class Image(models.Model):
 
 #     def __str__(self) -> str:
 #         return f"""MODEL
-#     Name: {self.name} 
+#     Name: {self.name}
 #     Accuracy: {self.accuracy}"""
 
 #     def save(self, *args, **kwargs):
@@ -174,13 +176,13 @@ class Classification(models.Model):
 
 
 @receiver(models.signals.post_delete, sender=Image)
-def auto_delete_file_on_delete(sender, instance, **kwargs):
+def auto_delete_file_on_delete(sender, instance, **kwargs): # pylint: disable=unused-argument
     if instance.photo:
         if os.path.isfile(instance.photo.path):
             os.remove(instance.photo.path)
-            
+
 @receiver(models.signals.post_delete, sender=Report)
-def auto_delete_file_on_delete(sender, instance, **kwargs):
+def auto_delete_report_file_on_delete(sender, instance, **kwargs): # pylint: disable=unused-argument
     if instance.file:
         if os.path.isfile(instance.file.path):
             os.remove(instance.file.path)

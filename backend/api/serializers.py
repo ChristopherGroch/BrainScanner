@@ -1,74 +1,82 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from rest_framework_simplejwt.tokens import RefreshToken
+from django.core.validators import RegexValidator
+
 from .models import Patient, Image, Report, Classification, Usage, UserProfile
-from django.core.validators import MinLengthValidator, RegexValidator
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username","first_name","last_name", "id"]
-        
+        fields = ["username", "first_name", "last_name", "id"]
+
+
 class UserCreateSerializer(serializers.ModelSerializer):
     PESEL = serializers.CharField(
-        write_only=True,  
-        required=True,  
+        write_only=True,
+        required=True,
         validators=[
             RegexValidator(
                 r"^\d{11}$", message="PESEL musi zawierać dokładnie 11 cyfr."
             )
         ],
     )
+
     class Meta:
         model = User
-        fields = ['username','first_name','last_name','email','PESEL']
-        
-        
+        fields = ["username", "first_name", "last_name", "email", "PESEL"]
+
+
 class UserChangeSerializer(serializers.ModelSerializer):
     PESEL = serializers.CharField(
-        write_only=True,  
-        required=True,  
+        write_only=True,
+        required=True,
         validators=[
             RegexValidator(
                 r"^\d{11}$", message="PESEL musi zawierać dokładnie 11 cyfr."
             )
         ],
     )
+
     class Meta:
         model = User
-        fields = ['id','username','first_name','last_name','email','PESEL']
+        fields = ["id", "username", "first_name", "last_name", "email", "PESEL"]
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['PESEL'] 
-
+        fields = ["PESEL"]
 
 
 class UserGetAllSerializer(serializers.ModelSerializer):
     userprofile = UserProfileSerializer(read_only=True)
+
     class Meta:
         model = User
-        fields = ['id','username','first_name','last_name','email','userprofile']
+        fields = ["id", "username", "first_name", "last_name", "email", "userprofile"]
 
 
 class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patient
-        fields = ["first_name", "last_name", "email", "PESEL" ,'id']
+        fields = ["first_name", "last_name", "email", "PESEL", "id"]
 
 
 class ImageSerializer(serializers.ModelSerializer):
     patient = PatientSerializer(read_only=True)
+
     class Meta:
         model = Image
         fields = "__all__"
+
 
 class ImageCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
         fields = "__all__"
+
+
 # class MlModelSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = MlModel
@@ -78,7 +86,8 @@ class ImageCreateSerializer(serializers.ModelSerializer):
 class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
-        fields = '__all__'
+        fields = "__all__"
+
 
 class ClassificationSerializer(serializers.ModelSerializer):
     # usage = UsageSerializer()
@@ -95,16 +104,20 @@ class ClassificationSerializer(serializers.ModelSerializer):
             "meningioma_prob",
             "glioma_prob",
         ]
-        extra_kwargs = {'usage':{'read_only':True}}
-        
+        extra_kwargs = {"usage": {"read_only": True}}
+
+
 class UsageSerializer(serializers.ModelSerializer):
     classifications = ClassificationSerializer(many=True, read_only=True)
+
     class Meta:
         model = Usage
         fields = "__all__"
 
+
 class UsageFilesSerializer(serializers.ModelSerializer):
     report = ReportSerializer(read_only=True)
+
     class Meta:
         model = Usage
         fields = "__all__"
