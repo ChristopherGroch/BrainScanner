@@ -1,3 +1,4 @@
+import psutil
 import os
 import io
 import shutil
@@ -26,6 +27,11 @@ from .serializers import UsageFilesSerializer
 
 NETWORK = "MlModels/googleNetFinalV1.pth"
 
+def get_memory_usage():
+    process = psutil.Process(os.getpid())
+    memory_info = process.memory_info()
+    memory_usage_mb = memory_info.rss / (1024 ** 2)
+    return memory_usage_mb
 
 def load_network():
     best_model = default_storage.path(NETWORK)

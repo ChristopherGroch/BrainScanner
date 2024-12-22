@@ -434,3 +434,4 @@ def multipleImageCheck(request):
             {"error": f"Unexpected error: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+    

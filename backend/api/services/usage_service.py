@@ -3,11 +3,12 @@ from io import StringIO
 import json
 import pandas as pd
 
+from django.apps import apps
 from django.core.files.base import ContentFile
 from django.db import transaction
 from ..models import Usage, Report, Classification
 from ..utils import (
-    load_network,
+    # load_network,
     get_single_image_prediction,
     round_decimal,
 )
@@ -49,19 +50,18 @@ def evaluate_images(images, usage, network):
 
 
 def single_image_check(request_data, files, user):
-    network = load_network()
+    network = apps.get_app_config('api').network #load_network()
     with transaction.atomic():
         patient = get_patient(request_data)
         image = get_image(files["photo"], patient)
         usage = Usage(doctor=user)
         usage.save()
         classification = evaluate_image(image, usage, network)
-
     return classification
 
 
 def multiple_image_check(data, photos, user, saved_photos):
-    network = load_network()
+    network = apps.get_app_config('api').network #load_network()
     data = json.loads(data)
     patients = []
     images = []
