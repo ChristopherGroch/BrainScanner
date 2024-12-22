@@ -24,6 +24,11 @@ import { getUsers, changeUser, resetPasword } from "../endpoints/api";
 import { refresh } from "../endpoints/api";
 import ReactSelect from "react-select";
 import { toast } from "sonner";
+import {
+  containsBraces,
+  parseErrorsFromString,
+  formatErrorsToString,
+} from "../utils/utils";
 
 const ChangeUserData = () => {
   const nav = useNavigate();
@@ -206,9 +211,17 @@ const ChangeUserData = () => {
             ) {
               toast.error("User with that PESEL already exists");
             } else {
-              toast.error(
-                refreshError.response?.data?.reason || "Unexpected error"
-              );
+              if (containsBraces(refreshError.response?.data?.reason)) {
+                toast.error(
+                  formatErrorsToString(
+                    parseErrorsFromString(refreshError.response?.data?.reason)
+                  ) || "Unexpoected error"
+                );
+              } else {
+                toast.error(
+                  refreshError.response?.data?.reason || "Unexpoected error"
+                );
+              }
             }
           }
         }
@@ -223,7 +236,17 @@ const ChangeUserData = () => {
         ) {
           toast.error("User with that PESEL already exists");
         } else {
-          toast.error(error.response?.data?.reason || "Unexpected error");
+          if (containsBraces(error.response?.data?.reason)) {
+            toast.error(
+              formatErrorsToString(
+                parseErrorsFromString(error.response?.data?.reason)
+              ) || "Unexpoected error"
+            );
+          } else {
+            toast.error(
+              error.response?.data?.reason || "Unexpoected error"
+            );
+          }
         }
       }
     }
@@ -231,36 +254,36 @@ const ChangeUserData = () => {
   };
 
   const handleResetPassword = async () => {
-      setLoading(true);
-      try {
-        const response = await resetPasword('01212121312', selectedUser.id);
-        toast.success("Password reseted");
-        onResetClose();
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          try {
-            await refresh();
-            const response = await resetPasword('01212121312', selectedUser.id);
-            toast.success("Password reseted");
-            onResetClose();
-          } catch (refreshError) {
-            if (refreshError.response && refreshError.response.status === 401) {
-              console.error("Nie udało się odświeżyć tokena", refreshError);
-              alert("Twoja sesja wygasła. Zaloguj się ponownie.");
-              nav("/login");
-            } else {
-              // alert(refreshError.response?.data?.reason || "Wystąpił błąd.");
-              toast.error(
-                refreshError.response?.data?.reason || "Wystąpił błąd."
-              );
-            }
+    setLoading(true);
+    try {
+      const response = await resetPasword("01212121312", selectedUser.id);
+      toast.success("Password reseted");
+      onResetClose();
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        try {
+          await refresh();
+          const response = await resetPasword("01212121312", selectedUser.id);
+          toast.success("Password reseted");
+          onResetClose();
+        } catch (refreshError) {
+          if (refreshError.response && refreshError.response.status === 401) {
+            console.error("Nie udało się odświeżyć tokena", refreshError);
+            alert("Twoja sesja wygasła. Zaloguj się ponownie.");
+            nav("/login");
+          } else {
+            // alert(refreshError.response?.data?.reason || "Wystąpił błąd.");
+            toast.error(
+              refreshError.response?.data?.reason || "Wystąpił błąd."
+            );
           }
-        } else {
-          // alert(error.response?.data?.reason || "Wystąpił błąd.");
-          toast.error(error.response?.data?.reason || "Wystąpił błąd.");
         }
+      } else {
+        // alert(error.response?.data?.reason || "Wystąpił błąd.");
+        toast.error(error.response?.data?.reason || "Wystąpił błąd.");
       }
-    
+    }
+
     setLoading(false);
   };
   const customStyles = {

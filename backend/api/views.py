@@ -386,7 +386,7 @@ def downloadFile(request):
     image = Image.objects.get(id=request.data["id"])
     file_path = image.photo.path
     response = FileResponse(open(file_path, "rb"))
-    response["Content-Type"] = "application/octet-stream"
+    response["Content-Type"] = "image/png"
     response["Content-Disposition"] = f'attachment; filename="{image.photo.name}"'
     return response
 
@@ -426,7 +426,7 @@ def multipleImageCheck(request):
         return Response({"reason": "No photos key"}, status=status.HTTP_400_BAD_REQUEST)
     try:
         saved_photos = []
-        saved_photos, usage, report = multiple_image_check(request.data["patients"],request.FILES.getlist("photos"), request.user)
+        usage, report = multiple_image_check(request.data["patients"],request.FILES.getlist("photos"), request.user, saved_photos)
         usage_data = UsageSerializer(usage).data
         usage_data["report"] = report.file.url
         usage_data["reportID"] = report.id

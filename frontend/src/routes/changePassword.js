@@ -89,7 +89,7 @@ const ChangePasasword = () => {
         mx={"auto"}
         maxW={"100%"}
         justify={"center"}
-        width={"34%"}
+        width={"500px"}
         height={"70%"}
         py={6}
         px={6}

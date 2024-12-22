@@ -65,7 +65,7 @@ const DropzoneMultiple = ({ onFileChange, onFileRemove, errorFile }) => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
-      "image/*": [],
+      "image/png": [],
     },
     maxFiles: 5,
     maxSize: 1024 * 5000,

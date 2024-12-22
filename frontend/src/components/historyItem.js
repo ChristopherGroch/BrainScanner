@@ -92,7 +92,7 @@ const HistoryItem = ({
 
   const handleDownloadFile = async () => {
     try {
-      await downloadFile(image_id, `${patient}-image.jpg`);
+      await downloadFile(image_id, `${patient}-image.png`);
     } catch (error) {
       console.log("w");
       if (error.response && error.response.status === 401) {

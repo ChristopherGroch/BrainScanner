@@ -63,16 +63,19 @@ export const AuthProvider = ({ children }) => {
   const logoutUser = async () => {
     try {
       await logout();
+      setUser(false);
+      nav("/login");
     } catch (error) {
       if (error.response && error.response.status === 401) {
         try {
           await refresh();
           await logout();
+          setUser(false);
+          nav("/login");
         } catch (refreshError) {}
       } else {
       }
     }
-    nav("/login");
   };
 
   useEffect(() => {

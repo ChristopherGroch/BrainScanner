@@ -29,7 +29,7 @@ const Dropzone = ({ onFileChange, errorFile }) => {
       onFileChange(acceptedFiles[0]);
     }
     if (rejectedFiles.length > 0) {
-      setError("The file is too large. Maximum file size is 5MB.");
+      setError("The file is too large or wrong format. Maximum file size is 5MB and only .png files can be used.");
     }
     if (rejectedFiles.length > 1) {
       setError("You can only send one file.");
@@ -38,7 +38,7 @@ const Dropzone = ({ onFileChange, errorFile }) => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
-      "image/*": [],
+      "image/png": [],
     },
     maxFiles: 1,
     maxSize: 1024 * 5000,

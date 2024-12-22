@@ -32,7 +32,7 @@ def get_patients_with_images(data):
         else:
             patient = PatientSerializer(data=p)
             if not patient.is_valid():
-                raise ValueError(f"{patient.errors}")
+                raise ValueError(f"{patient.errors} {p['first_name']} {p['last_name']}")
             patient = patient.create(patient.validated_data)
             patient.cur_images = p["images"]
         patients.append(patient)

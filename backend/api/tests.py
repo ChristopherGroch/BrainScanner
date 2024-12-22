@@ -1666,7 +1666,6 @@ class multipleImagesTest(TestCase):
                 "patients": json.dumps([patient_data1, patient_data2]),
             },
         )
-
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data["classifications"]), 3)
         self.assertEqual(response.data["doctor"], self.user.id)

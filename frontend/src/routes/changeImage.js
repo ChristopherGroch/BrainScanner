@@ -200,16 +200,16 @@ const ChangeImagesData = () => {
     try {
       const response = await changeImage(request_form, selectedImage.id);
       toast.success("Data changed");
-      await resetStates();
       onClose();
+      await resetStates();
     } catch (error) {
       if (error.response && error.response.status === 401) {
         try {
           await refresh();
           const response = await changeImage(request_form, selectedImage.id);
           toast.success("Data changed");
-          await resetStates();
           onClose();
+          await resetStates();
         } catch (refreshError) {
           if (refreshError.response && refreshError.response.status === 401) {
             console.error("Nie udało się odświeżyć tokena", refreshError);

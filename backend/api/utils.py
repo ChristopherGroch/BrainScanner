@@ -116,7 +116,7 @@ def saveBlankPILimage(im_path):
 def array_hash_in_memory(image_bytes):
     image_array = np.frombuffer(image_bytes, dtype=np.uint8)
     image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
-
+    
     arr_bytes = image.tobytes()
 
     sha256 = hashlib.sha256()

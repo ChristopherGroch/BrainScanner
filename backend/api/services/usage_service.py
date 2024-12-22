@@ -63,20 +63,19 @@ def single_image_check(request_data, files, user):
     return classification
 
 
-def multiple_image_check(data, photos, user):
+def multiple_image_check(data, photos, user, saved_photos):
     network = loadNetwork()
     data = json.loads(data)
     patients = []
     images = []
-    saved_photos = []
     with transaction.atomic():
         patients = get_patients_with_images(data)
-        images, saved_photos = get_images(patients, photos)
+        images = get_images(patients, photos, saved_photos)
         usage = Usage(doctor=user)
         usage.save()
         classifications = evaluate_images(images, usage, network)
         report = generate_report(classifications,usage)
-    return saved_photos, usage, report
+    return usage, report
 
 
 def generate_report(classifications, usage):

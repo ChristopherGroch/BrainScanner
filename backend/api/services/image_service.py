@@ -55,8 +55,7 @@ def get_image(data, patient):
     return image.create(image.validated_data)
 
 
-def get_images(patients, photos):
-    saved_images = []
+def get_images(patients, photos,saved_photos):
     images = []
     photos_dict = {photo.name: photo for photo in photos}
     for patient in patients:
@@ -77,7 +76,7 @@ def get_images(patients, photos):
                 if not image.is_valid():
                     raise ValueError(f"{image.errors}")
                 image = image.create(image.validated_data)
-                saved_images.append(image.photo.path)
+                saved_photos.append(image.photo.path)
                 images.append(image)
             photo.seek(0)
-    return images, saved_images
+    return images
