@@ -13,13 +13,12 @@ import {
   FormLabel,
   Input,
 } from "@chakra-ui/react";
-import { Box, Flex} from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import ReportItem from "../components/reportItem";
 import { toast } from "sonner";
 import Pagination from "@mui/material/Pagination";
 
 const ReportHistory = () => {
-  const BASE_URL = "http://127.0.0.1:8000";
   const [reports, setReports] = useState([]);
   const nav = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -157,34 +156,36 @@ const ReportHistory = () => {
                 return (
                   <ReportItem
                     key={key}
-                    file={`${BASE_URL}${menuItem.report.report.file}`}
+                    file={`${menuItem.report.report.file}`}
                     date={menuItem.report.date_of_creation}
                     file_id={menuItem.report.report.id}
                     patients={menuItem.patients}
                   />
                 );
               })}
-            <Stack spacing={2}>
-              <Pagination
-                count={numberOfPages}
-                page={page}
-                onChange={handleChange}
-                size="lg"
-                sx={{
-                  ".Mui-selected": {
-                    backgroundColor: "#A1C6EA",
-                    color: "black",
-                    fontWeight: "bold",
-                  },
-                  "button:hover": {
-                    backgroundColor: "#A1C6EA",
-                  },
-                }}
-              />
-              <Text fontSize="md" textAlign="center">
-                Current page: {page}
-              </Text>
-            </Stack>
+            {numberOfPages > 1 && (
+              <Stack spacing={2}>
+                <Pagination
+                  count={numberOfPages}
+                  page={page}
+                  onChange={handleChange}
+                  size="lg"
+                  sx={{
+                    ".Mui-selected": {
+                      backgroundColor: "#A1C6EA",
+                      color: "black",
+                      fontWeight: "bold",
+                    },
+                    "button:hover": {
+                      backgroundColor: "#A1C6EA",
+                    },
+                  }}
+                />
+                <Text fontSize="md" textAlign="center">
+                  Current page: {page}
+                </Text>
+              </Stack>
+            )}
           </VStack>
         </Box>
       </Stack>

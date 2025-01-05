@@ -1,6 +1,21 @@
 version: '3.8'
 
 services:
+  web:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    command: gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+    expose:
+      - 8000
+    volumes:
+      - static_volume:/home/app/web/static
+      - build_volume:/home/app/web/build
+      - media_volume:/home/app/web/media
+    env_file:
+      - ./.env
+    depends_on:
+      - db
   db:
     image: postgres:14
     restart: always
@@ -17,5 +32,19 @@ services:
     restart: always
     ports:
       - 8080:8080
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/app/web/static
+      - build_volume:/home/app/web/build
+      - media_volume:/home/app/web/media
+    ports:
+      - "80:80"
+      - "443:443" 
+    depends_on:
+      - web
 volumes:
   pg:
+  static_volume:
+  build_volume:
+  media_volume:

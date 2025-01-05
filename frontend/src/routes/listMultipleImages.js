@@ -302,7 +302,7 @@ const MultipleImagesList = () => {
   };
 
   const handleClick = async () => {
-    const fileUrl = `http://127.0.0.1:8000${classificationResult.report}`;
+    const fileUrl = `${classificationResult.report}`;
 
     try {
       const response = await fetch(fileUrl);

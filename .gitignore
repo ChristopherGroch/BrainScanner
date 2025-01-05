@@ -162,6 +162,7 @@ cython_debug/
 #.idea/
 
 media/
+static/
 testFiles/
 /custom_googlenet.pth
 Dataset/

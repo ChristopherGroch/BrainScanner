@@ -132,16 +132,11 @@ const HistoryMenu = () => {
             minH="50%"
             width={"100%"}
           >
-            <Stack
-              spacing={4}
-              justify="space-around"
-              align="stretch"
-              height="100%"
-            >
+            <VStack width={"100%"} spacing={5}>
               <FormControl>
                 <FormLabel>Search</FormLabel>
                 <Input
-                  placeholder="Enter a term to search..." 
+                  placeholder="Enter a term to search..."
                   onChange={(e) => setSearchBar(e.target.value)}
                   value={searchBar}
                   type="text"
@@ -149,43 +144,43 @@ const HistoryMenu = () => {
                   boxShadow="md"
                 />
               </FormControl>
-              <VStack width={"100%"} spacing={5}>
-                {loading && (
-                  <VStack>
-                    <Spinner sizer="4xl" />
-                    <Text>Loading...</Text>
-                  </VStack>
-                )}
+              {loading && (
+                <VStack>
+                  <Spinner sizer="4xl" />
+                  <Text>Loading...</Text>
+                </VStack>
+              )}
 
-                {classifications
-                  .filter((menuItem) => {
-                    return searchBar.toLocaleLowerCase() === ""
-                      ? menuItem
-                      : menuItem.patient
+              {classifications
+                .filter((menuItem) => {
+                  return searchBar.toLocaleLowerCase() === ""
+                    ? menuItem
+                    : menuItem.patient
+                        .toLocaleLowerCase()
+                        .includes(searchBar.toLocaleLowerCase()) ||
+                        (TUMOR_TYPES[menuItem.tumor_type] || "Unknown")
                           .toLocaleLowerCase()
-                          .includes(searchBar.toLocaleLowerCase()) ||
-                          (TUMOR_TYPES[menuItem.tumor_type] || "Unknown")
-                            .toLocaleLowerCase()
-                            .includes(searchBar.toLocaleLowerCase());
-                  })
-                  .slice(page * 10 - 10, page * 10)
-                  .map((menuItem, key) => {
-                    return (
-                      <HistoryItem
-                        key={key}
-                        image={`${BASE_URL}${menuItem.image_url}`}
-                        patient={menuItem.patient}
-                        date={menuItem.date}
-                        tumor_type={menuItem.tumor_type}
-                        no_tumor_prob={menuItem.no_tumor_prob}
-                        pituitary_prob={menuItem.pituitary_prob}
-                        glioma_prob={menuItem.glioma_prob}
-                        meningioma_prob={menuItem.meningioma_prob}
-                        image_id={menuItem.image_id}
-                        classifyFunction={updateTumorType}
-                      />
-                    );
-                  })}
+                          .includes(searchBar.toLocaleLowerCase());
+                })
+                .slice(page * 10 - 10, page * 10)
+                .map((menuItem, key) => {
+                  return (
+                    <HistoryItem
+                      key={key}
+                      image={`${menuItem.image_url}`}
+                      patient={menuItem.patient}
+                      date={menuItem.date}
+                      tumor_type={menuItem.tumor_type}
+                      no_tumor_prob={menuItem.no_tumor_prob}
+                      pituitary_prob={menuItem.pituitary_prob}
+                      glioma_prob={menuItem.glioma_prob}
+                      meningioma_prob={menuItem.meningioma_prob}
+                      image_id={menuItem.image_id}
+                      classifyFunction={updateTumorType}
+                    />
+                  );
+                })}
+              {numberOfPages > 1 && (
                 <Stack spacing={2}>
                   <Pagination
                     count={numberOfPages}
@@ -207,8 +202,8 @@ const HistoryMenu = () => {
                     Current page: {page}
                   </Text>
                 </Stack>
-              </VStack>
-            </Stack>
+              )}
+            </VStack>
           </Box>
         </Stack>
       </Flex>

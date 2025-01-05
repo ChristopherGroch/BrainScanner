@@ -28,7 +28,6 @@ import emptyImage from "../assets/empty.png";
 
 const ChangeImagesData = () => {
   const nav = useNavigate();
-  const BASE_URL = "http://127.0.0.1:8000";
   const TUMOR_TYPES = {
     0: "unknown",
     1: "glioma",
@@ -304,7 +303,7 @@ const ChangeImagesData = () => {
               >
                 <HStack justify="space-between" width={"95%"}>
                   <Image
-                    src={`${BASE_URL}${selectedImage.photo}`}
+                    src={`${selectedImage.photo}`}
                     alt={selectedImage.patient.first_name}
                     boxSize={{ base: "100%", md: "224px" }}
                     objectFit="cover"

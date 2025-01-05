@@ -536,7 +536,7 @@ const SingleImage = () => {
                         alignItems="center"
                       >
                         <Image
-                          src={`http://127.0.0.1:8000${classificationResult.image.photo}`}
+                          src={`${classificationResult.image.photo}`}
                           alt="Patient's Scan"
                           width="224px"
                           height="224px"

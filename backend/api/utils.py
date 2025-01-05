@@ -307,7 +307,7 @@ def fronted_happy_reformat_history(data):
             result.append(
                 {
                     "id": f"{id_class}",
-                    "patient": f"{patient.get("first_name")} {patient.get("last_name")}",
+                    "patient": f"{patient.get('first_name')} {patient.get('last_name')}",
                     "image_id": (image.get("id")),
                     "date": (item.get("date_of_creation")),
                     "image_url": image.get("photo"),

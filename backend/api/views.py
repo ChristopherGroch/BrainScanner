@@ -82,6 +82,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             ip_address = ip_address.split(',')[0]
         else:
             ip_address = request.META.get('REMOTE_ADDR')
+        print(ip_address)
         try:
             response = super().post(request, *args, **kwargs)
             data = response.data

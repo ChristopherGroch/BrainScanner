@@ -41,7 +41,7 @@ const ReportItem = ({ file, date, file_id, patients }) => {
   };
   const handleClick = async () => {
     const fileUrl = file;
-
+    console.log(fileUrl)
     try {
       const response = await fetch(fileUrl);
       const text = await response.text();
