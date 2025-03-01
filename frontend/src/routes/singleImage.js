@@ -48,7 +48,7 @@ const SingleImage = () => {
   const [patients, setPatients] = useState([]);
   const [classificationResult, setClassificationResult] = useState(null);
   const [dropzoneKey, setDropzoneKey] = useState(0);
-
+  const [loading, setLoading] = useState(false);
   const handleSwitchClick = (option) => {
     setIsDropdown(!isDropdown);
   };
@@ -147,13 +147,15 @@ const SingleImage = () => {
 
   const handleCloseModal = async () => {
     if (classificationResult) {
-      console.log("asdasdasd");
-      await resetStates();
+      // console.log("asdasdasd");
+      // await resetStates();
+      nav(0);
     }
     onClose();
   };
 
   const handleClassify = async () => {
+    setLoading(true);
     let requestData = {};
     if (isDropdown) {
       requestData = selectedPatient;
@@ -211,6 +213,7 @@ const SingleImage = () => {
         }
       }
     }
+    setLoading(false);
   };
   const customStyles = {
     control: (provided) => ({
@@ -503,10 +506,11 @@ const SingleImage = () => {
                         color="white"
                         _hover={{ bg: "blue.700" }}
                         onClick={handleClassify}
+                        isLoading={loading}
                         width={'100%'}
                         boxShadow="md"
                       >
-                        Confirm and classify
+                        Classify
                       </Button>
                       <Button
                         // variant="outline"

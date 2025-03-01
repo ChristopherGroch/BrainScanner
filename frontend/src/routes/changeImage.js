@@ -349,7 +349,7 @@ const ChangeImagesData = () => {
                         <option value="1">glioma</option>
                         <option value="2">meningioma</option>
                         <option value="3">pituitary</option>
-                        <option value="4">no Tumor</option>
+                        <option value="4">no tumor</option>
                       </Select>
                     </FormControl>
                     <FormControl width={"100%"}>
@@ -432,7 +432,7 @@ const ChangeImagesData = () => {
                         <option value="1">glioma</option>
                         <option value="2">meningioma</option>
                         <option value="3">pituitary</option>
-                        <option value="4">no Tumor</option>
+                        <option value="4">no tumor</option>
                       </Select>
                     </FormControl>
                     <FormControl width={"100%"}>

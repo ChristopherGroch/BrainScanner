@@ -77,6 +77,7 @@ class CookieTokenRefreshView(TokenRefreshView):
 
 class CookieTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
+        print('LOG')
         ip_address = request.META.get('HTTP_X_FORWARDED_FOR')
         if ip_address:
             ip_address = ip_address.split(',')[0]
@@ -147,6 +148,7 @@ def classifiy(request, pk):
     if not "tumor_type" in request.data:
         return Response("No tumor type key", status=status.HTTP_400_BAD_REQUEST)
     try:
+        print('CLASS')
         return_image = classify_image(pk, request.data["tumor_type"], request.user)
     except ValidationError as e:
         return Response({"reason": str(e)}, status=status.HTTP_400_BAD_REQUEST)

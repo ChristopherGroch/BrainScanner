@@ -49,7 +49,7 @@ const DropzoneMultiple = ({ onFileChange, onFileRemove, errorFile }) => {
         onFileChange(acceptedFiles);
       }
       if (rejectedFiles.length > 0) {
-        error = "The file is too large or isn't an image file. Maximum file size is 5MB";
+        error = "The file is too large or isn't an image file. Maximum file size is 4MB";
       }
       if (rejectedFiles.length > 5) {
         error = "You can only send five files";
@@ -67,7 +67,7 @@ const DropzoneMultiple = ({ onFileChange, onFileRemove, errorFile }) => {
       "image/png": [],
     },
     maxFiles: 5,
-    maxSize: 1024 * 5000,
+    maxSize: 1024 * 4000,
     onDrop,
   });
 

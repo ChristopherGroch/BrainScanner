@@ -181,7 +181,7 @@ const ChangeUserData = () => {
     try {
       const response = await changeUser(request_form, selectedUser.id);
       toast.success("Data changed");
-      await resetStates();
+      resetStates();
       onClose();
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -189,7 +189,7 @@ const ChangeUserData = () => {
           await refresh();
           const response = await changeUser(request_form, selectedUser.id);
           toast.success("Data changed");
-          await resetStates();
+          resetStates();
           onClose();
         } catch (refreshError) {
           if (refreshError.response && refreshError.response.status === 401) {

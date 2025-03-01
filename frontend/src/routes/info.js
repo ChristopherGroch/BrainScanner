@@ -20,70 +20,69 @@ const data = [
   {
     image: nn,
     text: `
-      The BrainScanner application is a cutting-edge system designed to support 
-      the classification of brain tumors. It simplifies the use of a pre-trained 
-      network for this task and enables the annotation of confirmed cases, which 
-      can contribute to improving the classification algorithm in the future.
+      BrainScanner uses a neural network based on the ResNet50 architecture, 
+      which has been specially adapted for brain tumor classification. 
+      The model consists of 24 million parameters. 
+      On the test set, the algorithm achieved over 95% accuracy and over 94% sensitivity.
     `,
     heading: `About the algorithm`,
   },
   {
     image: doctor,
     text: `
-      The BrainScanner application is a cutting-edge system designed to support 
-      the classification of brain tumors. It simplifies the use of a pre-trained 
-      network for this task and enables the annotation of confirmed cases, which 
-      can contribute to improving the classification algorithm in the future.
+      The application is made available exclusively to physicians specializing in 
+      brain tumor classification, who are fully aware that it is designed to support 
+      decision-making. Under no circumstances should the system be accessible to patients, 
+      as they might misinterpret the algorithm's results. At this stage, the application 
+      is primarily intended for collecting well-annotated images to facilitate future development.
     `,
     heading: `Access`,
   },
   {
     image: single,
     text: `
-      The BrainScanner application is a cutting-edge system designed to support 
-      the classification of brain tumors. It simplifies the use of a pre-trained 
-      network for this task and enables the annotation of confirmed cases, which 
-      can contribute to improving the classification algorithm in the future.
+      The system can be used to classify a single patient's image. 
+      In this case, the appropriate image should be selected, ensuring 
+      it is in PNG format and does not exceed 4 MB in size. It is not possible 
+      to assign the same image to multiple patients. However, a single image can be classified multiple times.
     `,
     heading: `Single image test`,
   },
   {
     image: multiple,
     text: `
-      The BrainScanner application is a cutting-edge system designed to support 
-      the classification of brain tumors. It simplifies the use of a pre-trained 
-      network for this task and enables the annotation of confirmed cases, which 
-      can contribute to improving the classification algorithm in the future.
+      The application can also be used to generate reports for multiple patients. 
+      In this case, the same rules apply as for single image classification, 
+      with the exception that up to five images can be selected for each patient.
     `,
     heading: `Multiple images test`,
   },
   {
     image: images,
     text: `
-      The BrainScanner application is a cutting-edge system designed to support 
-      the classification of brain tumors. It simplifies the use of a pre-trained 
-      network for this task and enables the annotation of confirmed cases, which 
-      can contribute to improving the classification algorithm in the future.
+      Every use of the algorithm on an image can be reviewed on the usage history page. 
+      This section displays all classifications performed by a specific doctor. 
+      Images can be enlarged by clicking on them and downloaded using the appropriate button. 
+      Additionally, images can be labeled directly from the history page. Each image can be labeled only once.
     `,
     heading: `Usage history`,
   },
   {
     image: reports,
     text: `
-      The BrainScanner application is a cutting-edge system designed to support 
-      the classification of brain tumors. It simplifies the use of a pre-trained 
-      network for this task and enables the annotation of confirmed cases, which 
-      can contribute to improving the classification algorithm in the future.
+      It is also possible to review the history of generated reports. 
+      This section provides access to all reports along with a list of 
+      patients and the number of their images analyzed. Each report can be 
+      opened in the browser or downloaded.
     `,
     heading: `Report history`,
   },
   {
     image: errors,
     text: `
-      The BrainScanner application is a cutting-edge system designed to support 
-      the classification of brain tumors. It simplifies the use of a pre-trained 
-      network for this task and enables the annotation of confirmed cases, which 
-      can contribute to improving the classification algorithm in the future.
+      In case of any errors related to patient data, image details, 
+      or incorrect labeling, the system administrator should be contacted. 
+      The administrator is responsible for correcting such errors directly within the application.
     `,
     heading: `Errors`,
   },
@@ -166,7 +165,7 @@ const Info = () => {
               </Heading>
               <Text color={"gray.800"}>
                 {" "}
-                he BrainScanner application is a cutting-edge system designed to
+                The BrainScanner application is a cutting-edge system designed to
                 support the classification of brain tumors. It simplifies the
                 use of a pre-trained network for this task and enables the
                 annotation of confirmed cases, which can contribute to improving

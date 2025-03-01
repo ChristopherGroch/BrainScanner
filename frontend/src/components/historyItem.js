@@ -204,15 +204,15 @@ const HistoryItem = ({
                   <Select
                     value={selectedOption}
                     onChange={(e) => setSelectedOption(e.target.value)}
-                    placeholder="Unknown"
+                    placeholder="unknown"
                     boxShadow="md"
                     size="sm"
                     // height={'30px'}
                   >
-                    <option value="1">g1lioma</option>
+                    <option value="1">glioma</option>
                     <option value="2">meningioma</option>
                     <option value="3">pituitary</option>
-                    <option value="4">no Tumor</option>
+                    <option value="4">no tumor</option>
                   </Select>
                 </FormControl>
                 <HStack>

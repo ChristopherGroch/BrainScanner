@@ -17,24 +17,28 @@ import { useState } from "react";
 import { changePassword, refresh } from "../endpoints/api";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { toast } from "sonner";
+import { useAuth } from "../context/auth";
 
 const ChangePasasword = () => {
   const [new_password, setNewPassword] = useState("");
   const [repeat_password, setRepeat] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const { deleteUser } = useAuth();
   const nav = useNavigate();
 
   const handleCreateUser = async () => {
     if (repeat_password === new_password) {
       try {
         await changePassword(new_password);
+        await deleteUser();
         nav("/login");
       } catch (error) {
         if (error.response && error.response.status === 401) {
           try {
             await refresh();
             await changePassword(new_password);
+            await deleteUser();
             nav("/login");
           } catch (refreshError) {
             if (refreshError.response && refreshError.response.status === 401) {

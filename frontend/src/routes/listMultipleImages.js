@@ -554,9 +554,9 @@ const MultipleImagesList = () => {
                       color="white"
                       _hover={{ bg: "blue.700" }}
                       onClick={handleClassify}
-                      width={"50%"}
+                      width={"100%"}
                       isLoading={loading}
-                      display={classificationResult ? "none" : "inline-block"}
+                      // display={classificationResult ? "none" : "inline-block"}
                       boxShadow="md"
                     >
                       Classify
@@ -568,8 +568,8 @@ const MultipleImagesList = () => {
                         bg: "red.700",
                       }}
                       onClick={onClose}
-                      width={"50%"}
-                      display={classificationResult ? "none" : "inline-block"}
+                      width={"100%"}
+                      // display={classificationResult ? "none" : "inline-block"}
                       boxShadow="md"
                     >
                       Cancel

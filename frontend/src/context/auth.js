@@ -61,6 +61,9 @@ export const AuthProvider = ({ children }) => {
       toast.error('Bad credentials')
     }
   };
+  const deleteUser = async () => {
+    setUser(false);
+  }
 
   const logoutUser = async () => {
     try {
@@ -86,7 +89,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, loginUser, refresh, logoutUser, admin, userName }}
+      value={{ user, loading, loginUser, refresh, logoutUser, admin, userName,deleteUser }}
     >
       {children}
     </AuthContext.Provider>

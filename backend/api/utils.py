@@ -25,7 +25,7 @@ from .models import Image, NetowrkException
 from .serializers import UsageFilesSerializer
 
 
-NETWORK = "MlModels/googleNetFinalV1.pth"
+NETWORK = "MlModels/ResFinal32.pth"
 
 def get_memory_usage():
     process = psutil.Process(os.getpid())
@@ -107,6 +107,8 @@ def check_duplicates_in_dataset(im):
     media = os.path.join(
         os.path.dirname(os.path.abspath(__file__)).split("backend")[0], "Dataset"
     )
+    if not os.path.exists(media):
+        media = "/home/app/dataset"
     for folder in os.listdir(media):
         if folder == ".DS_Store":
             continue
@@ -242,7 +244,7 @@ data_transform = transforms.Compose(
     [
         transforms.ToTensor(),
         transforms.Normalize(
-            mean=[0.1966, 0.1966, 0.1966], std=[0.2023, 0.2023, 0.2023]
+            mean=[0.1968, 0.1968, 0.1968], std=[0.2022, 0.2022, 0.2022]
         ),
     ]
 )
@@ -274,7 +276,7 @@ def delete_file(file):
 
 def generate_password_file(password):
     with open("password.txt", "w", encoding="utf-8") as f:
-        f.write(f"Twoje hasło: {password}")
+        f.write(f"Your password: {password}")
     return "password.txt"
 
 
@@ -327,6 +329,8 @@ def add_image_t_dataset(src, old_tt, new_tt):
     dataset = os.path.join(
         os.path.dirname(os.path.abspath(__file__)).split("backend")[0], "Dataset"
     )
+    if not os.path.exists(dataset):
+        dataset = "/home/app/dataset"
     if old_tt is None or int(old_tt) == 0:
         im = crop_image(path)
         im = resize_preserve_aspect(

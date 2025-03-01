@@ -38,7 +38,7 @@ const ChangePatientData = () => {
   });
   const [errors, setErrors] = useState({});
   const [patientOptions, setpatientOptions] = useState({});
-
+  const [loading, setLoading] = useState(false);
   const resetStates = async () => {
     setFormData({
       first_name: "",
@@ -100,6 +100,7 @@ const ChangePatientData = () => {
   }, [formData]);
 
   const handleEdit = async () => {
+    setLoading(true);
     let request_form = {};
     if (selectedPatient?.first_name !== formData.first_name)
       request_form["first_name"] = formData.first_name;
@@ -113,7 +114,7 @@ const ChangePatientData = () => {
     try {
       const response = await changePatient(request_form, selectedPatient.id);
       toast.success("Data changed");
-      await resetStates();
+      resetStates();
       onClose();
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -124,7 +125,7 @@ const ChangePatientData = () => {
             selectedPatient.id
           );
           toast.success("Data changed");
-          await resetStates();
+          resetStates();
           onClose();
         } catch (refreshError) {
           if (refreshError.response && refreshError.response.status === 401) {
@@ -149,6 +150,7 @@ const ChangePatientData = () => {
         );
       }
     }
+    setLoading(false);
   };
   const handleClick = () => {
     if (equal) {
@@ -327,6 +329,7 @@ const ChangePatientData = () => {
                   onClick={handleEdit}
                   bg="#507DBC"
                   color="white"
+                  isLoading={loading}
                   _hover={{ bg: "blue.700" }}
                   width={"100%"}
                   boxShadow={'md'}

@@ -80,7 +80,7 @@ def generate_report(classifications, usage):
         [
             {
                 "name": c.image.photo.name,
-                "patient_id": c.image.patient.id,
+                "patient_PESEL": c.image.patient.PESEL,
                 "first_name": c.image.patient.first_name,
                 "last_name": c.image.patient.last_name,
                 "no_tumor": float(c.no_tumor_prob),
@@ -92,7 +92,7 @@ def generate_report(classifications, usage):
         ]
     )
     df["max_value"] = df[["no_tumor", "pituitary", "glioma", "meningioma"]].max(axis=1)
-    df["mean"] = df.groupby(by="patient_id")["max_value"].transform("mean")
+    df["mean"] = df.groupby(by="patient_PESEL")["max_value"].transform("mean")
     df = df.sort_values(by=["mean", "max_value"], ascending=False)
     df = df.drop(columns=["mean", "max_value"])
 
@@ -100,7 +100,7 @@ def generate_report(classifications, usage):
         "Patient Classification Report\n\n"
         "This report provides a detailed analysis of classified medical images, "
         "prioritizing the most confident predictions for each patient. Columns included:\n\n"
-        "- `patient_id`: Unique identifier for the patient.\n"
+        "- `patient_PESEL`: Unique patient's PESEL number.\n"
         "- `name`: The filename of the analyzed image.\n"
         """- Probabilities (`no_tumor`, `pituitary`, `glioma`, `meningioma`):
         Confidence scores for each condition.\n\n"""
