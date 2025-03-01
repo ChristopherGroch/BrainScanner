@@ -167,6 +167,6 @@ testFiles/
 /custom_googlenet.pth
 Dataset/
 /.pylintrc
-.vscode/
+/.vscode/
 .DS_Store
 /test.py
