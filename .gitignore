@@ -170,3 +170,4 @@ Dataset/
 /.vscode/
 .DS_Store
 /test.py
+settings.py
