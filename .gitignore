@@ -171,3 +171,4 @@ Dataset/
 .DS_Store
 /test.py
 settings.py
+frontend/README.md
