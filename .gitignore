@@ -172,3 +172,7 @@ Dataset/
 /test.py
 settings.py
 frontend/README.md
+logo.svg
+reportWebVitals.js
+setupTests.js
+App.test.js
