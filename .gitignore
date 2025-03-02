@@ -162,9 +162,9 @@ cython_debug/
 #.idea/
 
 /backend/media/Images/*
-!Images/.gitkeep
+!/backend/media/Images/.gitkeep
 /backend/media/reports/*
-!reports/.gitkeep
+!/backend/media/reports/.gitkeep
 static/
 testFiles/
 /custom_googlenet.pth
