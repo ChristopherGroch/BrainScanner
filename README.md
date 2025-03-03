@@ -32,7 +32,7 @@ Ensure that a `settings.py` file is created in the Django backend. Modify or add
 
   ```python
   MEDIA_URL = "/media/"
-  STATIC_ROOT = BASE_DIR / "media"
+  MEDIA_ROOT = BASE_DIR / "media"
   ```
 
 - **Email settings (should be configured manually):**
